@@ -17,7 +17,7 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🧱 Klossmester | Klossepuslespill (5–15 år): dra klosser inn, fyll rader/kolonner. 15 nivåer med mål og steinhindringer, kombo-poeng og uendelig modus med rekord. |
 | 🐍 Slangejakt | Styr slangen og spis frukt (5–15 år). 12 nivåer med hjerter, økende fart og steiner, pluss uendelig modus. Sveip, piltaster eller store pilknapper. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
-| 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). Kjøp hatter, briller, kjæledyr, bakgrunner, rammer og effekter til figuren din. |
+| 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). 128 ting i 8 kategorier (hatter, briller, leker, kjæledyr, spesialdyr, bakgrunner, rammer, effekter) fra 15 til 1500 mynter, med sjeldenhetsnivåer og samlingsmåler. |
 | 📒 Klistremerkebok | Klistremerker kjøpes i butikken (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
 | 🌍 Språk | Norsk og albansk (shqip). |

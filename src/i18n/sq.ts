@@ -149,5 +149,12 @@ export const sq: Dict = {
   tapToStart: 'Shtyp për të filluar',
   paused: 'Pauzë',
   fruits: 'Fruta',
-  oops: 'Oi! Provo përsëri!'
+  oops: 'Oi! Provo përsëri!',
+  slotHeld: 'Lodra',
+  slotSkin: 'Kafshë speciale',
+  collection: 'Koleksioni',
+  rarity_common: 'E zakonshme',
+  rarity_rare: 'E rrallë',
+  rarity_epic: 'Epike',
+  rarity_legendary: 'Legjendare'
 };
