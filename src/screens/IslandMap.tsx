@@ -73,6 +73,7 @@ export function IslandMap() {
           <>
             <RoundButton icon="📒" label={t('stickers')} onClick={() => go('stickers')} color="#ffd60a" />
             <RoundButton icon="🔒" label={t('parents')} onClick={() => go('parents')} />
+            <RoundButton icon="🚪" label={t('exit')} onClick={() => go('bye')} color="#ffadad" />
           </>
         }
       />

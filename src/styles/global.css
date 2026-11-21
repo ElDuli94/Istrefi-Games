@@ -16,6 +16,9 @@
 }
 * { box-sizing: border-box; }
 html, body, #root { margin: 0; height: 100%; }
+html, body { overscroll-behavior: none; overflow: hidden; }
+#root { position: fixed; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden; }
+body { touch-action: manipulation; }
 body {
   background: var(--sky);
   overscroll-behavior: none;
@@ -39,6 +42,8 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
   padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 .screen--sky { background: linear-gradient(180deg, #4cc9f0 0%, #a0e7ff 100%); }
@@ -104,7 +109,8 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .profile-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 900px; }
 .profile-card { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform .1s; }
 .profile-card__name { font-size: 1.3rem; font-weight: 800; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
-.grown-up-link { margin-top: auto; border: 0; background: #ffffff55; border-radius: 999px; padding: 8px 18px; color: #fff; font-weight: 700; }
+.profile-footer { margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.grown-up-link { border: 0; background: #ffffff55; border-radius: 999px; padding: 8px 18px; color: #fff; font-weight: 700; }
 .clouds::before, .clouds::after {
   content: '☁️'; position: absolute; font-size: 90px; opacity: .8; animation: drift 40s linear infinite; top: 8%; left: -120px;
 }
@@ -279,3 +285,17 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 
 /* Runde knapper skal alltid være runde (eldre Safari krymper dem ellers) */
 .round-btn, .swatch, .tool, .avatar, .act, .tile { flex-shrink: 0; }
+
+/* ----- Ha det-skjerm ----- */
+.bye-screen { align-items: center; justify-content: center; }
+.bye-card {
+  background: #fff; border-radius: 36px; padding: 28px 32px; max-width: 480px; width: 100%; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; border: 8px solid #ffd60a; box-shadow: var(--shadow); z-index: 2;
+}
+.bye-card h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); color: #ff006e; }
+.bye-card p { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.bye-card small { color: #64748b; margin-top: 4px; }
+.wave .mascot__wing--r { animation: waveWing .5s ease-in-out infinite; }
+@keyframes waveWing { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-45deg); } }
+.install-step--lock { border-color: #ffd60a; background: #fffbea; }
+.install-step--lock p { margin: 8px 0 0; }

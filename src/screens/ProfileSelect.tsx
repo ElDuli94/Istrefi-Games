@@ -43,7 +43,10 @@ export function ProfileSelect() {
           <span className="profile-card__name">{t('newPlayer')}</span>
         </button>
       </div>
-      <button className="grown-up-link" onClick={() => go('parents')}>🔒 {t('parents')}</button>
+      <div className="profile-footer">
+        <button className="grown-up-link" onClick={() => go('parents')}>🔒 {t('parents')}</button>
+        <button className="grown-up-link" onClick={() => go('bye')}>🚪 {t('exit')}</button>
+      </div>
     </div>
   );
 }

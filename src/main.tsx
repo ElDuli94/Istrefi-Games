@@ -8,6 +8,11 @@ import '@fontsource/baloo-2/latin-800.css';
 import './styles/global.css';
 import App from './App';
 import { hideSplashWhenReady } from './splash';
+import { installHistoryGuard } from './router';
+import { installTouchGuard } from './touchGuard';
+
+installHistoryGuard();
+installTouchGuard();
 
 registerSW({ immediate: true });
 

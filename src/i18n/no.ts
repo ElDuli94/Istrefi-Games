@@ -118,7 +118,17 @@ export const no = {
   allAnimalsHeard: 'Du har hørt alle dyrene!',
   listen: 'Lytt',
   guessAnimal: 'Gjett dyret',
-  whoSaysThis: 'Hvem sier dette?'
+  whoSaysThis: 'Hvem sier dette?',
+  // Avslutt
+  exit: 'Avslutt',
+  byeTitle: 'Ha det, {name}!',
+  byeText: 'Takk for at du spilte! Shqipo gleder seg til neste gang.',
+  playMore: 'Spill mer',
+  byeHint: 'Trykk på hjem-knappen på iPaden for å lukke helt.',
+  // Lås iPaden
+  lockTitle: 'Lås iPaden til spillet (anbefalt for små barn)',
+  lockIntro: 'Med «Guidet tilgang» kan ikke barnet sveipe seg ut av spillet eller trykke på hjem-knappen. Du låser opp med en kode.',
+  lockSteps: 'Åpne Innstillinger → Tilgjengelighet → Guidet tilgang, og slå det på|Trykk «Kodeinnstillinger» og velg en kode du husker|Åpne Istrefi Games (gjerne som app fra hjemskjermen)|Trykk tre ganger raskt på hjem-knappen (eller sideknappen på nyere iPader) og trykk «Start»|For å avslutte: trykk tre ganger igjen og skriv inn koden'
 };
 
 export type Dict = typeof no;

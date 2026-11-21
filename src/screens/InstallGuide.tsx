@@ -22,6 +22,13 @@ export function InstallGuide() {
       ) : (
         canInstall && <button className="big-btn big-btn--go" onClick={promptInstall}>⬇️ {t('installNow')}</button>
       )}
+      <details className="install-step install-step--lock" open={current === 'ios'}>
+        <summary>🔐 {t('lockTitle')}</summary>
+        <p>{t('lockIntro')}</p>
+        <ol>
+          {t('lockSteps').split('|').map((step, i) => <li key={i}>{step}</li>)}
+        </ol>
+      </details>
       {sections.map((s) => (
         <details key={s.id} open={s.id === current} className="install-step">
           <summary>{s.icon} {t(s.title)}</summary>
