@@ -111,6 +111,51 @@ export const GAMES: GameDefinition[] = [
     worlds: ['mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./flags/FlagGame'))
+  },
+  {
+    id: 'trace',
+    titleKey: 'game_trace',
+    icon: '✍️',
+    color: '#ff70a6',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    component: lazy(() => import('./trace/TraceGame'))
+  },
+  {
+    id: 'coloring',
+    titleKey: 'game_coloring',
+    icon: '🖍️',
+    color: '#ffca3a',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 2,
+    component: lazy(() => import('./coloring/ColoringGame'))
+  },
+  {
+    id: 'dots',
+    titleKey: 'game_dots',
+    icon: '🔢',
+    color: '#4cc9f0',
+    worlds: ['small', 'mid'],
+    maxPlayers: 1,
+    component: lazy(() => import('./dots/DotsGame'))
+  },
+  {
+    id: 'robot',
+    titleKey: 'game_robot',
+    icon: '🤖',
+    color: '#6a4c93',
+    worlds: ['mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./robot/RobotGame'))
+  },
+  {
+    id: 'duel',
+    titleKey: 'game_duel',
+    icon: '👫',
+    color: '#ff006e',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 2,
+    component: lazy(() => import('./duel/DuelGame'))
   }
 ];
 

@@ -7,7 +7,7 @@ import { actions, useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { HOUSE_CATS, HOUSE_ITEMS, DEFAULT_FLOOR, DEFAULT_WALL, houseItemById, defaultHouse, type House, type HouseCat, type HouseItem } from '../data/house';
-import { AvatarView } from '../components/AvatarView';
+import { LivelyAvatar } from '../components/LivelyAvatar';
 import { BackButton, TopBar } from '../components/ui';
 import { CoinChip } from './Shop';
 import { playSfx } from '../audio/sound';
@@ -160,7 +160,7 @@ export function HouseScreen() {
             style={{ left: `${house.avatar.x}%`, top: `${house.avatar.y}%`, zIndex: Math.round(house.avatar.y) }}
             onPointerDown={(e) => startDrag(e, 'avatar')}
           >
-            <AvatarView avatar={profile.avatar} equipped={profile.equipped} size={70} />
+            <LivelyAvatar profile={profile} size={70} interactive={false} />
           </span>
         </div>
         {sel && (

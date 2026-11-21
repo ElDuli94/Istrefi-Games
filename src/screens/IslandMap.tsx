@@ -4,7 +4,7 @@ import { useT } from '../i18n';
 import { go } from '../router';
 import { WORLDS } from '../data/worlds';
 import { RoundButton, TopBar } from '../components/ui';
-import { AvatarView } from '../components/AvatarView';
+import { LivelyAvatar } from '../components/LivelyAvatar';
 import { CoinChip } from './Shop';
 import { MascotSays } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
@@ -68,9 +68,7 @@ export function IslandMap() {
       <TopBar
         left={
           <>
-            <button className="avatar-btn" onClick={() => { playSfx('tap'); go('shop'); }} aria-label={t('myAvatar')}>
-              <AvatarView avatar={profile.avatar} equipped={profile.equipped} size={window.innerWidth < 560 ? 48 : 60} />
-            </button>
+            <LivelyAvatar profile={profile} size={window.innerWidth < 560 ? 48 : 60} mode="wave" bubble="right" />
             <button className="avatar-btn" onClick={() => { playSfx('tap'); go('shop'); }} aria-label={t('coins')}>
               <CoinChip coins={profile.coins} />
             </button>

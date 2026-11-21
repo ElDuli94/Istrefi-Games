@@ -1,0 +1,19 @@
+.trace-pick { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 4px; }
+.trace-tabs { display: flex; gap: 10px; }
+.trace-tabs button { border: 5px solid #fff; background: #ffffffaa; border-radius: 18px; padding: 6px 22px; font-weight: 800; font-size: 1.6rem; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+.trace-tabs button.is-active { background: #ffd60a; }
+.trace-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; width: 100%; max-width: 820px; }
+.trace-tile { aspect-ratio: 1; border: 5px solid #fff; border-radius: 20px; background: #fff; font-size: 2.2rem; font-weight: 800; box-shadow: 0 5px 0 rgba(0,0,0,.12); position: relative; }
+.trace-tile.is-done { background: #e9fbe9; border-color: #06d6a0; }
+.trace-tile.is-done::after { content: '⭐'; position: absolute; top: -8px; right: -6px; font-size: 18px; }
+.tracer { height: 100%; display: flex; flex-direction: column; gap: 10px; }
+.tracer__top { display: flex; gap: 10px; align-items: center; justify-content: center; }
+.tracer__btn { border: 0; font-size: 1.3rem; cursor: pointer; }
+.tracer__meter { width: min(240px, 40vw); height: 18px; border-radius: 999px; background: #ffffff88; border: 3px solid #fff; overflow: hidden; }
+.tracer__meter i { display: block; height: 100%; background: linear-gradient(90deg, #ff70a6, #ffd60a, #06d6a0); transition: width .3s; }
+.tracer__stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.tracer__paper { position: relative; background: #fff; border-radius: 28px; border: 6px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,.15); box-sizing: content-box; }
+.tracer__paper canvas { position: absolute; left: 0; top: 0; }
+.tracer__paint { touch-action: none; cursor: crosshair; }
+.tracer__paper.is-success { animation: popIn .5s ease; border-color: #ffd60a; }
+.tracer__star { position: absolute; top: -20px; right: -10px; font-size: 64px; animation: stickerIn .7s cubic-bezier(.3,1.6,.5,1) both; }

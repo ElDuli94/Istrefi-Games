@@ -1,0 +1,27 @@
+.robot { height: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.robot__board { position: relative; display: grid; background: #95d5b2; border: 6px solid #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 0 rgba(0,0,0,.15); }
+.rcell { display: flex; align-items: center; justify-content: center; font-size: calc(min(14vw, 7vh, 46px)); background: #b7e4c7; }
+.rcell.is-alt { background: #a7dcba; }
+.robot__bot { position: absolute; display: flex; align-items: center; justify-content: center; transition: left .4s ease, top .4s ease; z-index: 2; }
+.robot__face { font-size: calc(min(14vw, 7vh, 48px)); filter: drop-shadow(0 4px 2px rgba(0,0,0,.25)); }
+.robot__bot.is-bump .robot__face { animation: wiggle .4s; }
+.robot__dir { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: flex-end; transition: transform .3s; pointer-events: none; }
+.robot__dir i { font-style: normal; color: #ff006e; font-size: 18px; margin-right: -4px; text-shadow: 0 0 3px #fff; }
+.robot__program {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; background: #ffffffcc; border-radius: 18px;
+  padding: 8px; min-height: 58px; width: 100%; max-width: 640px; box-sizing: border-box;
+}
+.robot__hint { color: #64748b; font-weight: 700; text-align: center; }
+.pcmd { width: 44px; height: 44px; border: 3px solid #fff; border-radius: 12px; background: #e7f5ff; font-size: 22px; padding: 0; box-shadow: 0 3px 0 rgba(0,0,0,.12); }
+.pcmd.is-active { background: #ffd60a; transform: scale(1.15); }
+.robot__msg { background: #fff; color: #ef476f; font-weight: 800; border-radius: 999px; padding: 4px 16px; }
+.robot__controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.rcmd {
+  min-width: 70px; height: 66px; border: 5px solid #fff; border-radius: 18px; background: #a0c4ff; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 0 rgba(0,0,0,.15); padding: 0 8px;
+}
+.rcmd small { font-size: .7rem; font-weight: 800; }
+.rcmd:active { transform: translateY(3px); }
+.rcmd--clear { background: #ffadad; }
+.rcmd--run { background: #06d6a0; color: #fff; font-weight: 800; font-size: 1.4rem; min-width: 120px; }
+.rcmd--run:disabled { opacity: .5; }
