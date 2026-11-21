@@ -5,13 +5,15 @@ Trygge og morsomme nettspill for barn fra 2 til 15 år.
 
 Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det albanske flagget.
 
-## Hva finnes nå (v0.2)
+## Hva finnes nå (v0.3)
 
 | Del | Beskrivelse |
 |---|---|
 | 👥 Profiler | Barnet velger sitt dyr – ingen tekst eller passord. Flere barn per enhet. |
 | 🏝️ Øykart | Fire verdener: Lekelandet (2–4), Eventyrskogen (5–7), Oppdagerfjellet (8–11), Stjernebyen (12–15). |
 | 🃏 Dyre-memory | 3 nivåer per verden (Lett/Middels/Vanskelig) som låses opp ett etter ett – fra 2 til 15 par. De eldste kobler bilde med skrevet ord. |
+| 🐮 Dyrelyder | Trykk på dyr og hør lyden og navnet (2–7 år). «Gjett dyret»-quiz for 5–7 år. Lydene lages i nettleseren. |
+| 🎨 Tegnebrett | Tegn fritt med fingrene (flere samtidig), regnbuepensel, stempler, viskelær, angre og et lite galleri. Alle aldre. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 📒 Klistremerkebok | Et nytt klistremerke for hvert fullførte spill (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |

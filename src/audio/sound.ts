@@ -9,7 +9,7 @@ let ctx: AudioContext | null = null;
 let musicGain: GainNode | null = null;
 let musicTimer: number | null = null;
 
-function ac(): AudioContext {
+export function ac(): AudioContext {
   if (!ctx) ctx = new AudioContext();
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;

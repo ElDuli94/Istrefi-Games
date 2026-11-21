@@ -105,7 +105,20 @@ export const no = {
   dragLetters: 'Dra eller trykk på bokstaver!',
   whatIsThis: 'Hva heter dette dyret?',
   wordOf: 'Ord {n} av {total}',
-  done: 'Ferdig'
+  done: 'Ferdig',
+  // Tegnebrett
+  game_draw: 'Tegnebrett',
+  tapAgainToClear: 'Trykk igjen for å viske ut alt',
+  myDrawings: 'Mine tegninger',
+  noDrawings: 'Ingen tegninger ennå',
+  drawSomething: 'Tegn hva du vil!',
+  // Dyrelyder
+  game_sounds: 'Dyrelyder',
+  tapAnAnimal: 'Trykk på et dyr!',
+  allAnimalsHeard: 'Du har hørt alle dyrene!',
+  listen: 'Lytt',
+  guessAnimal: 'Gjett dyret',
+  whoSaysThis: 'Hvem sier dette?'
 };
 
 export type Dict = typeof no;

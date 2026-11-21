@@ -97,5 +97,16 @@ export const sq: Dict = {
   dragLetters: 'Tërhiq ose shtyp shkronjat!',
   whatIsThis: 'Si quhet kjo kafshë?',
   wordOf: 'Fjala {n} nga {total}',
-  done: 'Mbarova'
+  done: 'Mbarova',
+  game_draw: 'Tabela e vizatimit',
+  tapAgainToClear: 'Shtyp përsëri për të fshirë gjithçka',
+  myDrawings: 'Vizatimet e mia',
+  noDrawings: 'Ende nuk ka vizatime',
+  drawSomething: 'Vizato çfarë të duash!',
+  game_sounds: 'Zërat e kafshëve',
+  tapAnAnimal: 'Shtyp një kafshë!',
+  allAnimalsHeard: 'I dëgjove të gjitha kafshët!',
+  listen: 'Dëgjo',
+  guessAnimal: 'Gjej kafshën',
+  whoSaysThis: 'Kush e bën këtë zë?'
 };
