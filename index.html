@@ -11,8 +11,112 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <title>Istrefi Games</title>
+    <link rel="preload" href="./fonts/baloo-2-800.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      /* ===== Åpningsskjerm (vises før appen er lastet) ===== */
+      @font-face { font-family: 'Baloo Splash'; src: url('./fonts/baloo-2-800.woff2') format('woff2'); font-weight: 800; font-display: block; }
+      html, body { margin: 0; background: #4cc9f0; }
+      #splash {
+        position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 9999; overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: radial-gradient(circle at 50% 38%, #8ee3ff 0%, #4cc9f0 45%, #3a86ff 100%);
+        font-family: 'Baloo Splash', 'Baloo 2', ui-rounded, 'Arial Rounded MT Bold', system-ui, sans-serif;
+        -webkit-user-select: none; user-select: none; cursor: pointer;
+        transition: opacity .5s ease, transform .5s ease;
+      }
+      #splash.is-leaving { opacity: 0; transform: scale(1.15); pointer-events: none; }
+
+      /* Solstråler som snurrer sakte bak ørnen */
+      .sp-rays {
+        position: absolute; width: 160vmax; height: 160vmax; left: 50%; top: 38%; margin: -80vmax 0 0 -80vmax;
+        background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.13) 0deg 10deg, transparent 10deg 20deg);
+        animation: sp-spin 30s linear infinite; opacity: 0; animation-name: sp-spin, sp-fade;
+        animation-duration: 30s, 1.2s; animation-timing-function: linear, ease; animation-iteration-count: infinite, 1; animation-fill-mode: none, forwards;
+      }
+      /* Skyer */
+      .sp-cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .9; animation: sp-drift linear infinite; }
+      .sp-cloud::before, .sp-cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
+      .sp-cloud::before { width: 55%; height: 160%; left: 15%; bottom: 20%; }
+      .sp-cloud::after { width: 40%; height: 120%; right: 12%; bottom: 25%; }
+      .sp-c1 { width: 180px; height: 50px; top: 12%; animation-duration: 18s; animation-delay: -4s; }
+      .sp-c2 { width: 130px; height: 38px; top: 72%; animation-duration: 24s; animation-delay: -14s; opacity: .75; }
+      .sp-c3 { width: 220px; height: 60px; top: 85%; animation-duration: 30s; animation-delay: -22s; opacity: .6; }
+      /* Stjerner */
+      .sp-star { position: absolute; color: #ffd60a; font-size: 26px; animation: sp-twinkle 1.6s ease-in-out infinite; text-shadow: 0 0 10px #fff; }
+      /* Ørnen */
+      .sp-eagle { width: min(42vmin, 230px); height: min(42vmin, 230px); position: relative; z-index: 2;
+        animation: sp-fly-in 1.1s cubic-bezier(.2,1.3,.4,1) both, sp-bob 2.2s ease-in-out 1.1s infinite; }
+      .sp-eagle svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 10px 0 rgba(0,0,0,.12)); }
+      .sp-wing-l { transform-origin: 60px 110px; animation: sp-flap-l .35s ease-in-out infinite; }
+      .sp-wing-r { transform-origin: 140px 110px; animation: sp-flap-r .35s ease-in-out infinite; }
+      .sp-blink { transform-origin: 100px 96px; animation: sp-blink 3.5s ease-in-out 1.5s infinite; }
+      /* Tittel */
+      .sp-title { position: relative; z-index: 2; margin: 6px 0 0; font-size: clamp(44px, 11vmin, 104px); font-weight: 800; line-height: 1; letter-spacing: 1px; white-space: nowrap; text-align: center; }
+      .sp-title span { display: inline-block; color: #fff; text-shadow: 0 6px 0 #0077b6, 0 10px 18px rgba(0,0,0,.2); animation: sp-drop .7s cubic-bezier(.3,1.7,.5,1) both, sp-wave 2.4s ease-in-out infinite; }
+      .sp-title .sp-g { color: #ffd60a; text-shadow: 0 6px 0 #e85d04, 0 10px 18px rgba(0,0,0,.2); }
+      .sp-title .sp-gap { width: .3em; }
+      .sp-word { display: inline-block; white-space: nowrap; }
+      /* Lastestripe */
+      .sp-bar { position: relative; z-index: 2; width: min(60vw, 320px); height: 18px; margin-top: 28px; background: rgba(255,255,255,.35); border-radius: 999px; overflow: hidden; border: 4px solid #fff; box-shadow: 0 5px 0 rgba(0,0,0,.12); animation: sp-pop .5s 1.4s cubic-bezier(.3,1.6,.5,1) both; }
+      .sp-bar i { display: block; height: 100%; width: 0; border-radius: 999px;
+        background: linear-gradient(90deg, #ff006e, #ff9f1c, #ffd60a, #06d6a0, #3a86ff, #8338ec);
+        background-size: 200% 100%; animation: sp-fill 1.6s 1.5s ease-out forwards, sp-shine 1.2s linear infinite; }
+
+      @keyframes sp-spin { to { transform: rotate(360deg); } }
+      @keyframes sp-fade { to { opacity: 1; } }
+      @keyframes sp-drift { from { left: -260px; } to { left: 110%; } }
+      @keyframes sp-twinkle { 0%,100% { transform: scale(.6) rotate(0); opacity: .4; } 50% { transform: scale(1.2) rotate(30deg); opacity: 1; } }
+      @keyframes sp-fly-in {
+        0% { transform: translate(-70vw, -30vh) rotate(-25deg) scale(.4); opacity: 0; }
+        60% { transform: translate(4vw, 2vh) rotate(8deg) scale(1.08); opacity: 1; }
+        100% { transform: translate(0, 0) rotate(0) scale(1); }
+      }
+      @keyframes sp-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+      @keyframes sp-flap-l { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(28deg); } }
+      @keyframes sp-flap-r { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-28deg); } }
+      @keyframes sp-blink { 0%,92%,100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+      @keyframes sp-drop { 0% { transform: translateY(-120vh) rotate(-20deg); } 100% { transform: translateY(0) rotate(0); } }
+      @keyframes sp-wave { 0%,100% { margin-top: 0; } 50% { margin-top: -8px; } }
+      @keyframes sp-pop { from { transform: scale(0); } to { transform: scale(1); } }
+      @keyframes sp-fill { 0% { width: 0; } 70% { width: 85%; } 100% { width: 100%; } }
+      @keyframes sp-shine { to { background-position: -200% 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        #splash *, #splash *::before, #splash *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; }
+      }
+    </style>
+    <script>
+      window.__splashStart = Date.now();
+    </script>
   </head>
   <body>
+    <div id="splash" role="img" aria-label="Istrefi Games">
+      <div class="sp-rays"></div>
+      <div class="sp-cloud sp-c1"></div><div class="sp-cloud sp-c2"></div><div class="sp-cloud sp-c3"></div>
+      <span class="sp-star" style="top:18%;left:14%;animation-delay:.2s">★</span>
+      <span class="sp-star" style="top:26%;right:12%;animation-delay:.9s;font-size:34px">★</span>
+      <span class="sp-star" style="bottom:22%;left:20%;animation-delay:.5s;font-size:20px">★</span>
+      <span class="sp-star" style="bottom:30%;right:18%;animation-delay:1.3s">★</span>
+      <div class="sp-eagle">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <g class="sp-wing-l"><ellipse cx="46" cy="122" rx="22" ry="38" fill="#3d2618" transform="rotate(25 46 122)"/></g>
+          <g class="sp-wing-r"><ellipse cx="154" cy="122" rx="22" ry="38" fill="#3d2618" transform="rotate(-25 154 122)"/></g>
+          <path d="M78 52 Q84 24 96 48 Q100 20 106 48 Q118 24 122 52 Z" fill="#3d2618"/>
+          <circle cx="100" cy="112" r="62" fill="#5b3a29"/>
+          <ellipse cx="100" cy="140" rx="38" ry="30" fill="#f4d8b0"/>
+          <g class="sp-blink">
+            <circle cx="78" cy="96" r="17" fill="#fff"/><circle cx="122" cy="96" r="17" fill="#fff"/>
+            <circle cx="81" cy="98" r="9" fill="#111"/><circle cx="119" cy="98" r="9" fill="#111"/>
+            <circle cx="84" cy="94" r="3.5" fill="#fff"/><circle cx="122" cy="94" r="3.5" fill="#fff"/>
+          </g>
+          <circle cx="62" cy="118" r="8" fill="#ff8fab" opacity=".7"/><circle cx="138" cy="118" r="8" fill="#ff8fab" opacity=".7"/>
+          <path d="M86 112 Q100 102 114 112 Q108 132 100 136 Q92 132 86 112 Z" fill="#ffb703"/>
+          <path d="M58 154 Q100 172 142 154 L140 166 Q100 184 60 166 Z" fill="#e63946"/>
+          <ellipse cx="84" cy="178" rx="10" ry="6" fill="#ffb703"/><ellipse cx="116" cy="178" rx="10" ry="6" fill="#ffb703"/>
+        </svg>
+      </div>
+      <h1 class="sp-title"><span class="sp-word"><span style="animation-delay:0.55s,1.60s">I</span><span style="animation-delay:0.62s,1.72s">s</span><span style="animation-delay:0.69s,1.84s">t</span><span style="animation-delay:0.76s,1.96s">r</span><span style="animation-delay:0.83s,2.08s">e</span><span style="animation-delay:0.90s,2.20s">f</span><span style="animation-delay:0.97s,2.32s">i</span></span><span class="sp-gap"></span><span class="sp-word"><span class="sp-g" style="animation-delay:1.04s,2.44s">G</span><span class="sp-g" style="animation-delay:1.11s,2.56s">a</span><span class="sp-g" style="animation-delay:1.18s,2.68s">m</span><span class="sp-g" style="animation-delay:1.25s,2.80s">e</span><span class="sp-g" style="animation-delay:1.32s,2.92s">s</span></span></h1>
+      <div class="sp-bar"><i></i></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
