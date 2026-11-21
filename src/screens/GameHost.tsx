@@ -8,7 +8,7 @@ import { useT } from '../i18n';
 import { go } from '../router';
 import { gameById } from '../games/registry';
 import { WORLDS, type WorldId } from '../data/worlds';
-import { pickNewSticker, stickerById } from '../data/stickers';
+import { coinsFor } from '../data/shop';
 import type { GameApi, GameResult } from '../games/types';
 import { BackButton, Stars, TopBar } from '../components/ui';
 import { Mascot } from '../components/Mascot';
@@ -25,7 +25,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
   const statsKey = `${gameId}:${worldId}`;
 
   const [round, setRound] = useState(0);
-  const [result, setResult] = useState<(GameResult & { sticker: string | null }) | null>(null);
+  const [result, setResult] = useState<(GameResult & { earned: number }) | null>(null);
   const startedAt = useRef(Date.now());
   const finished = useRef(false);
 
@@ -65,15 +65,12 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
     finished.current = true;
     const seconds = (Date.now() - startedAt.current) / 1000;
     actions.recordGame(profile.id, statsKey, { ...r, seconds });
-    let sticker: string | null = null;
-    if (r.won) {
-      sticker = pickNewSticker(getState().profiles.find((p) => p.id === profile.id)?.stickers ?? []);
-      if (sticker) actions.addSticker(profile.id, sticker);
-    }
-    setResult({ ...r, sticker });
-    playSfx('win');
-    speak(t('wellDone'));
-    if (sticker) setTimeout(() => playSfx('sticker'), 1200);
+    const earned = coinsFor(r);
+    if (earned > 0) actions.addCoins(profile.id, earned);
+    setResult({ ...r, earned });
+    playSfx(r.won ? 'win' : 'pop');
+    speak(r.won ? t('wellDone') : t('goodTry'));
+    if (earned > 0) setTimeout(() => playSfx('sticker'), 1200);
   }
 
   function again() {
@@ -99,18 +96,18 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
           </div>
           <div className="celebrate__card pop-in">
             <Mascot size={120} mood="cheer" className="bounce" />
-            <h2>{t('wellDone')}</h2>
+            <h2>{result.won ? t('wellDone') : t('goodTry')}</h2>
             <Stars count={result.stars} size={2.4} />
-            {result.sticker && (
-              <div className="celebrate__sticker">
-                <span className="sticker-reveal">{stickerById(result.sticker)?.emoji}</span>
-                <p>{t('youGotSticker')}</p>
+            {result.earned > 0 && (
+              <div className="celebrate__coins">
+                <span className="coin-burst">🪙</span>
+                <p>{t('youEarned', { coins: result.earned })}</p>
               </div>
             )}
             <div className="celebrate__actions">
               <button className="big-btn big-btn--go" onClick={() => { playSfx('tap'); again(); }}>🔁 {t('playAgain')}</button>
               <button className="big-btn" onClick={() => { playSfx('tap'); go(`world/${world}`); }}>🏝️</button>
-              {result.sticker && <button className="big-btn" onClick={() => { playSfx('tap'); go('stickers'); }}>📒</button>}
+              <button className="big-btn" onClick={() => { playSfx('tap'); go('shop'); }}>🛍️</button>
             </div>
           </div>
         </div>

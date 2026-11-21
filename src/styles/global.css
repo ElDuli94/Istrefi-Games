@@ -237,7 +237,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .panel { background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .panel h3 { display: flex; align-items: center; gap: 10px; }
 .stats { display: flex; flex-direction: column; gap: 12px; }
-.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 12px 0; }
 .stat-row div { background: #f8fafc; border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; }
 .stat-row b { font-size: 1.4rem; }
 .stat-row span { font-size: .85rem; color: #64748b; }
@@ -299,3 +299,69 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 @keyframes waveWing { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-45deg); } }
 .install-step--lock { border-color: #ffd60a; background: #fffbea; }
 .install-step--lock p { margin: 8px 0 0; }
+
+/* ----- Figur (avatar med ting) ----- */
+.av { position: relative; display: inline-block; flex-shrink: 0; line-height: 1; }
+.av__frame { position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: 50%; box-shadow: var(--shadow); box-sizing: border-box; }
+.av__face {
+  position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+  border-radius: 50%; overflow: hidden;
+}
+.av__animal { display: block; line-height: 1; transform: translateY(4%); }
+.av__glasses { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); line-height: 1; }
+.av__hat { position: absolute; left: 50%; top: -18%; transform: translateX(-50%) rotate(-8deg); line-height: 1; filter: drop-shadow(0 2px 0 rgba(0,0,0,.15)); }
+.av__pet { position: absolute; right: -12%; bottom: -6%; line-height: 1; filter: drop-shadow(0 2px 0 rgba(0,0,0,.2)); animation: bob 2s ease-in-out infinite; }
+.av__fx { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
+.av__fx i { position: absolute; font-style: normal; animation: fxFloat 2s ease-in-out infinite; opacity: 0; }
+@keyframes fxFloat { 0% { opacity: 0; transform: translateY(6px) scale(.6); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px) scale(1.1); } }
+
+.coin-chip {
+  display: inline-flex; align-items: center; gap: 4px; background: #fff; border-radius: 999px; padding: 4px 14px 4px 8px;
+  font-weight: 800; font-size: 1.25rem; box-shadow: var(--shadow); border: 3px solid #ffd60a; white-space: nowrap;
+}
+.coin-chip.is-bump { animation: coinBump .5s ease; }
+@keyframes coinBump { 50% { transform: scale(1.25); } }
+
+/* ----- Butikk ----- */
+.shop-screen { background: linear-gradient(180deg, #ffd6ff, #c8b6ff); gap: 10px; }
+.shop-hero { display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; padding: 22px 0 6px; min-height: 200px; }
+.shop-action { min-width: 180px; }
+.shop-action.is-poor { background: #e9ecef; color: #868e96; }
+.shop-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; max-width: 900px; width: 100%; margin: 0 auto; justify-content: safe center; }
+.shop-tabs button {
+  flex-shrink: 0; border: 4px solid #fff; background: #ffffffaa; border-radius: 18px; padding: 6px 12px;
+  display: flex; flex-direction: column; align-items: center; min-width: 76px; box-shadow: 0 4px 0 rgba(0,0,0,.1);
+}
+.shop-tabs button span { font-size: 30px; line-height: 1.1; }
+.shop-tabs button small { font-weight: 800; font-size: .8rem; }
+.shop-tabs button.is-active { background: #ffd60a; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 12px; max-width: 900px; width: 100%; margin: 0 auto; padding: 4px; }
+.shop-item {
+  border: 5px solid #fff; background: #fff; border-radius: 22px; padding: 12px 6px 8px; display: flex; flex-direction: column;
+  align-items: center; gap: 6px; box-shadow: 0 5px 0 rgba(0,0,0,.12); transition: transform .1s;
+}
+.shop-item:active { transform: scale(.94); }
+.shop-item.is-selected { border-color: #ffd60a; box-shadow: 0 0 0 5px #ffd60a88, 0 5px 0 rgba(0,0,0,.12); }
+.shop-item.is-owned { background: #f1fff6; }
+.shop-item__emoji { font-size: 52px; line-height: 1.1; height: 58px; display: flex; align-items: center; }
+.shop-item__price { font-weight: 800; font-size: 1.05rem; }
+.shop-item__label { font-weight: 800; }
+.swatch-bg { width: 58px; height: 58px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #eee; }
+.swatch-frame { width: 50px; height: 50px; border-radius: 50%; border: 8px solid; box-sizing: border-box; margin: 4px; }
+.shop-stickers { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 10px; }
+.shop-item--pack { width: 200px; }
+.shop-item--pack .shop-item__emoji { font-size: 72px; height: 84px; }
+
+.celebrate__coins { display: flex; flex-direction: column; align-items: center; }
+.celebrate__coins p { margin: 0; font-weight: 800; font-size: 1.3rem; color: #e85d04; }
+.coin-burst { display: inline-block; font-size: 76px; animation: coinSpin 1.2s 1s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes coinSpin { 0% { transform: scale(0) rotateY(0); } 60% { transform: scale(1.2) rotateY(540deg); } 100% { transform: scale(1) rotateY(720deg); } }
+
+/* Mobil: plass til figur, mynter og knapper i toppfeltet */
+.shop-hero, .shop-tabs, .topbar { flex-shrink: 0; }
+@media (max-width: 560px) {
+  .island-screen .round-btn { width: 46px; height: 46px; font-size: 21px; border-width: 3px; }
+  .island-screen .topbar__side { gap: 6px; }
+  .island-screen .topbar__title { display: none; }
+  .island-screen .coin-chip { font-size: 1rem; padding: 2px 10px 2px 6px; }
+}

@@ -11,7 +11,7 @@ import type { Lang } from '../i18n';
 import type { WorldId } from '../data/worlds';
 
 export const STORAGE_KEY = 'istrefi-games';
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface GameStats {
   plays: number;
@@ -31,6 +31,9 @@ export interface Profile {
   world: WorldId; // foretrukket aldersverden
   createdAt: number;
   stickers: string[]; // id-er i STICKERS, i rekkefølgen de ble vunnet
+  coins: number; // mynter tjent i spill, brukes i butikken
+  owned: string[]; // kjøpte ting (id-er i SHOP_ITEMS)
+  equipped: Partial<Record<string, string>>; // spor (hatt, briller ...) -> ting-id
   games: Record<string, GameStats>;
 }
 
@@ -62,7 +65,15 @@ function migrate(raw: unknown): AppState {
   // Fremtidige migreringer: if (r.version === 1) { ... r.version = 2 }
   return {
     version: SCHEMA_VERSION,
-    profiles: Array.isArray(r.profiles) ? r.profiles : [],
+    // v1 -> v2: mynter, butikk og figur. Eksisterende spillere får startmynter.
+    profiles: Array.isArray(r.profiles)
+      ? r.profiles.map((p) => ({
+          ...p,
+          coins: typeof p.coins === 'number' ? p.coins : 30 + (p.stickers?.length ?? 0) * 5,
+          owned: Array.isArray(p.owned) ? p.owned : [],
+          equipped: p.equipped && typeof p.equipped === 'object' ? p.equipped : {}
+        }))
+      : [],
     activeProfileId: r.activeProfileId ?? null,
     settings: { ...base.settings, ...(r.settings ?? {}) }
   };
@@ -127,7 +138,7 @@ function updateProfile(id: string, fn: (p: Profile) => Profile) {
 
 export const actions = {
   createProfile(input: { name: string; avatar: string; world: WorldId }) {
-    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, ...input };
+    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, coins: 30, owned: [], equipped: {}, ...input };
     setState((s) => ({ ...s, profiles: [...s.profiles, profile], activeProfileId: profile.id }));
     return profile;
   },
@@ -172,6 +183,31 @@ export const actions = {
     updateProfile(profileId, (p) => {
       const g = p.games[gameId] ?? { plays: 0, wins: 0, bestStars: 0, totalSeconds: 0, lastPlayed: 0 };
       return { ...p, games: { ...p.games, [gameId]: { ...g, data } } };
+    });
+  },
+  addCoins(profileId: string, amount: number) {
+    updateProfile(profileId, (p) => ({ ...p, coins: Math.max(0, (p.coins ?? 0) + amount) }));
+  },
+  /** Kjøp en ting. Returnerer false hvis man ikke har råd eller allerede eier den. */
+  buy(profileId: string, itemId: string, price: number): boolean {
+    const p = state.profiles.find((x) => x.id === profileId);
+    if (!p || p.coins < price || p.owned.includes(itemId)) return false;
+    updateProfile(profileId, (q) => ({ ...q, coins: q.coins - price, owned: [...q.owned, itemId] }));
+    return true;
+  },
+  /** Kjøp et tilfeldig nytt klistremerke. */
+  buySticker(profileId: string, stickerId: string, price: number): boolean {
+    const p = state.profiles.find((x) => x.id === profileId);
+    if (!p || p.coins < price || p.stickers.includes(stickerId)) return false;
+    updateProfile(profileId, (q) => ({ ...q, coins: q.coins - price, stickers: [...q.stickers, stickerId] }));
+    return true;
+  },
+  equip(profileId: string, slot: string, itemId: string | null) {
+    updateProfile(profileId, (p) => {
+      const equipped = { ...p.equipped };
+      if (itemId) equipped[slot] = itemId;
+      else delete equipped[slot];
+      return { ...p, equipped };
     });
   },
   addSticker(profileId: string, stickerId: string) {

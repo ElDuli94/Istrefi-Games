@@ -128,7 +128,42 @@ export const no = {
   // Lås iPaden
   lockTitle: 'Lås iPaden til spillet (anbefalt for små barn)',
   lockIntro: 'Med «Guidet tilgang» kan ikke barnet sveipe seg ut av spillet eller trykke på hjem-knappen. Du låser opp med en kode.',
-  lockSteps: 'Åpne Innstillinger → Tilgjengelighet → Guidet tilgang, og slå det på|Trykk «Kodeinnstillinger» og velg en kode du husker|Åpne Istrefi Games (gjerne som app fra hjemskjermen)|Trykk tre ganger raskt på hjem-knappen (eller sideknappen på nyere iPader) og trykk «Start»|For å avslutte: trykk tre ganger igjen og skriv inn koden'
+  lockSteps: 'Åpne Innstillinger → Tilgjengelighet → Guidet tilgang, og slå det på|Trykk «Kodeinnstillinger» og velg en kode du husker|Åpne Istrefi Games (gjerne som app fra hjemskjermen)|Trykk tre ganger raskt på hjem-knappen (eller sideknappen på nyere iPader) og trykk «Start»|For å avslutte: trykk tre ganger igjen og skriv inn koden',
+  // Mynter og butikk
+  coins: 'Mynter',
+  shop: 'Butikk',
+  myAvatar: 'Min figur',
+  youEarned: 'Du tjente {coins} mynter!',
+  buy: 'Kjøp',
+  wear: 'Bruk',
+  takeOff: 'Ta av',
+  notEnough: 'Du trenger {n} mynter til. Spill litt mer!',
+  tapToBuy: 'Trykk igjen for å kjøpe',
+  bought: 'Kjøpt!',
+  slotHat: 'Hatter',
+  slotGlasses: 'Briller',
+  slotPet: 'Kjæledyr',
+  slotBg: 'Bakgrunn',
+  slotFrame: 'Ramme',
+  slotEffect: 'Effekter',
+  slotStickers: 'Klistremerker',
+  stickerPack: 'Nytt klistremerke',
+  bookFull: 'Klistremerkeboka er full!',
+  goodTry: 'Godt forsøkt!',
+  // Klossmester og Slangejakt
+  game_blocks: 'Klossmester',
+  game_snake: 'Slangejakt',
+  endless: 'Uendelig',
+  score: 'Poeng',
+  target: 'Mål',
+  best: 'Rekord',
+  combo: 'Kombo',
+  noMoves: 'Ingen flere trekk!',
+  levelDone: 'Nivå klart!',
+  tapToStart: 'Trykk for å starte',
+  paused: 'Pause',
+  fruits: 'Frukt',
+  oops: 'Oi! Prøv igjen!'
 };
 
 export type Dict = typeof no;

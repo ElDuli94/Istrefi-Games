@@ -16,6 +16,10 @@ export interface GameResult {
   /** 0–3 stjerner */
   stars: number;
   score?: number;
+  /** Første gang dette nivået klares – gir bonusmynter. */
+  firstClear?: boolean;
+  /** Overstyr antall mynter (f.eks. fri lek som gir færre mynter). */
+  coins?: number;
 }
 
 export interface GameApi {

@@ -103,12 +103,13 @@ export default function MemoryGame(props: GameProps) {
         const next = advance(progress, level, true, stars);
         setProgress(next);
         api.saveData(next);
+        return (progress.best[level] ?? 0) === 0;
       }}
     />
   );
 }
 
-function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCfg; onDone: (stars: number) => void }) {
+function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCfg; onDone: (stars: number) => boolean }) {
   const ui = WORLD_UI[world];
   const [deck] = useState(() => makeDeck(cfg));
   const [open, setOpen] = useState<number[]>([]);
@@ -159,8 +160,8 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
       if (nm.size === deck.length) {
         const p = cfg.pairs;
         const stars = ui.alwaysThreeStars ? 3 : total <= p * 1.5 ? 3 : total <= p * 2.2 ? 2 : 1;
-        onDone(stars);
-        setTimeout(() => onFinish({ won: true, stars, score: Math.max(0, 1000 - total * 20 - seconds * 2) }), 900);
+        const firstClear = onDone(stars);
+        setTimeout(() => onFinish({ won: true, stars, firstClear, score: Math.max(0, 1000 - total * 20 - seconds * 2) }), 900);
       }
     } else {
       lock.current = true;

@@ -49,7 +49,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
             </button>
           );
         })}
-        {PLACEHOLDERS.slice(0, 6 - games.length).map((icon, i) => (
+        {PLACEHOLDERS.slice(0, Math.max(0, 6 - games.length)).map((icon, i) => (
           <div key={i} className="game-card game-card--soon" aria-label={t('comingSoon')}>
             <span className="game-card__icon">{icon}</span>
             <span className="game-card__title">{t('comingSoon')}</span>

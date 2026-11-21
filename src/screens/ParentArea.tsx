@@ -68,6 +68,7 @@ function StatsTab({ profiles }: { profiles: Profile[] }) {
               <div><b>{fmtDuration(total)}</b><span>{t('totalPlayTime')}</span></div>
               <div><b>{plays}</b><span>{t('gamesPlayed')}</span></div>
               <div><b>{p.stickers.length}/{STICKERS.length}</b><span>{t('stickers')}</span></div>
+              <div><b>🪙 {p.coins}</b><span>{t('coins')}</span></div>
             </div>
             {entries.length === 0 ? <p className="muted">{t('noStats')}</p> : (
               <table className="stat-table">

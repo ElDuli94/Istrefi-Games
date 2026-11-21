@@ -227,7 +227,7 @@ function FreePlay({ world, api, onFinish }: GameProps) {
       onRead={read}
       extraButtons={
         readWords.size >= 3 && (
-          <button className="act act--done pop-in" onClick={() => onFinish({ won: true, stars: 3 })}>✔ {api.t('done')}</button>
+          <button className="act act--done pop-in" onClick={() => onFinish({ won: true, stars: 3, coins: 5 })}>✔ {api.t('done')}</button>
         )
       }
     />
