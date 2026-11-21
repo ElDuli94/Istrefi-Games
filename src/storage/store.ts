@@ -9,6 +9,7 @@
 import { useSyncExternalStore } from 'react';
 import type { Lang } from '../i18n';
 import type { WorldId } from '../data/worlds';
+import { defaultHouse, type House } from '../data/house';
 
 export const STORAGE_KEY = 'istrefi-games';
 export const SCHEMA_VERSION = 2;
@@ -34,6 +35,7 @@ export interface Profile {
   coins: number; // mynter tjent i spill, brukes i butikken
   owned: string[]; // kjøpte ting (id-er i SHOP_ITEMS)
   equipped: Partial<Record<string, string>>; // spor (hatt, briller ...) -> ting-id
+  house: House; // barnets eget hus
   games: Record<string, GameStats>;
 }
 
@@ -71,7 +73,8 @@ function migrate(raw: unknown): AppState {
           ...p,
           coins: typeof p.coins === 'number' ? p.coins : 30 + (p.stickers?.length ?? 0) * 5,
           owned: Array.isArray(p.owned) ? p.owned : [],
-          equipped: p.equipped && typeof p.equipped === 'object' ? p.equipped : {}
+          equipped: p.equipped && typeof p.equipped === 'object' ? p.equipped : {},
+          house: p.house && Array.isArray(p.house.items) ? p.house : defaultHouse()
         }))
       : [],
     activeProfileId: r.activeProfileId ?? null,
@@ -138,7 +141,7 @@ function updateProfile(id: string, fn: (p: Profile) => Profile) {
 
 export const actions = {
   createProfile(input: { name: string; avatar: string; world: WorldId }) {
-    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, coins: 30, owned: [], equipped: {}, ...input };
+    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, coins: 30, owned: [], equipped: {}, house: defaultHouse(), ...input };
     setState((s) => ({ ...s, profiles: [...s.profiles, profile], activeProfileId: profile.id }));
     return profile;
   },
@@ -201,6 +204,9 @@ export const actions = {
     if (!p || p.coins < price || p.stickers.includes(stickerId)) return false;
     updateProfile(profileId, (q) => ({ ...q, coins: q.coins - price, stickers: [...q.stickers, stickerId] }));
     return true;
+  },
+  setHouse(profileId: string, house: House) {
+    updateProfile(profileId, (p) => ({ ...p, house }));
   },
   equip(profileId: string, slot: string, itemId: string | null) {
     updateProfile(profileId, (p) => {

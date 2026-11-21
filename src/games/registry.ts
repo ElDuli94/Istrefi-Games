@@ -57,6 +57,60 @@ export const GAMES: GameDefinition[] = [
     worlds: ['small', 'mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./snake/SnakeGame'))
+  },
+  {
+    id: 'math',
+    titleKey: 'game_math',
+    icon: '🧮',
+    color: '#ff9f1c',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./math/MathGame'))
+  },
+  {
+    id: 'balloons',
+    titleKey: 'game_balloons',
+    icon: '🎈',
+    color: '#ff4d6d',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    component: lazy(() => import('./balloons/BalloonGame'))
+  },
+  {
+    id: 'music',
+    titleKey: 'game_music',
+    icon: '🎹',
+    color: '#8338ec',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 2,
+    component: lazy(() => import('./music/MusicGame'))
+  },
+  {
+    id: 'puzzle',
+    titleKey: 'game_puzzle',
+    icon: '🧩',
+    color: '#2ec4b6',
+    worlds: ['tiny', 'small', 'mid'],
+    maxPlayers: 1,
+    component: lazy(() => import('./puzzle/PuzzleGame'))
+  },
+  {
+    id: 'words',
+    titleKey: 'game_words',
+    icon: '🔠',
+    color: '#06d6a0',
+    worlds: ['mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./wordgame/WordGame'))
+  },
+  {
+    id: 'flags',
+    titleKey: 'game_flags',
+    icon: '🌍',
+    color: '#ef476f',
+    worlds: ['mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./flags/FlagGame'))
   }
 ];
 

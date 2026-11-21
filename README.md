@@ -5,7 +5,7 @@ Trygge og morsomme nettspill for barn fra 2 til 15 år.
 
 Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det albanske flagget.
 
-## Hva finnes nå (v0.4)
+## Hva finnes nå (v0.5)
 
 | Del | Beskrivelse |
 |---|---|
@@ -16,8 +16,15 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🎨 Tegnebrett | Tegn fritt med fingrene (flere samtidig), regnbuepensel, stempler, viskelær, angre og et lite galleri. Alle aldre. |
 | 🧱 Klossmester | Klossepuslespill (5–15 år): dra klosser inn, fyll rader/kolonner. 15 nivåer med mål og steinhindringer, kombo-poeng og uendelig modus med rekord. |
 | 🐍 Slangejakt | Styr slangen og spis frukt (5–15 år). 12 nivåer med hjerter, økende fart og steiner, pluss uendelig modus. Sveip, piltaster eller store pilknapper. |
+| 🧮 Mattemester | 15 nivåer per verden: pluss/minus med bilder (5–7), gangetabell og deling (8–11), negative tall, regnerekkefølge, prosent og likninger (12–15). |
+| 🎈 Ballongsprekk | Sprekk ballonger: fri lek med farger og tall (2–4), oppgaver som «Sprekk den røde ballongen!» (5–7). |
+| 🎹 Musikkleker | Piano, xylofon og trommer med farger og dyr (2–7). |
+| 🧩 Puslespill | 12 bilder, 4/9/16 biter etter alder, bitene klikker på plass. |
+| 🔠 Ordgåten | Gjett ordet på 6 forsøk (8–15). Dagens ord + øving, norsk og albansk. |
+| 🌍 Flaggquiz | 10 nivåer: Norden og Balkan, Europa og verden. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). 128 ting i 8 kategorier (hatter, briller, leker, kjæledyr, spesialdyr, bakgrunner, rammer, effekter) fra 15 til 1500 mynter, med sjeldenhetsnivåer og samlingsmåler. |
+| 🏠 Mitt hus | Eget rom med 80+ møbler, planter, leker, pynt, dyr, vegger og gulv. Dra ting rundt, gjør dem større/mindre og snu dem. |
 | 📒 Klistremerkebok | Klistremerker kjøpes i butikken (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
 | 🌍 Språk | Norsk og albansk (shqip). |
