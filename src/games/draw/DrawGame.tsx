@@ -168,7 +168,7 @@ export default function DrawGame({ world, api, onFinish }: GameProps) {
     const next = [t.toDataURL('image/jpeg', 0.75), ...gallery].slice(0, MAX_GALLERY);
     setGallery(next);
     api.saveData({ gallery: next } satisfies SavedData);
-    onFinish({ won: true, stars: 3 });
+    onFinish({ won: true, stars: 3, coins: 5 });
   }
 
   const pickTool = (t: Tool) => { api.sfx('tap'); setTool(t); setShowStamps(t === 'stamp' && (tool !== 'stamp' || !showStamps)); };

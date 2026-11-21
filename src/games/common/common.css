@@ -22,3 +22,21 @@
   .level-btn { width: 100%; max-width: 340px; flex-direction: row; justify-content: space-between; padding: 10px 18px; }
   .level-btn__icon { font-size: 44px; }
 }
+
+.level-grid-wrap { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 4px 20px; }
+.level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 12px; width: 100%; max-width: 720px; }
+.lvl {
+  aspect-ratio: 1; border: 5px solid #fff; border-radius: 22px; background: #fff; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px; box-shadow: 0 5px 0 rgba(0,0,0,.15); min-height: 78px;
+}
+.lvl:active { transform: scale(.93); }
+.lvl__num { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.lvl__stars i { font-style: normal; color: #00000022; font-size: .95rem; }
+.lvl__stars i.on { color: #ffc300; text-shadow: 0 1px 0 #e85d04; }
+.lvl.is-locked { background: #ffffff77; border-style: dashed; }
+.lvl.is-locked .lvl__num { font-size: 1.4rem; filter: grayscale(1); opacity: .7; }
+.lvl.is-next { border-color: #ffd60a; animation: pulseGlow 1.4s ease-in-out infinite; }
+.mode-btn {
+  border: 5px solid #fff; border-radius: 999px; background: #8338ec; color: #fff; font-weight: 800; font-size: 1.3rem;
+  padding: 10px 26px; box-shadow: 0 5px 0 rgba(0,0,0,.15);
+}

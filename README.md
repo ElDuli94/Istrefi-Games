@@ -5,7 +5,7 @@ Trygge og morsomme nettspill for barn fra 2 til 15 år.
 
 Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det albanske flagget.
 
-## Hva finnes nå (v0.3)
+## Hva finnes nå (v0.4)
 
 | Del | Beskrivelse |
 |---|---|
@@ -14,8 +14,11 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🃏 Dyre-memory | 3 nivåer per verden (Lett/Middels/Vanskelig) som låses opp ett etter ett – fra 2 til 15 par. De eldste kobler bilde med skrevet ord. |
 | 🐮 Dyrelyder | Trykk på dyr og hør lyden og navnet (2–7 år). «Gjett dyret»-quiz for 5–7 år. Lydene lages i nettleseren. |
 | 🎨 Tegnebrett | Tegn fritt med fingrene (flere samtidig), regnbuepensel, stempler, viskelær, angre og et lite galleri. Alle aldre. |
+| 🧱 Klossmester | Klossepuslespill (5–15 år): dra klosser inn, fyll rader/kolonner. 15 nivåer med mål og steinhindringer, kombo-poeng og uendelig modus med rekord. |
+| 🐍 Slangejakt | Styr slangen og spis frukt (5–15 år). 12 nivåer med hjerter, økende fart og steiner, pluss uendelig modus. Sveip, piltaster eller store pilknapper. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
-| 📒 Klistremerkebok | Et nytt klistremerke for hvert fullførte spill (36 totalt). |
+| 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). Kjøp hatter, briller, kjæledyr, bakgrunner, rammer og effekter til figuren din. |
+| 📒 Klistremerkebok | Klistremerker kjøpes i butikken (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
 | 🌍 Språk | Norsk og albansk (shqip). |
 | 🔊 Lyd | Musikk, lydeffekter og opplesing – alt kan slås av/på. |

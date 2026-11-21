@@ -39,6 +39,24 @@ export const GAMES: GameDefinition[] = [
     worlds: ['tiny', 'small', 'mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./letters/LetterGame'))
+  },
+  {
+    id: 'blocks',
+    titleKey: 'game_blocks',
+    icon: '🧱',
+    color: '#3a86ff',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./blocks/BlockGame'))
+  },
+  {
+    id: 'snake',
+    titleKey: 'game_snake',
+    icon: '🐍',
+    color: '#38b000',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./snake/SnakeGame'))
   }
 ];
 

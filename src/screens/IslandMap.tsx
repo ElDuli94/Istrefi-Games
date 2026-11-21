@@ -3,7 +3,9 @@ import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { WORLDS } from '../data/worlds';
-import { Avatar, RoundButton, TopBar } from '../components/ui';
+import { RoundButton, TopBar } from '../components/ui';
+import { AvatarView } from '../components/AvatarView';
+import { CoinChip } from './Shop';
 import { MascotSays } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
@@ -65,12 +67,18 @@ export function IslandMap() {
     <div className="screen screen--sea island-screen">
       <TopBar
         left={
-          <button className="avatar-btn" onClick={() => { playSfx('tap'); go(''); }} aria-label={t('switchPlayer')}>
-            <Avatar avatar={profile.avatar} size={56} />
-          </button>
+          <>
+            <button className="avatar-btn" onClick={() => { playSfx('tap'); go('shop'); }} aria-label={t('myAvatar')}>
+              <AvatarView avatar={profile.avatar} equipped={profile.equipped} size={window.innerWidth < 560 ? 48 : 60} />
+            </button>
+            <button className="avatar-btn" onClick={() => { playSfx('tap'); go('shop'); }} aria-label={t('coins')}>
+              <CoinChip coins={profile.coins} />
+            </button>
+          </>
         }
         right={
           <>
+            <RoundButton icon="🛍️" label={t('shop')} onClick={() => go('shop')} color="#ffafcc" />
             <RoundButton icon="📒" label={t('stickers')} onClick={() => go('stickers')} color="#ffd60a" />
             <RoundButton icon="🔒" label={t('parents')} onClick={() => go('parents')} />
             <RoundButton icon="🚪" label={t('exit')} onClick={() => go('bye')} color="#ffadad" />

@@ -65,7 +65,7 @@ function Free({ world, api, onFinish }: GameProps) {
       done.current = true;
       setTimeout(() => {
         api.speak(api.t('allAnimalsHeard'));
-        onFinish({ won: true, stars: 3 });
+        onFinish({ won: true, stars: 3, coins: 10 });
       }, 3500);
     }
   }
