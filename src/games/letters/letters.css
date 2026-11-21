@@ -10,7 +10,7 @@
 .letters--big { --tile: clamp(58px, 12vmin, 86px); }
 
 .tile {
-  width: var(--tile); height: var(--tile); border-radius: 16px; display: inline-grid; place-items: center;
+  width: var(--tile); height: var(--tile); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: calc(var(--tile) * .55); line-height: 1; color: #fff; cursor: grab;
   box-shadow: 0 5px 0 rgba(0,0,0,.2); touch-action: none; flex-shrink: 0; letter-spacing: -1px;
   text-shadow: 0 2px 0 rgba(0,0,0,.15); transition: transform .1s;
@@ -25,7 +25,7 @@
 
 .letters__guide { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
 .letters__guide span {
-  min-width: calc(var(--tile) * .7); padding: 0 6px; height: calc(var(--tile) * .7); border-radius: 12px; display: grid; place-items: center;
+  min-width: calc(var(--tile) * .7); padding: 0 6px; height: calc(var(--tile) * .7); border-radius: 12px; display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: calc(var(--tile) * .45); color: #00000055; background: #ffffff88; border: 3px dashed #ffffffcc;
 }
 .letters__guide span.is-done { background: #06d6a0; color: #fff; border-style: solid; border-color: #fff; }
@@ -58,7 +58,7 @@
 .word-task__count { background: #fff; border-radius: 999px; padding: 2px 14px; font-weight: 800; box-shadow: 0 3px 0 rgba(0,0,0,.12); }
 .word-task__pic {
   font-size: clamp(64px, 14vmin, 110px); line-height: 1.1; border: 0; background: #ffffffaa; border-radius: 50%;
-  width: 1.5em; height: 1.5em; display: grid; place-items: center; box-shadow: 0 6px 0 rgba(0,0,0,.12);
+  width: 1.5em; height: 1.5em; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 rgba(0,0,0,.12);
 }
 .word-task__pic.is-solved { animation: bounce .5s ease-in-out 3; background: #06d6a0; }
 .word-task__slots { display: flex; gap: 6px; }

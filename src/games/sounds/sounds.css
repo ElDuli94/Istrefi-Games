@@ -12,7 +12,7 @@
   .farm--many { grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
 .farm-animal {
-  position: relative; border: 6px solid #fff; border-radius: 28px; display: grid; place-items: center;
+  position: relative; border: 6px solid #fff; border-radius: 28px; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 0 rgba(0,0,0,.15); min-height: 0; padding: 0; touch-action: manipulation; overflow: visible;
 }
 .farm-animal:active { transform: scale(.94) translateY(3px); }
