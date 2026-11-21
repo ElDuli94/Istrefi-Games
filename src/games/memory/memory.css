@@ -1,0 +1,30 @@
+.memory { display: flex; flex-direction: column; height: 100%; gap: 12px; }
+.memory__hud { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; font-size: 1.15rem; }
+.memory__hud span { background: #fff; border-radius: 999px; padding: 6px 16px; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+.memory__board { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.memory__grid { display: grid; justify-content: center; }
+
+.mcard { perspective: 800px; border: 0; padding: 0; background: none; cursor: pointer; }
+.mcard__inner {
+  position: relative; display: block; width: 100%; height: 100%;
+  transition: transform .45s cubic-bezier(.3,1.4,.5,1); transform-style: preserve-3d;
+}
+.mcard.is-up .mcard__inner { transform: rotateY(180deg); }
+.mcard__back, .mcard__front {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: 18%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: 0 6px 0 rgba(0,0,0,.18);
+}
+.mcard__back {
+  background: radial-gradient(circle at 30% 25%, #ff5ca8, #ff006e 70%);
+  color: #ffe066; font-size: .6em; border: 4px solid #fff;
+}
+.mcard__front { background: #fff; transform: rotateY(180deg); border: 4px solid #ffd6e8; }
+.mcard:active .mcard__inner { scale: .95; }
+.mcard.is-matched .mcard__front { border-color: #06d6a0; animation: matched .6s ease; }
+.mcard.is-wiggle .mcard__inner { animation: wiggle .4s ease; }
+
+@keyframes matched { 0%,100% { scale: 1; } 50% { scale: 1.15; } }
+@keyframes wiggle {
+  0%,100% { translate: 0; } 25% { translate: -6px; } 75% { translate: 6px; }
+}

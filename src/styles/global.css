@@ -1,0 +1,268 @@
+/* ===== Istrefi Games – felles design ===== */
+:root {
+  --sky: #4cc9f0;
+  --sea: #3a86ff;
+  --pink: #ff006e;
+  --yellow: #ffd60a;
+  --green: #06d6a0;
+  --purple: #8338ec;
+  --ink: #23213a;
+  --card: #ffffff;
+  --radius: 24px;
+  --shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; height: 100%; }
+body {
+  background: var(--sky);
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+input, select { font: inherit; user-select: text; -webkit-user-select: text; }
+h1, h2, h3 { margin: 0; line-height: 1.1; }
+
+.screen {
+  min-height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+.screen--sky { background: linear-gradient(180deg, #4cc9f0 0%, #a0e7ff 100%); }
+.screen--sea { background: radial-gradient(circle at 50% 50%, #48cae4 0%, #0096c7 60%, #0077b6 100%); overflow: hidden; }
+
+/* ----- Animasjoner ----- */
+.pop-in { animation: popIn 0.45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.bob { animation: bob 2.4s ease-in-out infinite; }
+.bounce { animation: bounce 0.8s ease-in-out infinite; }
+@keyframes popIn { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+@keyframes bounce { 0%, 100% { translate: 0 0; } 50% { translate: 0 -14px; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ----- Toppfelt og knapper ----- */
+.topbar { display: flex; align-items: center; gap: 12px; min-height: 64px; z-index: 5; }
+.topbar__side { display: flex; gap: 10px; min-width: 64px; }
+.topbar__side--right { justify-content: flex-end; }
+.topbar__title { flex: 1; text-align: center; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.2); font-size: clamp(1rem, 3vw, 1.5rem); }
+.topbar__title small { display: block; font-size: .65em; opacity: .9; }
+
+.round-btn {
+  width: 60px; height: 60px; border-radius: 50%; border: 4px solid #fff;
+  font-size: 28px; display: grid; place-items: center; box-shadow: var(--shadow);
+  transition: transform .1s;
+}
+.round-btn:active, .big-btn:active, .profile-card:active, .game-card:active, .world-spot:active { transform: scale(.93) translateY(3px); }
+.big-btn {
+  border: 0; border-radius: 999px; padding: 14px 28px; font-size: 1.3rem; font-weight: 800;
+  background: #fff; box-shadow: var(--shadow); transition: transform .1s;
+}
+.big-btn--go { background: var(--green); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+.danger-btn { border: 0; background: #ffe5ec; color: #c9184a; border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+.text-input { border: 4px solid #fff; border-radius: 18px; padding: 12px 18px; font-size: 1.2rem; background: #ffffffee; min-width: 0; outline: none; }
+.text-input:focus { border-color: var(--yellow); }
+
+.avatar { display: inline-grid; place-items: center; border-radius: 50%; border: 5px solid #fff; box-shadow: var(--shadow); line-height: 1; flex-shrink: 0; }
+.avatar--plus { background: #ffffff88; color: #fff; font-size: 56px; border-style: dashed; }
+.avatar-btn { border: 0; background: none; padding: 0; }
+
+/* ----- Maskot ----- */
+.mascot__wing--l { transform-origin: 60px 110px; animation: flapL 1.6s ease-in-out infinite; }
+.mascot__wing--r { transform-origin: 140px 110px; animation: flapR 1.6s ease-in-out infinite; }
+.mascot--cheer .mascot__wing--l { animation-duration: .4s; }
+.mascot--cheer .mascot__wing--r { animation-duration: .4s; }
+@keyframes flapL { 0%, 100% { rotate: 0deg; } 50% { rotate: 12deg; } }
+@keyframes flapR { 0%, 100% { rotate: 0deg; } 50% { rotate: -12deg; } }
+.mascot-says { display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 0; margin: 4px auto; max-width: 640px; }
+.bubble {
+  position: relative; background: #fff; border-radius: 22px; padding: 10px 18px;
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem); font-weight: 700; box-shadow: var(--shadow); text-align: left;
+}
+.bubble::before { content: ''; position: absolute; left: -12px; top: 50%; translate: 0 -50%; border: 10px solid transparent; border-right: 14px solid #fff; border-left: 0; }
+
+/* ----- Profilvalg ----- */
+.profile-select { align-items: center; justify-content: center; gap: 18px; text-align: center; }
+.logo { display: flex; flex-direction: column; align-items: center; }
+.logo__text { font-size: clamp(2.4rem, 8vw, 4rem); font-weight: 800; color: #fff; text-shadow: 0 5px 0 #0077b6; letter-spacing: 1px; }
+.logo__text span { color: var(--yellow); }
+.say { color: #fff; font-size: clamp(1.4rem, 4vw, 2rem); text-shadow: 0 3px 0 rgba(0,0,0,.15); cursor: pointer; }
+.profile-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 900px; }
+.profile-card { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform .1s; }
+.profile-card__name { font-size: 1.3rem; font-weight: 800; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
+.grown-up-link { margin-top: auto; border: 0; background: #ffffff55; border-radius: 999px; padding: 8px 18px; color: #fff; font-weight: 700; }
+.clouds::before, .clouds::after {
+  content: '☁️'; position: absolute; font-size: 90px; opacity: .8; animation: drift 40s linear infinite; top: 8%; left: -120px;
+}
+.clouds::after { top: 60%; font-size: 70px; animation-duration: 55s; animation-delay: -20s; }
+@keyframes drift { to { left: 110%; } }
+
+/* ----- Opprett profil ----- */
+.create-profile { align-items: center; gap: 16px; }
+.avatar-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; width: 100%; max-width: 720px; }
+.avatar-option { border: 0; background: none; padding: 4px; border-radius: 50%; display: grid; place-items: center; transition: transform .15s; }
+.avatar-option.is-selected { transform: scale(1.15); }
+.avatar-option.is-selected .avatar { border-color: var(--yellow); box-shadow: 0 0 0 6px #ffd60a88, var(--shadow); }
+.world-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; max-width: 720px; }
+.world-option { border: 5px solid #fff; border-radius: var(--radius); padding: 12px 6px; display: flex; flex-direction: column; align-items: center; box-shadow: var(--shadow); color: #fff; }
+.world-option.is-selected { border-color: var(--yellow); transform: scale(1.07); }
+.world-option__icon { font-size: 44px; }
+.world-option__age { font-weight: 800; font-size: 1.2rem; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.create-finish { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+@media (max-width: 520px) { .world-picker { grid-template-columns: repeat(2, 1fr); } }
+
+/* ----- Øykart ----- */
+.island-screen { gap: 0; }
+.island-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; container-type: size; }
+.island { position: relative; width: min(100cqw, 100cqh); aspect-ratio: 1; }
+.island__art { width: 100%; height: 100%; display: block; filter: drop-shadow(0 10px 0 rgba(0,0,0,.12)); }
+.island__foam { animation: foam 3s ease-in-out infinite; transform-origin: center; }
+@keyframes foam { 0%, 100% { scale: 1; } 50% { scale: 1.015; } }
+.world-spot {
+  position: absolute; translate: -50% -50%; border: 0; background: none; padding: 0;
+  display: flex; flex-direction: column; align-items: center; transition: transform .1s;
+}
+.world-spot__icon {
+  width: clamp(64px, 16cqmin, 120px); height: clamp(64px, 16cqmin, 120px); border-radius: 50%;
+  background: #fff; border: 6px solid var(--c); display: grid; place-items: center;
+  font-size: clamp(34px, 9cqmin, 64px); box-shadow: var(--shadow); animation: bob 3s ease-in-out infinite;
+}
+.world-spot.is-mine .world-spot__icon { box-shadow: 0 0 0 8px #ffd60aaa, var(--shadow); }
+.world-spot__label {
+  margin-top: 6px; background: var(--c); color: #fff; border-radius: 14px; padding: 2px 12px;
+  font-weight: 800; font-size: clamp(.85rem, 2.8cqmin, 1.25rem); line-height: 1.15; white-space: nowrap; box-shadow: var(--shadow);
+}
+.world-spot__label small { display: block; font-size: .8em; opacity: .9; }
+.island-mascot { position: absolute; left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 4; max-width: calc(100% - 24px); }
+.island-mascot .mascot-says { margin: 0; }
+@media (max-aspect-ratio: 4/5) { .island-mascot { position: static; } }
+
+/* ----- Verden ----- */
+.world-screen { gap: 12px; }
+.world-title { font-size: clamp(1.4rem, 4vw, 2.2rem); }
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 40vw), 1fr)); gap: 14px; width: 100%; max-width: 1000px; margin: 0 auto; padding: 8px; }
+.game-card {
+  border: 6px solid #fff; border-radius: var(--radius); background: var(--c, #fff); color: #fff;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 10px 12px;
+  box-shadow: var(--shadow); transition: transform .1s; min-height: 190px; justify-content: center;
+}
+.game-card__icon { font-size: 72px; line-height: 1; filter: drop-shadow(0 4px 0 rgba(0,0,0,.15)); }
+.game-card__title { font-weight: 800; font-size: 1.3rem; text-shadow: 0 2px 0 rgba(0,0,0,.2); text-align: center; }
+.game-card--soon { background: #ffffff55; border-style: dashed; color: #fff; opacity: .85; }
+.game-card--soon .game-card__icon { filter: grayscale(1) opacity(.6); }
+.world-screen--tiny .game-grid { grid-template-columns: repeat(auto-fill, minmax(min(220px, 40vw), 1fr)); }
+.world-screen--tiny .game-card { min-height: 230px; }
+.world-screen--tiny .game-card__icon { font-size: 96px; }
+
+.stars { display: inline-flex; gap: 2px; font-size: 1.6rem; line-height: 1; }
+.star { color: #00000033; }
+.star.is-on { color: var(--yellow); text-shadow: 0 2px 0 #e85d04; animation: popIn .5s both; }
+
+/* ----- Spillramme ----- */
+.game-host { overflow: hidden; }
+.game-title { font-size: clamp(1.2rem, 3.5vw, 1.8rem); }
+.game-host__stage { flex: 1; min-height: 0; padding: 8px 0; }
+.loading { height: 100%; display: grid; place-items: center; }
+
+.celebrate { position: fixed; inset: 0; background: #0008; display: grid; place-items: center; z-index: 50; padding: 16px; }
+.celebrate__card {
+  background: #fff; border-radius: 32px; padding: 20px 28px 26px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 460px; width: 100%; border: 8px solid var(--yellow);
+}
+.celebrate__card h2 { font-size: 2.4rem; color: var(--pink); }
+.celebrate__sticker p { margin: 0; font-weight: 700; font-size: 1.2rem; }
+.sticker-reveal { display: inline-block; font-size: 84px; animation: stickerIn 1s 1s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes stickerIn { from { transform: scale(0) rotate(-180deg); } to { transform: scale(1) rotate(0); } }
+.celebrate__actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.confetti i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; animation: fall 2.6s linear infinite; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+/* ----- Klistremerkebok ----- */
+.sticker-screen { background: linear-gradient(180deg, #ffd6a5, #ffadad); gap: 8px; }
+.sticker-book {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 12px;
+  background: #fffaf0; border-radius: 28px; padding: 18px; max-width: 900px; width: 100%; margin: 0 auto;
+  box-shadow: inset 0 0 0 6px #ffe5b4, var(--shadow);
+}
+.sticker-slot { aspect-ratio: 1; border-radius: 20px; border: 4px dashed #e9c46a; background: #fff3; font-size: 2rem; color: #e9c46a; font-weight: 800; display: grid; place-items: center; }
+.sticker-slot.is-owned { border: 4px solid #fff; background: #fff; font-size: 3.2rem; box-shadow: var(--shadow); rotate: -3deg; }
+.sticker-slot.is-owned:nth-child(even) { rotate: 3deg; }
+.sticker-slot.is-new { animation: stickerIn .8s cubic-bezier(.3,1.6,.5,1) both; box-shadow: 0 0 0 6px var(--yellow), var(--shadow); }
+
+/* ----- Foreldrelås ----- */
+.parent-gate { background: #2b2d42; align-items: center; }
+.gate-card { background: #fff; border-radius: 28px; padding: 24px; width: 100%; max-width: 360px; text-align: center; margin: auto; }
+.gate-q { font-size: 1.8rem; font-weight: 800; margin: 12px 0 4px; }
+.gate-input { font-size: 2.2rem; font-weight: 800; border-bottom: 4px solid #ddd; min-height: 56px; margin-bottom: 8px; }
+.gate-input.is-wrong { border-color: #ef476f; animation: wiggle .4s; }
+.gate-wrong { color: #ef476f; margin: 0 0 8px; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.keypad button { border: 0; background: #edf2f4; border-radius: 16px; padding: 14px 0; font-size: 1.5rem; font-weight: 800; }
+.keypad button.is-ok { background: var(--green); color: #fff; }
+@keyframes wiggle { 0%, 100% { translate: 0; } 25% { translate: -6px; } 75% { translate: 6px; } }
+
+/* ----- Foreldredel ----- */
+.parent-area { background: #f1f5f9; font-size: 1.05rem; }
+.parent-area .topbar__title { color: var(--ink); text-shadow: none; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; max-width: 900px; width: 100%; margin: 0 auto; }
+.tabs button { border: 0; background: #fff; border-radius: 999px; padding: 8px 16px; white-space: nowrap; font-weight: 700; }
+.tabs button.is-active { background: var(--ink); color: #fff; }
+.parent-content { max-width: 900px; width: 100%; margin: 8px auto 0; display: flex; flex-direction: column; gap: 12px; }
+.panel { background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.panel h3 { display: flex; align-items: center; gap: 10px; }
+.stats { display: flex; flex-direction: column; gap: 12px; }
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.stat-row div { background: #f8fafc; border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; }
+.stat-row b { font-size: 1.4rem; }
+.stat-row span { font-size: .85rem; color: #64748b; }
+.stat-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.stat-table td { padding: 6px 4px; border-top: 1px solid #eef2f7; }
+.stat-table small { color: #64748b; }
+.stat-table .stars { font-size: 1rem; }
+.muted { color: #64748b; }
+.profile-admin { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.profile-admin .text-input { border-color: #e2e8f0; flex: 1; min-width: 140px; font-size: 1rem; padding: 8px 12px; }
+.profile-admin select { padding: 8px; border-radius: 10px; border: 2px solid #e2e8f0; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.parent-area .big-btn { font-size: 1.05rem; padding: 10px 20px; box-shadow: 0 3px 0 rgba(0,0,0,.12); border: 2px solid #e2e8f0; }
+.parent-area .big-btn--go { border-color: transparent; }
+.notice { border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+.notice--ok { background: #d8f3dc; color: #1b4332; }
+.notice--err { background: #ffe5ec; color: #c9184a; }
+.settings { display: flex; flex-direction: column; gap: 12px; }
+.toggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.switch { border: 0; border-radius: 999px; padding: 6px 18px; background: #e2e8f0; font-weight: 800; min-width: 80px; }
+.switch.is-on { background: var(--green); color: #fff; }
+.lang-pick { display: flex; gap: 6px; }
+.lang-pick button { border: 2px solid #e2e8f0; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 700; }
+.lang-pick button.is-on { border-color: var(--ink); background: var(--ink); color: #fff; }
+.install-guide { background: #fff; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.install-guide p { margin: 0; }
+.install-step { border: 2px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; }
+.install-step summary { font-weight: 800; cursor: pointer; }
+.install-step ol { margin: 8px 0 0; padding-left: 22px; }
+.install-step li { margin: 4px 0; }
+
+/* ----- Lesbarhet på lyse bakgrunner ----- */
+.world-title, .game-title, .sticker-screen .topbar__title h1 {
+  display: inline-block; background: rgba(0, 0, 0, 0.28); border-radius: 20px; padding: 4px 18px;
+}
+.game-card--soon { color: rgba(0, 0, 0, 0.45); background: rgba(255, 255, 255, 0.45); }
+.game-card--soon .game-card__title { text-shadow: none; }
+.create-profile { justify-content: center; }
+.create-profile .topbar { position: absolute; top: max(12px, env(safe-area-inset-top)); left: 16px; }
+@media (max-width: 520px) {
+  .game-card, .world-screen--tiny .game-card { min-height: 150px; padding: 12px 6px; }
+  .game-card__icon, .world-screen--tiny .game-card__icon { font-size: 56px; }
+  .game-card__title { font-size: 1.1rem; }
+}
