@@ -12,8 +12,11 @@ interface Props {
 }
 
 export function AvatarView({ avatar, equipped = {}, size = 96, preview }: Props) {
-  const a = AVATARS[avatar] ?? AVATARS.lion;
+  const base = AVATARS[avatar] ?? AVATARS.lion;
   const eq = { ...equipped, ...(preview ? { [preview.slot]: preview.id } : {}) };
+  const skin = itemById(eq.skin);
+  const held = itemById(eq.held);
+  const a = { ...base, emoji: skin?.emoji ?? base.emoji };
   const hat = itemById(eq.hat);
   const glasses = itemById(eq.glasses);
   const pet = itemById(eq.pet);
@@ -36,6 +39,7 @@ export function AvatarView({ avatar, equipped = {}, size = 96, preview }: Props)
       </span>
       {hat && <span className="av__hat" style={{ fontSize: size * 0.42 }}>{hat.emoji}</span>}
       {pet && <span className="av__pet" style={{ fontSize: size * 0.34 }}>{pet.emoji}</span>}
+      {held && <span className="av__held" style={{ fontSize: size * 0.32 }}>{held.emoji}</span>}
       {fx && (
         <span className="av__fx" aria-hidden>
           {[0, 1, 2, 3].map((i) => (

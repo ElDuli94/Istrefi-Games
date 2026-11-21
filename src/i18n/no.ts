@@ -163,7 +163,14 @@ export const no = {
   tapToStart: 'Trykk for å starte',
   paused: 'Pause',
   fruits: 'Frukt',
-  oops: 'Oi! Prøv igjen!'
+  oops: 'Oi! Prøv igjen!',
+  slotHeld: 'Leker',
+  slotSkin: 'Spesialdyr',
+  collection: 'Samling',
+  rarity_common: 'Vanlig',
+  rarity_rare: 'Sjelden',
+  rarity_epic: 'Episk',
+  rarity_legendary: 'Legendarisk'
 };
 
 export type Dict = typeof no;

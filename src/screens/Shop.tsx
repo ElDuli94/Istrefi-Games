@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { actions, useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
-import { SHOP_ITEMS, SLOTS, STICKER_PACK_PRICE, type ShopItem, type Slot } from '../data/shop';
+import { SHOP_ITEMS, SLOTS, STICKER_PACK_PRICE, rarityOf, type ShopItem, type Slot } from '../data/shop';
 import { pickNewSticker, stickerById } from '../data/stickers';
 import { AvatarView } from '../components/AvatarView';
 import { BackButton, TopBar } from '../components/ui';
@@ -19,10 +19,9 @@ function ItemSwatch({ item }: { item: ShopItem }) {
   if (item.slot === 'bg') return <span className="swatch-bg" style={{ background: item.css }} />;
   if (item.slot === 'frame')
     return (
-      <span
-        className="swatch-frame"
-        style={{ borderColor: item.css === 'rainbow' ? '#ff595e' : item.css, background: item.css === 'rainbow' ? 'conic-gradient(#ff595e,#ffca3a,#8ac926,#1982c4,#6a4c93,#ff595e)' : undefined }}
-      />
+      <span className="swatch-ring" style={{ background: item.css === 'rainbow' ? 'conic-gradient(#ff595e,#ffca3a,#8ac926,#1982c4,#6a4c93,#ff595e)' : item.css }}>
+        <i />
+      </span>
     );
   return <span className="shop-item__emoji">{item.emoji}</span>;
 }
@@ -87,6 +86,7 @@ export function Shop() {
   }
 
   const items = SHOP_ITEMS.filter((i) => i.slot === tab);
+  const ownedCount = profile.owned.filter((id) => SHOP_ITEMS.some((i) => i.id === id)).length;
   const preview = selected && !owns(selected.id) ? { slot: selected.slot, id: selected.id } : null;
   const canAfford = selected ? profile.coins >= selected.price : false;
 
@@ -95,7 +95,13 @@ export function Shop() {
       <TopBar left={<BackButton to={() => go('map')} />} title={<h1>🛍️ {t('shop')}</h1>} right={<CoinChip coins={profile.coins} bump={bump} />} />
 
       <div className="shop-hero">
-        <AvatarView avatar={profile.avatar} equipped={profile.equipped} size={150} preview={preview} />
+        <div className="shop-hero__avatar">
+          <AvatarView avatar={profile.avatar} equipped={profile.equipped} size={150} preview={preview} />
+          <div className="collection">
+            <span>🏅 {t('collection')}: {ownedCount} / {SHOP_ITEMS.length}</span>
+            <span className="collection__bar"><i style={{ width: `${(ownedCount / SHOP_ITEMS.length) * 100}%` }} /></span>
+          </div>
+        </div>
         {tab !== 'stickers' && selected && (
           <button
             className={`big-btn shop-action ${owns(selected.id) ? '' : canAfford ? 'big-btn--go' : 'is-poor'}`}
@@ -131,11 +137,12 @@ export function Shop() {
           {items.map((it, i) => (
             <button
               key={it.id}
-              className={`shop-item pop-in ${selected?.id === it.id ? 'is-selected' : ''} ${owns(it.id) ? 'is-owned' : ''}`}
+              className={`shop-item shop-item--${rarityOf(it.price)} pop-in ${selected?.id === it.id ? 'is-selected' : ''} ${owns(it.id) ? 'is-owned' : ''}`}
               style={{ animationDelay: `${i * 0.03}s` }}
               onClick={() => select(it)}
             >
               <ItemSwatch item={it} />
+              <span className={`rarity rarity--${rarityOf(it.price)}`}>{t(`rarity_${rarityOf(it.price)}`)}</span>
               <span className="shop-item__price">
                 {wearing(it) ? '✔' : owns(it.id) ? '👜' : `🪙 ${it.price}`}
               </span>
