@@ -23,7 +23,10 @@ body {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
-button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+button {
+  font: inherit; color: inherit; cursor: pointer; touch-action: manipulation;
+  -webkit-appearance: none; appearance: none; margin: 0; line-height: 1.15; text-align: center;
+}
 input, select { font: inherit; user-select: text; -webkit-user-select: text; }
 h1, h2, h3 { margin: 0; line-height: 1.1; }
 
@@ -61,7 +64,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 
 .round-btn {
   width: 60px; height: 60px; border-radius: 50%; border: 4px solid #fff;
-  font-size: 28px; display: grid; place-items: center; box-shadow: var(--shadow);
+  font-size: 28px; line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow);
   transition: transform .1s;
 }
 .round-btn:active, .big-btn:active, .profile-card:active, .game-card:active, .world-spot:active { transform: scale(.93) translateY(3px); }
@@ -74,7 +77,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .text-input { border: 4px solid #fff; border-radius: 18px; padding: 12px 18px; font-size: 1.2rem; background: #ffffffee; min-width: 0; outline: none; }
 .text-input:focus { border-color: var(--yellow); }
 
-.avatar { display: inline-grid; place-items: center; border-radius: 50%; border: 5px solid #fff; box-shadow: var(--shadow); line-height: 1; flex-shrink: 0; }
+.avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 5px solid #fff; box-shadow: var(--shadow); line-height: 1; flex-shrink: 0; }
 .avatar--plus { background: #ffffff88; color: #fff; font-size: 56px; border-style: dashed; }
 .avatar-btn { border: 0; background: none; padding: 0; }
 
@@ -111,7 +114,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 /* ----- Opprett profil ----- */
 .create-profile { align-items: center; gap: 16px; }
 .avatar-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; width: 100%; max-width: 720px; }
-.avatar-option { border: 0; background: none; padding: 4px; border-radius: 50%; display: grid; place-items: center; transition: transform .15s; }
+.avatar-option { border: 0; background: none; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform .15s; }
 .avatar-option.is-selected { transform: scale(1.15); }
 .avatar-option.is-selected .avatar { border-color: var(--yellow); box-shadow: 0 0 0 6px #ffd60a88, var(--shadow); }
 .world-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; max-width: 720px; }
@@ -139,7 +142,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .world-spot__icon {
   width: clamp(64px, 12vmin, 120px); height: clamp(64px, 12vmin, 120px);
   width: clamp(64px, 16cqmin, 120px); height: clamp(64px, 16cqmin, 120px); border-radius: 50%;
-  background: #fff; border: 6px solid var(--c); display: grid; place-items: center;
+  background: #fff; border: 6px solid var(--c); display: flex; align-items: center; justify-content: center;
   font-size: clamp(34px, 7vmin, 64px);
   font-size: clamp(34px, 9cqmin, 64px); box-shadow: var(--shadow); animation: bob 3s ease-in-out infinite;
 }
@@ -179,9 +182,9 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .game-host { overflow: hidden; }
 .game-title { font-size: clamp(1.2rem, 3.5vw, 1.8rem); }
 .game-host__stage { flex: 1; min-height: 0; padding: 8px 0; }
-.loading { height: 100%; display: grid; place-items: center; }
+.loading { height: 100%; display: flex; align-items: center; justify-content: center; }
 
-.celebrate { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: #0008; display: grid; place-items: center; z-index: 50; padding: 16px; }
+.celebrate { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: #0008; display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
 .celebrate__card {
   background: #fff; border-radius: 32px; padding: 20px 28px 26px; text-align: center;
   display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 460px; width: 100%; border: 8px solid var(--yellow);
@@ -201,7 +204,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
   background: #fffaf0; border-radius: 28px; padding: 18px; max-width: 900px; width: 100%; margin: 0 auto;
   box-shadow: inset 0 0 0 6px #ffe5b4, var(--shadow);
 }
-.sticker-slot { aspect-ratio: 1; border-radius: 20px; border: 4px dashed #e9c46a; background: #fff3; font-size: 2rem; color: #e9c46a; font-weight: 800; display: grid; place-items: center; }
+.sticker-slot { aspect-ratio: 1; border-radius: 20px; border: 4px dashed #e9c46a; background: #fff3; font-size: 2rem; color: #e9c46a; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 .sticker-slot.is-owned { border: 4px solid #fff; background: #fff; font-size: 3.2rem; box-shadow: var(--shadow); rotate: -3deg; }
 .sticker-slot.is-owned:nth-child(even) { rotate: 3deg; }
 .sticker-slot.is-new { animation: stickerIn .8s cubic-bezier(.3,1.6,.5,1) both; box-shadow: 0 0 0 6px var(--yellow), var(--shadow); }
@@ -273,3 +276,6 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
   .game-card__icon, .world-screen--tiny .game-card__icon { font-size: 56px; }
   .game-card__title { font-size: 1.1rem; }
 }
+
+/* Runde knapper skal alltid være runde (eldre Safari krymper dem ellers) */
+.round-btn, .swatch, .tool, .avatar, .act, .tile { flex-shrink: 0; }
