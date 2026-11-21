@@ -108,5 +108,13 @@ export const sq: Dict = {
   allAnimalsHeard: 'I dëgjove të gjitha kafshët!',
   listen: 'Dëgjo',
   guessAnimal: 'Gjej kafshën',
-  whoSaysThis: 'Kush e bën këtë zë?'
+  whoSaysThis: 'Kush e bën këtë zë?',
+  exit: 'Dil',
+  byeTitle: 'Mirupafshim, {name}!',
+  byeText: 'Faleminderit që luajte! Shqipo mezi pret herën tjetër.',
+  playMore: 'Luaj më shumë',
+  byeHint: 'Shtyp butonin bazë në iPad për ta mbyllur plotësisht.',
+  lockTitle: 'Kyç iPad-in te loja (rekomandohet për fëmijët e vegjël)',
+  lockIntro: 'Me «Qasja e udhëzuar» (Guided Access) fëmija nuk mund të dalë nga loja me rrëshqitje ose me butonin bazë. E hap me një kod.',
+  lockSteps: 'Hap Cilësimet → Qasshmëria → Qasja e udhëzuar dhe aktivizoje|Shtyp «Cilësimet e kodit» dhe zgjidh një kod që e mban mend|Hap Istrefi Games (mundësisht si aplikacion nga ekrani kryesor)|Shtyp tri herë shpejt butonin bazë (ose butonin anësor në iPad-ët më të rinj) dhe shtyp «Fillo»|Për të dalë: shtyp përsëri tri herë dhe shkruaj kodin'
 };

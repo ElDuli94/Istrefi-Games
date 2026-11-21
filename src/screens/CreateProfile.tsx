@@ -25,7 +25,7 @@ export function CreateProfile() {
     if (!avatar || !world) return;
     playSfx('win');
     actions.createProfile({ avatar, world, name: name.trim() });
-    go('map');
+    go('map', { replace: true });
   }
 
   return (

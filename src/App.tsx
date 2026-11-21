@@ -9,6 +9,7 @@ import { WorldScreen } from './screens/WorldScreen';
 import { GameHost } from './screens/GameHost';
 import { StickerBook } from './screens/StickerBook';
 import { ParentArea } from './screens/ParentArea';
+import { ByeScreen } from './screens/ByeScreen';
 
 export default function App() {
   const [page, a, b] = useRoute();
@@ -45,6 +46,8 @@ export default function App() {
       return <StickerBook />;
     case 'parents':
       return <ParentArea />;
+    case 'bye':
+      return <ByeScreen />;
     default:
       return <ProfileSelect />;
   }
