@@ -189,5 +189,10 @@ export const sq: Dict = {
   whichCountry: 'Cilit shtet i përket ky flamur?',
   whichFlag: 'Cili flamur i përket {c}?',
   editProfiles: 'Ndrysho profilet',
-  deleteYes: 'Po, fshije'
+  deleteYes: 'Po, fshije',
+  songs: 'Këngë',
+  learnSongs: 'Mëso këngë',
+  listenSong: 'Dëgjo këngën',
+  stopSong: 'Ndalo',
+  playTheGlowing: 'Shtyp tastin që ndriçon!'
 };

@@ -206,7 +206,12 @@ export const no = {
   whichCountry: 'Hvilket land har dette flagget?',
   whichFlag: 'Hvilket flagg tilhører {c}?',
   editProfiles: 'Endre profiler',
-  deleteYes: 'Ja, slett'
+  deleteYes: 'Ja, slett',
+  songs: 'Sanger',
+  learnSongs: 'Lær sanger',
+  listenSong: 'Hør sangen',
+  stopSong: 'Stopp',
+  playTheGlowing: 'Trykk på tangenten som lyser!'
 };
 
 export type Dict = typeof no;

@@ -14,7 +14,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt': appen laster ikke seg selv på nytt midt i bruk (ga dobbel åpningsskjerm).
+      // Ny versjon tas i bruk neste gang appen åpnes.
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Istrefi Games',

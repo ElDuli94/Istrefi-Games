@@ -16,6 +16,19 @@ installTouchGuard();
 
 registerSW({ immediate: true });
 
+// Etter en oppdatering kan gamle spillfiler være borte fra serveren.
+// Da laster vi siden på nytt én gang i stedet for å vise en feil.
+window.addEventListener('vite:preloadError', (e) => {
+  e.preventDefault();
+  try {
+    if (sessionStorage.getItem('istrefi-reloaded') === '1') return;
+    sessionStorage.setItem('istrefi-reloaded', '1');
+  } catch {
+    /* ignorer */
+  }
+  window.location.reload();
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
