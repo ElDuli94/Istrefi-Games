@@ -72,6 +72,14 @@ function noise(at: number, dur: number, filter: Pt[], vol = 0.4, q = 1) {
 /** Spiller lyden og returnerer omtrent hvor lang den er (sek). */
 export function playAnimal(s: AnimalSound): number {
   if (!getState().settings.sfx) return 0;
+  try {
+    return playAnimalInner(s);
+  } catch {
+    return 0;
+  }
+}
+
+function playAnimalInner(s: AnimalSound): number {
   switch (s) {
     case 'dog':
       for (const at of [0, 0.28]) {

@@ -16,8 +16,8 @@
   box-shadow: 0 6px 0 rgba(0,0,0,.15); min-height: 0; padding: 0; touch-action: manipulation; overflow: visible;
 }
 .farm-animal:active { transform: scale(.94) translateY(3px); }
-.farm-animal__emoji { font-size: clamp(48px, 13cqmin, 130px); line-height: 1; filter: drop-shadow(0 5px 0 rgba(0,0,0,.12)); }
-.farm--many .farm-animal__emoji { font-size: clamp(40px, 11cqmin, 90px); }
+.farm-animal__emoji { font-size: clamp(48px, 10vmin, 130px); font-size: clamp(48px, 13cqmin, 130px); line-height: 1; filter: drop-shadow(0 5px 0 rgba(0,0,0,.12)); }
+.farm--many .farm-animal__emoji { font-size: clamp(40px, 8vmin, 90px); font-size: clamp(40px, 11cqmin, 90px); }
 .farm-animal.is-active .farm-animal__emoji { animation: animalJump .6s cubic-bezier(.3,1.6,.5,1); }
 .farm-animal.is-heard::after { content: '⭐'; position: absolute; top: 4px; right: 8px; font-size: 18px; }
 .farm-animal__says {
@@ -35,7 +35,7 @@
 .quiz__q { margin: 0; color: #fff; font-weight: 800; font-size: 1.5rem; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
 .quiz__options { flex: 1; min-height: 0; width: 100%; max-width: 900px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: center; container-type: size; }
 .quiz__options .farm-animal { aspect-ratio: 1; max-height: 100%; }
-.quiz__options .farm-animal__emoji { font-size: clamp(50px, 18cqmin, 140px); }
+.quiz__options .farm-animal__emoji { font-size: clamp(50px, 12vmin, 140px); font-size: clamp(50px, 18cqmin, 140px); }
 .farm-animal.is-wrong { animation: wiggle .4s; opacity: .6; }
 .farm-animal.is-right { border-color: #06d6a0; box-shadow: 0 0 0 8px #06d6a088; }
 .farm-animal.is-right .farm-animal__emoji { animation: animalJump .6s cubic-bezier(.3,1.6,.5,1) 2; }
