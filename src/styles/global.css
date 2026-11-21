@@ -439,3 +439,32 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .confirm-box { margin-top: 12px; background: #fff0f3; border: 3px solid #ffb3c1; border-radius: 16px; padding: 12px 14px; }
 .confirm-box p { margin: 0 0 10px; font-weight: 700; }
 .danger-btn--solid { background: #e63946; color: #fff; padding: 10px 18px; border-radius: 999px; }
+
+/* ----- Figur med liv ----- */
+.lively { position: relative; display: inline-block; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.lively__body { display: inline-block; transform-origin: 50% 90%; }
+.lively__body.is-idle { animation: lvIdle 3s ease-in-out infinite; }
+.lively__body.is-jump { animation: lvJump .7s cubic-bezier(.3,1.6,.5,1); }
+.lively__body.is-spin { animation: lvSpin .8s ease; }
+.lively__body.is-wiggle { animation: lvWiggle .6s ease; }
+.lively__body.is-squish { animation: lvSquish .6s ease; }
+.lively__body.is-dance, .lively__body.is-dance-loop { animation: lvDance .9s ease-in-out infinite; }
+.lively__body.is-dance { }
+.lively__body.is-wave { animation: lvIdle 3s ease-in-out infinite; }
+.lively__hand { position: absolute; right: -18%; top: 10%; transform-origin: 30% 90%; animation: lvWave .4s ease-in-out infinite alternate; line-height: 1; }
+.lively__heart { position: absolute; left: 50%; top: 0; font-size: 22px; pointer-events: none; animation: lvHeart 1.2s ease-out forwards; }
+.lively__say {
+  position: absolute; z-index: 30; background: #fff; border-radius: 16px; padding: 4px 12px; font-weight: 800; font-size: 1rem;
+  white-space: nowrap; box-shadow: 0 4px 0 rgba(0,0,0,.15); pointer-events: none; color: #23213a;
+}
+.lively--bubble-top .lively__say { bottom: 100%; left: 50%; transform: translate(-50%, -8px); }
+.lively--bubble-right .lively__say { left: 100%; top: 50%; transform: translate(10px, -50%); }
+@keyframes lvIdle { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-3px) scale(1.02, .98); } }
+@keyframes lvJump { 0% { transform: translateY(0); } 40% { transform: translateY(-40%) scale(1.05); } 70% { transform: translateY(0) scale(1.1, .9); } 100% { transform: translateY(0); } }
+@keyframes lvSpin { to { transform: rotate(360deg); } }
+@keyframes lvWiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-14deg); } 40% { transform: rotate(12deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(5deg); } }
+@keyframes lvSquish { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(1.25, .75); } 60% { transform: scale(.85, 1.15); } }
+@keyframes lvDance { 0%, 100% { transform: rotate(-10deg) translateY(0); } 25% { transform: rotate(0) translateY(-12%); } 50% { transform: rotate(10deg) translateY(0); } 75% { transform: rotate(0) translateY(-12%); } }
+@keyframes lvWave { from { transform: rotate(-20deg); } to { transform: rotate(25deg); } }
+@keyframes lvHeart { from { transform: translate(-50%, 0) scale(.5); opacity: 1; } to { transform: translate(-50%, -70px) scale(1.3); opacity: 0; } }
+.celebrate__duo { display: flex; align-items: flex-end; gap: 10px; }

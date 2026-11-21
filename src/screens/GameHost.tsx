@@ -12,6 +12,7 @@ import { coinsFor } from '../data/shop';
 import type { GameApi, GameResult } from '../games/types';
 import { BackButton, Stars, TopBar } from '../components/ui';
 import { Mascot } from '../components/Mascot';
+import { LivelyAvatar } from '../components/LivelyAvatar';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 
@@ -95,7 +96,10 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
             ))}
           </div>
           <div className="celebrate__card pop-in">
-            <Mascot size={120} mood="cheer" className="bounce" />
+            <div className="celebrate__duo">
+              <Mascot size={110} mood="cheer" className="bounce" />
+              <LivelyAvatar profile={profile} size={96} mode={result.won ? 'dance' : 'idle'} />
+            </div>
             <h2>{result.won ? t('wellDone') : t('goodTry')}</h2>
             <Stars count={result.stars} size={2.4} />
             {result.earned > 0 && (

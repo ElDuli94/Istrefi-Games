@@ -3,6 +3,7 @@ import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { Mascot } from '../components/Mascot';
+import { LivelyAvatar } from '../components/LivelyAvatar';
 import { stopMusic, playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 
@@ -27,7 +28,10 @@ export function ByeScreen() {
     <div className="screen screen--sky bye-screen">
       <div className="clouds" aria-hidden />
       <div className="bye-card pop-in">
-        <Mascot size={150} mood="cheer" className="wave" />
+        <div className="celebrate__duo">
+          <Mascot size={130} mood="cheer" className="wave" />
+          {profile && <LivelyAvatar profile={profile} size={100} mode="wave" interactive={false} />}
+        </div>
         <h1>{title} 👋</h1>
         <p>{t('byeText')}</p>
         <button className="big-btn big-btn--go" onClick={() => { playSfx('pop'); go(''); }}>▶ {t('playMore')}</button>

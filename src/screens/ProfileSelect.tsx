@@ -1,7 +1,7 @@
 import { actions, useStore } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
-import { AvatarView } from '../components/AvatarView';
+import { LivelyAvatar } from '../components/LivelyAvatar';
 import { Mascot } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
@@ -34,7 +34,7 @@ export function ProfileSelect() {
               go('map');
             }}
           >
-            <AvatarView avatar={p.avatar} equipped={p.equipped} size={110} />
+            <LivelyAvatar profile={p} size={110} interactive={false} />
             {p.name && <span className="profile-card__name">{p.name}</span>}
           </button>
         ))}

@@ -5,10 +5,11 @@ Trygge og morsomme nettspill for barn fra 2 til 15 år.
 
 Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det albanske flagget.
 
-## Hva finnes nå (v0.5)
+## Hva finnes nå (v0.6)
 
 | Del | Beskrivelse |
 |---|---|
+| 💃 Levende figur | Figuren svever, vinker, danser når man vinner og reagerer med snakkeboble når man trykker på den. |
 | 👥 Profiler | Barnet velger sitt dyr – ingen tekst eller passord. Flere barn per enhet. |
 | 🏝️ Øykart | Fire verdener: Lekelandet (2–4), Eventyrskogen (5–7), Oppdagerfjellet (8–11), Stjernebyen (12–15). |
 | 🃏 Dyre-memory | 3 nivåer per verden (Lett/Middels/Vanskelig) som låses opp ett etter ett – fra 2 til 15 par. De eldste kobler bilde med skrevet ord. |
@@ -22,6 +23,11 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🧩 Puslespill | 12 bilder, 4/9/16 biter etter alder, bitene klikker på plass. |
 | 🔠 Ordgåten | Gjett ordet på 6 forsøk (8–15). Dagens ord + øving, norsk og albansk. |
 | 🌍 Flaggquiz | 10 nivåer: Norden og Balkan, Europa og verden. |
+| ✍️ Skriv bokstaver | Følg stiplede bokstaver og tall med fingeren (store/små, norsk og albansk alfabet). |
+| 🖍️ Fargeleggingsbok | 8 egentegnede linjetegninger – velg farge og trykk for å fylle. |
+| 🔢 Prikk til prikk | 9 figurer som kommer fram når man kobler tallene i rekkefølge. |
+| 🤖 Robotkoding | 12 nivåer: piler i rekkefølge, så «fram/snu» – roboten skal finne diamanten. |
+| 👫 To spillere | Tre på rad, fire på rad (også mot Shqipo) og luft-hockey på samme skjerm. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). 128 ting i 8 kategorier (hatter, briller, leker, kjæledyr, spesialdyr, bakgrunner, rammer, effekter) fra 15 til 1500 mynter, med sjeldenhetsnivåer og samlingsmåler. |
 | 🏠 Mitt hus | Eget rom med 80+ møbler, planter, leker, pynt, dyr, vegger og gulv. Dra ting rundt, gjør dem større/mindre og snu dem. |
