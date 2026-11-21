@@ -170,7 +170,41 @@ export const no = {
   rarity_common: 'Vanlig',
   rarity_rare: 'Sjelden',
   rarity_epic: 'Episk',
-  rarity_legendary: 'Legendarisk'
+  rarity_legendary: 'Legendarisk',
+  // Huset
+  myHouse: 'Mitt hus',
+  catFurniture: 'Møbler',
+  catPlants: 'Planter',
+  catToys: 'Leker',
+  catDecor: 'Pynt',
+  catPets: 'Dyr',
+  catWall: 'Vegg',
+  catFloor: 'Gulv',
+  houseHint: 'Kjøp ting og dra dem dit du vil i huset ditt!',
+  game_math: 'Mattemester',
+  // Småbarnspakken
+  game_balloons: 'Ballongsprekk',
+  game_music: 'Musikkleker',
+  game_puzzle: 'Puslespill',
+  popBalloons: 'Sprekk ballongene!',
+  popColor: 'Sprekk den {color} ballongen!',
+  popNumber: 'Finn tallet {n}!',
+  piano: 'Piano',
+  xylophone: 'Xylofon',
+  drums: 'Trommer',
+  choosePicture: 'Velg et bilde',
+  color_red: 'røde', color_blue: 'blå', color_yellow: 'gule', color_green: 'grønne', color_orange: 'oransje', color_purple: 'lilla', color_pink: 'rosa',
+  colorName_red: 'Rød', colorName_blue: 'Blå', colorName_yellow: 'Gul', colorName_green: 'Grønn', colorName_orange: 'Oransje', colorName_purple: 'Lilla', colorName_pink: 'Rosa',
+  // Ordgåten og flaggquiz
+  game_words: 'Ordgåten',
+  game_flags: 'Flaggquiz',
+  dailyWord: 'Dagens ord',
+  practice: 'Øving',
+  dailyDone: 'Nytt ord i morgen!',
+  theWordWas: 'Ordet var: {w}',
+  wordHelp: 'Gjett ordet! Grønn = riktig plass. Gul = finnes i ordet. Grå = ikke med.',
+  whichCountry: 'Hvilket land har dette flagget?',
+  whichFlag: 'Hvilket flagg tilhører {c}?'
 };
 
 export type Dict = typeof no;

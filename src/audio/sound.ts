@@ -124,3 +124,49 @@ export function stopMusic() {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) stopMusic();
 });
+
+// ---- Instrumenter (Musikkleker) ----
+export type Timbre = 'piano' | 'xylo';
+export function playNote(freq: number, timbre: Timbre = 'piano') {
+  if (!getState().settings.sfx) return;
+  try {
+    const c = ac();
+    const t = c.currentTime;
+    if (timbre === 'piano') {
+      tone(freq, t, 1.2, 'triangle', 0.28);
+      tone(freq * 2, t, 0.6, 'sine', 0.06);
+    } else {
+      tone(freq * 2, t, 0.7, 'sine', 0.3);
+      tone(freq * 8.1, t, 0.12, 'sine', 0.05); // metallisk "pling"
+    }
+  } catch { /* ignorer */ }
+}
+
+export type Drum = 'kick' | 'snare' | 'hihat' | 'clap' | 'tom' | 'bell';
+function noiseHit(t: number, dur: number, type: BiquadFilterType, freq: number, vol: number) {
+  const c = ac();
+  const buf = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = c.createBufferSource(); src.buffer = buf;
+  const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq;
+  const g = c.createGain();
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f).connect(g).connect(c.destination);
+  src.start(t);
+}
+export function playDrum(kind: Drum) {
+  if (!getState().settings.sfx) return;
+  try {
+    const c = ac();
+    const t = c.currentTime;
+    switch (kind) {
+      case 'kick': { const o = tone(150, t, 0.4, 'sine', 0.8); o.frequency.exponentialRampToValueAtTime(45, t + 0.3); break; }
+      case 'snare': noiseHit(t, 0.2, 'bandpass', 1800, 0.6); tone(220, t, 0.1, 'triangle', 0.3); break;
+      case 'hihat': noiseHit(t, 0.06, 'highpass', 7000, 0.4); break;
+      case 'clap': [0, 0.012, 0.024].forEach((d) => noiseHit(t + d, 0.12, 'bandpass', 1200, 0.5)); break;
+      case 'tom': { const o = tone(220, t, 0.45, 'sine', 0.6); o.frequency.exponentialRampToValueAtTime(110, t + 0.4); break; }
+      case 'bell': tone(540, t, 0.5, 'square', 0.08); tone(800, t, 0.5, 'square', 0.06); break;
+    }
+  } catch { /* ignorer */ }
+}

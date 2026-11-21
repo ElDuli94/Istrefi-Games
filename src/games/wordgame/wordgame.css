@@ -1,0 +1,35 @@
+.wg-menu { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.wg-help { background: #fff; border-radius: 18px; padding: 10px 18px; font-weight: 700; max-width: 520px; text-align: center; margin: 0; box-shadow: 0 4px 0 rgba(0,0,0,.1); }
+.wg-mode {
+  width: min(320px, 86vw); border: 6px solid #fff; border-radius: 28px; background: #fff; padding: 16px; display: flex; flex-direction: column;
+  align-items: center; font-size: 1.5rem; font-weight: 800; box-shadow: 0 6px 0 rgba(0,0,0,.15);
+}
+.wg-mode span { font-size: 54px; line-height: 1.1; }
+.wg-mode small { font-size: .85rem; color: #64748b; font-weight: 700; text-align: center; }
+.wg-mode:disabled { opacity: .75; }
+.wg { height: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.wg-grid { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.wg-row { display: flex; gap: 6px; }
+.wg-row.is-shake { animation: wiggle .4s; }
+.wg-cell {
+  width: clamp(40px, 7.5vmin, 62px); height: clamp(40px, 7.5vmin, 62px); border-radius: 12px; background: #ffffffcc; border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(1.2rem, 4vmin, 2rem); box-sizing: border-box;
+}
+.wg-cell.is-typed { background: #fff; border-color: #8338ec; animation: popIn .15s; }
+.wg-cell.is-ok { background: #06d6a0; color: #fff; border-color: #06d6a0; }
+.wg-cell.is-near { background: #ffd60a; border-color: #ffd60a; }
+.wg-cell.is-no { background: #adb5bd; color: #fff; border-color: #adb5bd; }
+.wg-cell.is-flip { animation: wgFlip .5s ease both; }
+@keyframes wgFlip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+.wg-reveal { background: #fff; border-radius: 999px; padding: 6px 18px; font-weight: 800; color: #ef476f; }
+.wg-keys { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 640px; flex-shrink: 0; }
+.wg-keyrow { display: flex; gap: 5px; justify-content: center; }
+.wg-key {
+  flex: 1; max-width: 52px; min-width: 0; height: 50px; border: 0; border-radius: 10px; background: #fff; font-weight: 800; font-size: 1.05rem;
+  box-shadow: 0 4px 0 rgba(0,0,0,.15); padding: 0;
+}
+.wg-key--wide { max-width: 70px; flex: 1.5; font-size: 1.3rem; }
+.wg-key--enter { background: #8338ec; color: #fff; }
+.wg-key.is-ok { background: #06d6a0; color: #fff; }
+.wg-key.is-near { background: #ffd60a; }
+.wg-key.is-no { background: #adb5bd; color: #fff; }

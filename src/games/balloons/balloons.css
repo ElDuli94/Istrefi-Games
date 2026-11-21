@@ -1,0 +1,23 @@
+.balloons { height: 100%; display: flex; flex-direction: column; gap: 8px; }
+.balloons__hud { display: flex; justify-content: center; gap: 10px; align-items: center; }
+.balloons__task {
+  border: 5px solid #fff; background: #fff; border-radius: 999px; padding: 6px 18px; display: flex; align-items: center; gap: 10px;
+  font-size: 1.6rem; box-shadow: 0 5px 0 rgba(0,0,0,.15); animation: bob 2s ease-in-out infinite;
+}
+.balloons__task b { font-size: 2rem; color: #8338ec; min-width: 1em; }
+.balloons__dot { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #ddd; }
+.balloons__sky { position: relative; flex: 1; overflow: hidden; border-radius: 26px; background: linear-gradient(#8ee3ff, #e0f7ff); border: 6px solid #fff; }
+.balloon {
+  position: absolute; bottom: -160px; width: clamp(70px, 11vmin, 110px); border: 0; background: none; padding: 0;
+  display: flex; flex-direction: column; align-items: center; animation: balloonUp linear forwards; touch-action: manipulation;
+}
+.balloons--free .balloon { width: clamp(90px, 15vmin, 140px); }
+.balloon__body {
+  width: 100%; aspect-ratio: .85; border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%; background: radial-gradient(circle at 32% 28%, #ffffffaa 0 12%, var(--c) 13%);
+  display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: clamp(2rem, 6vmin, 3rem);
+  text-shadow: 0 2px 0 rgba(0,0,0,.25); box-shadow: inset -6px -8px 0 rgba(0,0,0,.12);
+}
+.balloon__string { width: 2px; height: 50px; background: #6c757d; }
+.balloon.is-popped .balloon__body, .balloon.is-popped .balloon__string { opacity: 0; transform: scale(1.4); transition: all .2s; }
+.balloon__boom { position: absolute; top: 10%; font-size: 64px; animation: popIn .3s both; }
+@keyframes balloonUp { from { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-60vh) rotate(3deg); } to { transform: translateY(-125vh) rotate(-3deg); } }

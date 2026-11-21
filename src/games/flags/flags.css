@@ -1,0 +1,8 @@
+.flags__big { font-size: clamp(90px, 22vmin, 170px); line-height: 1.1; }
+.flags__q { font-weight: 800; font-size: 1.3rem; color: #64748b; }
+.flags__name { font-weight: 800; font-size: clamp(1.4rem, 5vmin, 2.2rem); padding: 18px 0; }
+.flags__choice { font-size: clamp(1.1rem, 4vmin, 1.7rem) !important; padding: 18px 8px !important; line-height: 1.15; }
+.flags__opt-flag { font-size: clamp(56px, 12vmin, 90px); line-height: 1; }
+.flags__choices--flags .flags__choice { padding: 8px !important; background: #fff !important; }
+.flags__choices--flags .flags__choice.is-right { background: #06d6a0 !important; }
+.flags__choices--flags .flags__choice.is-wrong { background: #ef476f !important; }

@@ -11,6 +11,7 @@ import { StickerBook } from './screens/StickerBook';
 import { ParentArea } from './screens/ParentArea';
 import { ByeScreen } from './screens/ByeScreen';
 import { Shop } from './screens/Shop';
+import { HouseScreen } from './screens/HouseScreen';
 
 export default function App() {
   const [page, a, b] = useRoute();
@@ -51,6 +52,8 @@ export default function App() {
       return <ByeScreen />;
     case 'shop':
       return <Shop />;
+    case 'house':
+      return <HouseScreen />;
     default:
       return <ProfileSelect />;
   }
