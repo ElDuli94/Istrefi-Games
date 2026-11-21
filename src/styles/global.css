@@ -468,3 +468,7 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 @keyframes lvWave { from { transform: rotate(-20deg); } to { transform: rotate(25deg); } }
 @keyframes lvHeart { from { transform: translate(-50%, 0) scale(.5); opacity: 1; } to { transform: translate(-50%, -70px) scale(1.3); opacity: 0; } }
 .celebrate__duo { display: flex; align-items: flex-end; gap: 10px; }
+
+/* ----- 3D-emoji ----- */
+.emo { display: inline-block; vertical-align: -0.12em; object-fit: contain; -webkit-user-drag: none; user-select: none; pointer-events: none; }
+.emo--txt { line-height: 1; }

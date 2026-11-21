@@ -1,3 +1,4 @@
+import { Emo } from '../components/Emo';
 import { useEffect } from 'react';
 import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
@@ -97,7 +98,7 @@ export function IslandMap() {
                 go(`world/${w.id}`);
               }}
             >
-              <span className="world-spot__icon">{w.icon}</span>
+              <span className="world-spot__icon"><Emo e={w.icon} /></span>
               <span className="world-spot__label">
                 {t(w.nameKey)}
                 <small>{t(w.ageKey)}</small>

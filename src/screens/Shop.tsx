@@ -1,3 +1,4 @@
+import { Emo } from '../components/Emo';
 import { useState } from 'react';
 import { actions, useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
@@ -12,7 +13,7 @@ import { speak } from '../audio/speech';
 type Tab = Slot | 'stickers';
 
 export function CoinChip({ coins, bump }: { coins: number; bump?: boolean }) {
-  return <span className={`coin-chip ${bump ? 'is-bump' : ''}`}>🪙 {coins}</span>;
+  return <span className={`coin-chip ${bump ? 'is-bump' : ''}`}><Emo e="🪙" /> {coins}</span>;
 }
 
 function ItemSwatch({ item }: { item: ShopItem }) {
@@ -23,7 +24,7 @@ function ItemSwatch({ item }: { item: ShopItem }) {
         <i />
       </span>
     );
-  return <span className="shop-item__emoji">{item.emoji}</span>;
+  return <span className="shop-item__emoji"><Emo e={item.emoji!} /></span>;
 }
 
 export function Shop() {
@@ -107,7 +108,7 @@ export function Shop() {
             className={`big-btn shop-action ${owns(selected.id) ? '' : canAfford ? 'big-btn--go' : 'is-poor'}`}
             onClick={action}
           >
-            {owns(selected.id) ? (wearing(selected) ? `✖ ${t('takeOff')}` : `✔ ${t('wear')}`) : `${t('buy')} 🪙 ${selected.price}`}
+            {owns(selected.id) ? (wearing(selected) ? `✖ ${t('takeOff')}` : `✔ ${t('wear')}`) : <>{t('buy')} <Emo e="🪙" /> {selected.price}</>}
           </button>
         )}
       </div>
@@ -115,20 +116,20 @@ export function Shop() {
       <nav className="shop-tabs">
         {SLOTS.map((s) => (
           <button key={s.id} className={tab === s.id ? 'is-active' : ''} onClick={() => { playSfx('tap'); setTab(s.id); setSelected(null); }} aria-label={t(s.nameKey)}>
-            <span>{s.icon}</span><small>{t(s.nameKey)}</small>
+            <span><Emo e={s.icon} /></span><small>{t(s.nameKey)}</small>
           </button>
         ))}
         <button className={tab === 'stickers' ? 'is-active' : ''} onClick={() => { playSfx('tap'); setTab('stickers'); setSelected(null); }} aria-label={t('slotStickers')}>
-          <span>📒</span><small>{t('slotStickers')}</small>
+          <span><Emo e="📒" /></span><small>{t('slotStickers')}</small>
         </button>
       </nav>
 
       {tab === 'stickers' ? (
         <div className="shop-stickers">
           <button className="shop-item shop-item--pack pop-in" onClick={buySticker}>
-            <span className="shop-item__emoji">{newSticker ? <span className="sticker-reveal" style={{ animationDelay: '0s' }}>{stickerById(newSticker)?.emoji}</span> : '🎁'}</span>
+            <span className="shop-item__emoji">{newSticker ? <span className="sticker-reveal" style={{ animationDelay: '0s' }}><Emo e={stickerById(newSticker)?.emoji ?? '⭐'} /></span> : <Emo e="🎁" />}</span>
             <span className="shop-item__label">{t('stickerPack')}</span>
-            <span className="shop-item__price">🪙 {STICKER_PACK_PRICE}</span>
+            <span className="shop-item__price"><Emo e="🪙" /> {STICKER_PACK_PRICE}</span>
           </button>
           <button className="big-btn" onClick={() => go('stickers')}>📒 {t('stickerBookTitle')}</button>
         </div>
@@ -144,7 +145,7 @@ export function Shop() {
               <ItemSwatch item={it} />
               <span className={`rarity rarity--${rarityOf(it.price)}`}>{t(`rarity_${rarityOf(it.price)}`)}</span>
               <span className="shop-item__price">
-                {wearing(it) ? '✔' : owns(it.id) ? '👜' : `🪙 ${it.price}`}
+                {wearing(it) ? '✔' : owns(it.id) ? <Emo e="👜" /> : <><Emo e="🪙" /> {it.price}</>}
               </span>
             </button>
           ))}

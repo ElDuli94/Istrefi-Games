@@ -2,6 +2,7 @@
  * Puslespill – velg et bilde, dra bitene på plass. Bitene "klikker" inn når de er nær riktig sted.
  * 2–4 år: 4 biter, 5–7 år: 9 biter, 8–11 år: 16 biter. Et svakt bilde i bakgrunnen hjelper.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
 import { SCENES } from './scenes';
@@ -39,9 +40,9 @@ function PictureView({ pic, size }: { pic: Pic; size: number }) {
   return (
     <div className="pic" style={{ width: size, height: size, background: `linear-gradient(135deg, ${p.bg[0]}, ${p.bg[1]})` }}>
       {p.deco.map((d, k) => (
-        <span key={k} style={{ left: spots[k][0] * size, top: spots[k][1] * size, fontSize: size * 0.16 }}>{d}</span>
+        <span key={k} style={{ left: spots[k][0] * size, top: spots[k][1] * size, fontSize: size * 0.16 }}><Emo e={d} /></span>
       ))}
-      <span style={{ left: size / 2, top: size * 0.54, fontSize: size * 0.55 }}>{p.main}</span>
+      <span style={{ left: size / 2, top: size * 0.54, fontSize: size * 0.55 }}><Emo e={p.main} /></span>
     </div>
   );
 }

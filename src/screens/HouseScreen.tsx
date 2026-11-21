@@ -2,6 +2,7 @@
  * Mitt hus – barnets eget rom. Kjøp ting for mynter, dra dem rundt,
  * gjør dem større/mindre, snu dem, eller legg dem tilbake i kassen.
  */
+import { Emo } from '../components/Emo';
 import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { actions, useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
@@ -151,7 +152,7 @@ export function HouseScreen() {
                 style={{ left: `${p.x}%`, top: `${p.y}%`, zIndex: Math.round(p.y), fontSize: `calc(var(--room-w) * ${0.11 * p.s * depth})`, transform: `translate(-50%, -100%) scaleX(${p.f ? -1 : 1})` }}
                 onPointerDown={(e) => startDrag(e, i)}
               >
-                {it.emoji}
+                <Emo e={it.emoji!} />
               </span>
             );
           })}
@@ -176,7 +177,7 @@ export function HouseScreen() {
       <nav className="shop-tabs house-tabs">
         {HOUSE_CATS.map((c) => (
           <button key={c.id} className={cat === c.id ? 'is-active' : ''} onClick={() => { playSfx('tap'); setCat(c.id); setPending(null); }} aria-label={t(c.nameKey)}>
-            <span>{c.icon}</span><small>{t(c.nameKey)}</small>
+            <span><Emo e={c.icon} /></span><small>{t(c.nameKey)}</small>
           </button>
         ))}
       </nav>
@@ -190,8 +191,8 @@ export function HouseScreen() {
               className={`house-item ${placed ? 'is-placed' : ''} ${pending === it.id ? 'is-pending' : ''}`}
               onClick={() => tapDrawer(it)}
             >
-              {it.css ? <span className="house-swatch" style={{ background: it.css }} /> : <span className="house-item__emoji">{it.emoji}</span>}
-              <span className="house-item__price">{placed ? '✔' : owned ? '＋' : pending === it.id ? `${t('buy')}?` : `🪙 ${it.price}`}</span>
+              {it.css ? <span className="house-swatch" style={{ background: it.css }} /> : <span className="house-item__emoji"><Emo e={it.emoji!} /></span>}
+              <span className="house-item__price">{placed ? '✔' : owned ? '＋' : pending === it.id ? `${t('buy')}?` : <><Emo e="🪙" /> {it.price}</>}</span>
             </button>
           );
         })}

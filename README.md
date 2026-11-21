@@ -82,6 +82,12 @@ src/
   styles/       design
 ```
 
+## 3D-figurer
+
+Alle emoji i appen vises som 3D-figurer fra **Microsoft Fluent Emoji 3D** (MIT-lisens), via npm-pakken `@lobehub/fluent-emoji-3d`.
+`scripts/sync-emoji.mjs` finner emoji som brukes i koden og kopierer bare de nødvendige figurene til `public/emoji3d/` (kjøres automatisk ved `npm install` og `npm run build`).
+Bruk `<Emo e="🐶" />` eller `<EmojiText text="🎈 Tekst" />` for å vise 3D-figurer. Se `THIRD_PARTY_NOTICES.md`.
+
 ## Personvern
 
 All progresjon lagres kun i nettleseren på enheten. Ingenting sendes til noen server.

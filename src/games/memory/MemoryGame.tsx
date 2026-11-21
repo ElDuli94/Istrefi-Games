@@ -1,3 +1,4 @@
+import { Emo } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
@@ -201,13 +202,13 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
                 aria-label={isUp ? name : '?'}
               >
                 <span className="mcard__inner">
-                  <span className="mcard__back">⭐</span>
+                  <span className="mcard__back"><Emo e="⭐" /></span>
                   {card.isWord ? (
                     <span className="mcard__front mcard__front--word" style={{ fontSize: Math.min(grid.size * 0.26, (grid.size * 1.5) / name.length) }}>
                       {name.toUpperCase()}
                     </span>
                   ) : (
-                    <span className="mcard__front">{ANIMALS[card.animal].emoji}</span>
+                    <span className="mcard__front"><Emo e={ANIMALS[card.animal].emoji} /></span>
                   )}
                 </span>
               </button>

@@ -2,6 +2,7 @@
  * GameHost: rammen rundt alle spill. Laster spillet, gir det GameApi,
  * måler spilletid, lagrer resultat og viser feiring + klistremerke.
  */
+import { Emo } from '../components/Emo';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { actions, getState, useActiveProfile, useStore } from '../storage/store';
 import { useT } from '../i18n';
@@ -81,7 +82,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
 
   return (
     <div className="screen game-host" style={{ background: WORLDS.find((w) => w.id === world)!.bg }}>
-      <TopBar left={<BackButton to={() => go(`world/${world}`)} />} title={<h1 className="game-title">{game.icon} {t(game.titleKey)}</h1>} />
+      <TopBar left={<BackButton to={() => go(`world/${world}`)} />} title={<h1 className="game-title"><Emo e={game.icon} /> {t(game.titleKey)}</h1>} />
       <main className="game-host__stage">
         <Suspense fallback={<div className="loading"><Mascot size={100} className="bob" /></div>}>
           <Game key={round} world={world} players={1} api={api} onFinish={handleFinish} />
@@ -104,7 +105,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
             <Stars count={result.stars} size={2.4} />
             {result.earned > 0 && (
               <div className="celebrate__coins">
-                <span className="coin-burst">🪙</span>
+                <span className="coin-burst"><Emo e="🪙" /></span>
                 <p>{t('youEarned', { coins: result.earned })}</p>
               </div>
             )}

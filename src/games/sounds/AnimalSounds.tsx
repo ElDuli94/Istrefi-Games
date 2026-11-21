@@ -2,6 +2,7 @@
  * Dyrelyder – trykk på et dyr og hør lyden og navnet.
  * 2–4 år: 9 store dyr, fri lek. 5–7 år: alle dyr + "Gjett dyret"-quiz.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
 import { FARM } from '../../data/farm';
@@ -34,10 +35,10 @@ export default function AnimalSounds(props: GameProps) {
     return (
       <div className="sounds-menu">
         <button className="sounds-mode pop-in" onClick={() => { api.sfx('pop'); setMode('free'); }}>
-          <span>🐮</span>{api.t('tapAnAnimal')}
+          <span><Emo e="🐮" /></span>{api.t('tapAnAnimal')}
         </button>
         <button className="sounds-mode pop-in" style={{ animationDelay: '.08s' }} onClick={() => { api.sfx('pop'); api.speak(api.t('guessAnimal')); setMode('quiz'); }}>
-          <span>❓</span>{api.t('guessAnimal')}
+          <span><Emo e="❓" /></span>{api.t('guessAnimal')}
         </button>
       </div>
     );
@@ -80,7 +81,7 @@ function Free({ world, api, onFinish }: GameProps) {
           onPointerDown={() => tap(a)}
           aria-label={a.name[api.lang]}
         >
-          <span key={active === a.id ? tick : 0} className="farm-animal__emoji">{a.emoji}</span>
+          <span key={active === a.id ? tick : 0} className="farm-animal__emoji"><Emo e={a.emoji} /></span>
           {active === a.id && <span key={`b${tick}`} className="farm-animal__says">{a.says[api.lang]}</span>}
         </button>
       ))}
@@ -142,7 +143,7 @@ function Quiz({ api, onFinish }: GameProps) {
             onClick={() => pick(a)}
             aria-label={a.name[api.lang]}
           >
-            <span className="farm-animal__emoji">{a.emoji}</span>
+            <span className="farm-animal__emoji"><Emo e={a.emoji} /></span>
           </button>
         ))}
       </div>

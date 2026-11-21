@@ -4,3 +4,5 @@ dev-dist
 *.log
 .DS_Store
 *.tsbuildinfo
+public/emoji3d
+src/emoji3dList.ts

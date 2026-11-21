@@ -223,5 +223,7 @@ export const sq: Dict = {
   draw: 'Barazim!',
   red: 'E kuqja',
   blue: 'Bluja',
-  yourTurn: 'Radha e {p}'
+  yourTurn: 'Radha e {p}',
+  credits: 'Figurat 3D: Microsoft Fluent Emoji (licenca MIT). Shkronja: Baloo 2 (OFL).',
+  licenses: 'Shiko licencat'
 };

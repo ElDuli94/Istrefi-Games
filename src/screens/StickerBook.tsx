@@ -1,3 +1,4 @@
+import { Emo } from '../components/Emo';
 import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
@@ -30,7 +31,7 @@ export function StickerBook() {
             onClick={() => owned.has(s.id) && playSfx('pop')}
             aria-label={owned.has(s.id) ? s.emoji : '?'}
           >
-            {owned.has(s.id) ? s.emoji : '?'}
+            {owned.has(s.id) ? <Emo e={s.emoji} /> : '?'}
           </button>
         ))}
       </div>

@@ -227,6 +227,7 @@ function SettingsTab() {
       <Toggle label={`🗣️ ${t('voice')}`} value={settings.voice} onChange={(v) => actions.updateSettings({ voice: v })} />
       <h3>🛡️ {t('privacyTitle')}</h3>
       <p>{t('privacyText')}</p>
+      <p className="muted">{t('credits')} <a href="./licenses.txt" target="_blank" rel="noopener">{t('licenses')}</a></p>
       <p className="muted">Istrefi Games v{__APP_VERSION__}</p>
     </div>
   );

@@ -1,6 +1,7 @@
 /**
  * Prikk til prikk – trykk eller dra fra 1 til siste tall, så kommer en figur fram.
  */
+import { Emo, emojiUrl } from '../../components/Emo';
 import { useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
 import { DOT_FIGS, type DotFig } from './figures';
@@ -19,7 +20,7 @@ export default function DotsGame(props: GameProps) {
         <div className="dots-pick__grid">
           {DOT_FIGS.map((f, i) => (
             <button key={f.id} className={`dots-thumb pop-in ${saved.done.includes(f.id) ? 'is-done' : ''}`} style={{ animationDelay: `${i * 0.04}s` }} onClick={() => { api.sfx('pop'); setFig(f); }}>
-              {saved.done.includes(f.id) ? <span className="dots-thumb__emoji">{f.emoji}</span> : <span className="dots-thumb__q">{f.pts.length}</span>}
+              {saved.done.includes(f.id) ? <span className="dots-thumb__emoji"><Emo e={f.emoji} /></span> : <span className="dots-thumb__q">{f.pts.length}</span>}
             </button>
           ))}
         </div>
@@ -99,7 +100,9 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
           );
         })}
         {!done && n === fig.pts.length && <circle cx={fig.pts[0][0]} cy={fig.pts[0][1]} r={4.5} className="dot-back" />}
-        {done && <text x={50} y={58} textAnchor="middle" className="dots__emoji">{fig.emoji}</text>}
+        {done && (emojiUrl(fig.emoji)
+          ? <image href={emojiUrl(fig.emoji)!} x={36} y={36} width={28} height={28} className="dots__emoji" />
+          : <text x={50} y={58} textAnchor="middle" className="dots__emoji">{fig.emoji}</text>)}
       </svg>
       {done && <div className="dots__name pop-in">{fig.name[api.lang]}!</div>}
     </div>

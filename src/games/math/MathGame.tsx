@@ -2,6 +2,7 @@
  * Mattespill – 10 oppgaver per nivå. 5–11 år velger blant store svarknapper,
  * 12–15 år skriver svaret på et talltastatur.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useState } from 'react';
 import type { GameProps } from '../types';
 import type { Lang } from '../../i18n';
@@ -88,9 +89,9 @@ function Quiz({ api, world, onFinish, level, onEnd }: GameProps & { level: numbe
       <div className={`math__card ${feedback ? (feedback.ok ? 'is-ok' : 'is-wrong') : ''}`}>
         {q.visual && (
           <div className="math__visual">
-            <span>{Array.from({ length: q.visual.a }, () => q.visual!.emoji).join('')}</span>
+            <span>{Array.from({ length: q.visual.a }, (_, i) => <Emo key={i} e={q.visual!.emoji} />)}</span>
             <b>{q.visual.op === '+' ? '+' : '−'}</b>
-            <span className={q.visual.op === '−' ? 'is-gone' : ''}>{Array.from({ length: q.visual.b }, () => q.visual!.emoji).join('')}</span>
+            <span className={q.visual.op === '−' ? 'is-gone' : ''}>{Array.from({ length: q.visual.b }, (_, i) => <Emo key={i} e={q.visual!.emoji} />)}</span>
           </div>
         )}
         <div className="math__q">{q.text}{q.text.includes('?') ? '' : ' = '}{!q.text.includes('?') && <span className="math__slot">{keypad ? input || '?' : feedback ? q.answer : '?'}</span>}</div>
