@@ -47,7 +47,7 @@ export default function App() {
     case 'stickers':
       return <StickerBook />;
     case 'parents':
-      return <ParentArea />;
+      return <ParentArea initialTab={a} />;
     case 'bye':
       return <ByeScreen />;
     case 'shop':

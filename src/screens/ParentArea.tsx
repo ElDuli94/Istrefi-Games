@@ -1,9 +1,11 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { actions, useStore, type Profile } from '../storage/store';
 import { LANGUAGES, useT, type Lang } from '../i18n';
-import { back } from '../router';
+import { back, go } from '../router';
 import { GAMES } from '../games/registry';
-import { WORLDS, worldById, type WorldId } from '../data/worlds';
+import { WORLDS, type WorldId } from '../data/worlds';
+import { AVATARS, AVATAR_KEYS } from '../data/avatars';
+import { AvatarView } from '../components/AvatarView';
 import { STICKERS } from '../data/stickers';
 import { Avatar, BackButton, Stars, TopBar } from '../components/ui';
 import { InstallGuide } from './InstallGuide';
@@ -99,32 +101,61 @@ function StatsTab({ profiles }: { profiles: Profile[] }) {
 
 function ProfilesTab({ profiles }: { profiles: Profile[] }) {
   const t = useT();
+  const [picking, setPicking] = useState<string | null>(null); // profil-id som velger nytt dyr
+  const [deleting, setDeleting] = useState<string | null>(null); // profil-id som venter på bekreftelse
+  if (!profiles.length) return <p className="panel">{t('noStats')}</p>;
   return (
     <div className="profiles-admin">
       {profiles.map((p) => (
         <section key={p.id} className="panel profile-admin">
-          <Avatar avatar={p.avatar} size={56} />
-          <input
-            className="text-input"
-            value={p.name}
-            placeholder={t('nameOptional')}
-            maxLength={16}
-            onChange={(e) => actions.editProfile(p.id, { name: e.target.value })}
-          />
-          <label>
-            {t('age')}{' '}
-            <select value={p.world} onChange={(e) => actions.editProfile(p.id, { world: e.target.value as WorldId })}>
-              {WORLDS.map((w) => <option key={w.id} value={w.id}>{w.icon} {t(w.ageKey)}</option>)}
-            </select>
-          </label>
-          <button
-            className="danger-btn"
-            onClick={() => confirm(t('confirmDelete', { name: p.name || worldById(p.world).icon })) && actions.deleteProfile(p.id)}
-          >
-            🗑️ {t('deleteProfile')}
-          </button>
+          <div className="profile-admin__row">
+            <button className="profile-admin__avatar" onClick={() => setPicking(picking === p.id ? null : p.id)} aria-label={t('chooseAnimal')}>
+              <AvatarView avatar={p.avatar} equipped={p.equipped} size={64} />
+              <span className="profile-admin__edit">✏️</span>
+            </button>
+            <input
+              className="text-input"
+              value={p.name}
+              placeholder={t('nameOptional')}
+              maxLength={16}
+              onChange={(e) => actions.editProfile(p.id, { name: e.target.value })}
+            />
+            <label>
+              {t('age')}{' '}
+              <select value={p.world} onChange={(e) => actions.editProfile(p.id, { world: e.target.value as WorldId })}>
+                {WORLDS.map((w) => <option key={w.id} value={w.id}>{w.icon} {t(w.ageKey)}</option>)}
+              </select>
+            </label>
+            <button className="danger-btn" onClick={() => setDeleting(p.id)}>🗑️ {t('deleteProfile')}</button>
+          </div>
+
+          {picking === p.id && (
+            <div className="profile-admin__picker pop-in">
+              {AVATAR_KEYS.map((k) => (
+                <button
+                  key={k}
+                  className={`avatar-option ${p.avatar === k ? 'is-selected' : ''}`}
+                  onClick={() => { actions.editProfile(p.id, { avatar: k }); setPicking(null); }}
+                  aria-label={k}
+                >
+                  <Avatar avatar={k} size={52} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {deleting === p.id && (
+            <div className="confirm-box pop-in" role="alertdialog">
+              <p>{t('confirmDelete', { name: p.name || AVATARS[p.avatar]?.emoji || '' })}</p>
+              <div className="btn-row">
+                <button className="danger-btn danger-btn--solid" onClick={() => { actions.deleteProfile(p.id); setDeleting(null); }}>🗑️ {t('deleteYes')}</button>
+                <button className="big-btn" onClick={() => setDeleting(null)}>{t('cancel')}</button>
+              </div>
+            </div>
+          )}
         </section>
       ))}
+      <button className="big-btn big-btn--go" onClick={() => go('new')}>＋ {t('newPlayer')}</button>
     </div>
   );
 }
@@ -203,10 +234,10 @@ function SettingsTab() {
 
 type Tab = 'stats' | 'profiles' | 'backup' | 'settings' | 'install';
 
-export function ParentArea() {
+export function ParentArea({ initialTab = 'stats' }: { initialTab?: string }) {
   const t = useT();
   const [unlocked, setUnlocked] = useState(false);
-  const [tab, setTab] = useState<Tab>('stats');
+  const [tab, setTab] = useState<Tab>((['stats', 'profiles', 'backup', 'settings', 'install'].includes(initialTab) ? initialTab : 'stats') as Tab);
   const profiles = useStore((s) => s.profiles);
 
   if (!unlocked) return <ParentGate onPass={() => setUnlocked(true)} />;
