@@ -187,5 +187,7 @@ export const sq: Dict = {
   theWordWas: 'Fjala ishte: {w}',
   wordHelp: 'Gjej fjalën! E gjelbër = vendi i duhur. E verdhë = gjendet në fjalë. Gri = nuk është.',
   whichCountry: 'Cilit shtet i përket ky flamur?',
-  whichFlag: 'Cili flamur i përket {c}?'
+  whichFlag: 'Cili flamur i përket {c}?',
+  editProfiles: 'Ndrysho profilet',
+  deleteYes: 'Po, fshije'
 };

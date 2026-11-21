@@ -44,6 +44,7 @@ export function ProfileSelect() {
         </button>
       </div>
       <div className="profile-footer">
+        <button className="grown-up-link" onClick={() => go('parents/profiles')}>✏️ {t('editProfiles')}</button>
         <button className="grown-up-link" onClick={() => go('parents')}>🔒 {t('parents')}</button>
         <button className="grown-up-link" onClick={() => go('bye')}>🚪 {t('exit')}</button>
       </div>

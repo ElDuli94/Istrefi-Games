@@ -204,7 +204,9 @@ export const no = {
   theWordWas: 'Ordet var: {w}',
   wordHelp: 'Gjett ordet! Grønn = riktig plass. Gul = finnes i ordet. Grå = ikke med.',
   whichCountry: 'Hvilket land har dette flagget?',
-  whichFlag: 'Hvilket flagg tilhører {c}?'
+  whichFlag: 'Hvilket flagg tilhører {c}?',
+  editProfiles: 'Endre profiler',
+  deleteYes: 'Ja, slett'
 };
 
 export type Dict = typeof no;
