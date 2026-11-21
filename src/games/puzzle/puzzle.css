@@ -1,11 +1,12 @@
 .puzzle-pick { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 6px; }
 .puzzle-pick__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; width: 100%; max-width: 800px; }
 .puzzle-thumb { position: relative; border: 6px solid #fff; border-radius: 22px; padding: 0; overflow: hidden; aspect-ratio: 1; box-shadow: 0 6px 0 rgba(0,0,0,.15); background: #fff; }
-.puzzle-thumb img { width: 100%; height: 100%; display: block; }
+.puzzle-thumb__pic { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.puzzle-thumb__pic > * { width: 100% !important; height: 100% !important; }
 .puzzle-thumb__done { position: absolute; top: 6px; right: 6px; background: #06d6a0; color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 .puzzle { position: relative; height: 100%; touch-action: none; }
 .puzzle__board {
-  position: absolute; left: 0; top: 0; border-radius: 12px; background-size: cover; box-shadow: 0 0 0 6px #fff, 0 10px 0 6px rgba(0,0,0,.15);
+  position: absolute; left: 0; top: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 6px #fff, 0 10px 0 6px rgba(0,0,0,.15);
 }
 .puzzle__board::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(255,255,255,.72); border-radius: 12px; }
 .puzzle__slot { position: absolute; box-sizing: border-box; border: 2px dashed rgba(0,0,0,.18); z-index: 1; }
@@ -15,3 +16,9 @@
 }
 .puzzle__piece.is-placed { box-shadow: none; border-color: transparent; border-radius: 0; z-index: 2; cursor: default; animation: placed .35s ease; }
 @keyframes placed { 50% { transform: scale(1.08); } }
+
+.pic { position: relative; overflow: hidden; }
+.pic span { position: absolute; transform: translate(-50%, -50%); line-height: 1; }
+.puzzle__piece { overflow: hidden; }
+.puzzle__piece-pic { position: absolute; pointer-events: none; }
+.puzzle__board::after { z-index: 1; }

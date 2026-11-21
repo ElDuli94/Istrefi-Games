@@ -7,6 +7,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type { GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
 import { LevelGrid, advanceGrid, emptyGridProgress, type GridProgress } from '../common/LevelGrid';
+import { EMOJI_FONT } from '../../emojiFont';
 import './snake.css';
 
 const LEVELS = 12;
@@ -293,7 +294,7 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     });
     // Frukt (dumper litt)
     const bob = Math.sin(now / 200) * cs * 0.06;
-    ctx.font = `${cs * 0.85}px serif`;
+    ctx.font = `${cs * 0.85}px ${EMOJI_FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(s.fruitEmoji, s.fruit[0] * cs + cs / 2, s.fruit[1] * cs + cs / 2 + bob);
