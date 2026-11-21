@@ -160,7 +160,8 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     const ro = new ResizeObserver(() => {
       const landscape = el.clientWidth > el.clientHeight * 1.15;
       const availW = landscape ? el.clientWidth * 0.62 : el.clientWidth;
-      const availH = landscape ? el.clientHeight : el.clientHeight * 0.68;
+      // Liggende: la det være litt luft under brettet så fingeren har plass
+      const availH = landscape ? el.clientHeight - 56 : el.clientHeight * 0.68;
       setCell(Math.floor(Math.max(22, Math.min(availW, availH) - 24) / N));
     });
     ro.observe(el);
@@ -174,7 +175,14 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     const pad = 6;
     const left = d.x - (d.piece.w * cell) / 2 - r.left - pad;
     const top = d.y - d.offY - (d.piece.h * cell) / 2 - r.top - pad;
-    const c = Math.round(left / cell), rr = Math.round(top / cell);
+    let c = Math.round(left / cell), rr = Math.round(top / cell);
+    // Litt utenfor kanten = fest til kanten. Da kan barnet nå nederste rad
+    // og ytterste kolonner selv om fingeren ikke kommer lenger ned på skjermen.
+    const TOL = 2;
+    const maxR = N - d.piece.h, maxC = N - d.piece.w;
+    if (rr < -TOL || rr > maxR + TOL || c < -TOL || c > maxC + TOL) return null;
+    rr = Math.min(maxR, Math.max(0, rr));
+    c = Math.min(maxC, Math.max(0, c));
     return fits(board, d.piece, rr, c) ? { r: rr, c } : null;
   }
 
@@ -183,7 +191,7 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     if (!piece || over) return;
     e.preventDefault();
     api.sfx('tap');
-    const offY = e.pointerType === 'mouse' ? 0 : cell * 2.2; // løft brikken over fingeren
+    const offY = e.pointerType === 'mouse' ? 0 : cell * 1.5; // løft brikken over fingeren
     const d = { piece, slot, x: e.clientX, y: e.clientY, offY };
     dragRef.current = d;
     setDrag(d);
@@ -330,7 +338,7 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
           {tray.map((p, slot) => (
             <div key={slot} className="tray-slot" onPointerDown={(e) => start(e, slot)}>
               {p && drag?.slot !== slot && (
-                <PieceView piece={p} size={mini} dim={!fitsAnywhere(board, p)} />
+                <PieceView piece={p} size={Math.min(mini, Math.floor(96 / Math.max(p.w, p.h)))} dim={!fitsAnywhere(board, p)} />
               )}
             </div>
           ))}
