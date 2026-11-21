@@ -20,6 +20,8 @@ export interface GameResult {
 
 export interface GameApi {
   lang: Lang;
+  /** Barnets navn fra profilen (kan være tomt). */
+  playerName: string;
   t: (key: DictKey, vars?: Record<string, string | number>) => string;
   sfx: (name: Sfx) => void;
   speak: (text: string) => void;

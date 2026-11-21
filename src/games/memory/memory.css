@@ -28,3 +28,4 @@
 @keyframes wiggle {
   0%,100% { translate: 0; } 25% { translate: -6px; } 75% { translate: 6px; }
 }
+.mcard__front--word { font-weight: 800; color: #3a0ca3; background: #fff8e1; border-color: #ffd166; padding: 4px; word-break: break-all; line-height: 1; }

@@ -80,5 +80,22 @@ export const sq: Dict = {
   installAndroidSteps: 'Hape faqen në Chrome|Shtyp menynë ⋮ lart djathtas|Zgjidh «Instalo aplikacionin» ose «Shto në ekranin bazë»|Konfirmo',
   installDesktop: 'PC dhe Mac (Chrome ose Edge)',
   installDesktopSteps: 'Hape faqen në Chrome ose Edge|Kliko ikonën e instalimit në shiritin e adresës|Kliko «Instalo»',
-  offlineReady: 'Gati për t’u luajtur pa internet!'
+  offlineReady: 'Gati për t’u luajtur pa internet!',
+  chooseLevel: 'Zgjidh nivelin',
+  levelEasy: 'Lehtë',
+  levelMedium: 'Mesatar',
+  levelHard: 'Vështirë',
+  locked: 'Fito nivelin e mëparshëm për ta hapur',
+  game_letters: 'Lojë me shkronja',
+  freePlay: 'Lojë e lirë',
+  wordTasks: 'Detyra me fjalë',
+  readAloud: 'Lexo',
+  clearAll: 'Pastro',
+  removeLast: 'Fshi të fundit',
+  hint: 'Ndihmë',
+  writeYourName: 'Shkruaj emrin tënd:',
+  dragLetters: 'Tërhiq ose shtyp shkronjat!',
+  whatIsThis: 'Si quhet kjo kafshë?',
+  wordOf: 'Fjala {n} nga {total}',
+  done: 'Mbarova'
 };

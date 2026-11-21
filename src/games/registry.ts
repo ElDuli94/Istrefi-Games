@@ -12,6 +12,15 @@ export const GAMES: GameDefinition[] = [
     worlds: ['tiny', 'small', 'mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./memory/MemoryGame'))
+  },
+  {
+    id: 'letters',
+    titleKey: 'game_letters',
+    icon: '🔤',
+    color: '#8338ec',
+    worlds: ['tiny', 'small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./letters/LetterGame'))
   }
 ];
 

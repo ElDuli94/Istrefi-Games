@@ -5,13 +5,14 @@ Trygge og morsomme nettspill for barn fra 2 til 15 år.
 
 Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det albanske flagget.
 
-## Hva finnes nå (v0.1)
+## Hva finnes nå (v0.2)
 
 | Del | Beskrivelse |
 |---|---|
 | 👥 Profiler | Barnet velger sitt dyr – ingen tekst eller passord. Flere barn per enhet. |
 | 🏝️ Øykart | Fire verdener: Lekelandet (2–4), Eventyrskogen (5–7), Oppdagerfjellet (8–11), Stjernebyen (12–15). |
-| 🃏 Dyre-memory | Første spill. Vanskelighetsgrad tilpasses verden (3–12 par). Dyrenavn leses opp. |
+| 🃏 Dyre-memory | 3 nivåer per verden (Lett/Middels/Vanskelig) som låses opp ett etter ett – fra 2 til 15 par. De eldste kobler bilde med skrevet ord. |
+| 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 📒 Klistremerkebok | Et nytt klistremerke for hvert fullførte spill (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
 | 🌍 Språk | Norsk og albansk (shqip). |
@@ -44,6 +45,7 @@ Senere kan et eget domene (f.eks. `istrefigames.no`) kobles til under samme side
    (se `src/games/types.ts`). Spillet får `world` (aldersverden) og `api`
    (lyd, opplesing, oversettelse, lagring) og kaller `onFinish({ won, stars })` når runden er ferdig.
 2. Legg til én oppføring i `src/games/registry.ts`.
+   Trenger spillet nivåer? Bruk den ferdige `LevelPicker` fra `src/games/common/`.
 3. Legg til spillnavnet i `src/i18n/no.ts` og `src/i18n/sq.ts`.
 
 Plattformen tar seg av resten: spilletid, statistikk, stjerner, feiring og klistremerker.
