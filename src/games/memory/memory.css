@@ -11,7 +11,7 @@
 }
 .mcard.is-up .mcard__inner { transform: rotateY(180deg); }
 .mcard__back, .mcard__front {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center;
   border-radius: 18%; backface-visibility: hidden; -webkit-backface-visibility: hidden;
   box-shadow: 0 6px 0 rgba(0,0,0,.18);
 }
@@ -28,3 +28,4 @@
 @keyframes wiggle {
   0%,100% { translate: 0; } 25% { translate: -6px; } 75% { translate: 6px; }
 }
+.mcard__front--word { font-weight: 800; color: #3a0ca3; background: #fff8e1; border-color: #ffd166; padding: 4px; word-break: break-all; line-height: 1; }

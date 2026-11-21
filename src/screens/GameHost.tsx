@@ -48,13 +48,14 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
 
   const api = useMemo<GameApi>(() => ({
     lang,
+    playerName: profile?.name ?? '',
     t,
     sfx: playSfx,
     speak,
     loadData: <T,>() => getState().profiles.find((p) => p.id === profile?.id)?.games[statsKey]?.data as T | undefined,
     saveData: (data) => profile && actions.saveGameData(profile.id, statsKey, data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [lang, profile?.id, statsKey]);
+  }), [lang, profile?.id, profile?.name, statsKey]);
 
   if (!valid || !game || !profile) return null;
   const Game = game.component;

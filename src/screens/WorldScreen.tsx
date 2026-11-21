@@ -7,7 +7,7 @@ import { BackButton, Stars, TopBar } from '../components/ui';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 
-const PLACEHOLDERS = ['🎨', '🔢', '🧩', '🎵', '🚗', '🔤'];
+const PLACEHOLDERS = ['🔢', '🧩', '🎵', '🚗', '🎈', '🧮'];
 
 export function WorldScreen({ worldId }: { worldId: string }) {
   const t = useT();

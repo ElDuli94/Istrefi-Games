@@ -11,7 +11,7 @@ export type Lang = keyof typeof LANGUAGES;
 
 export function translate(lang: Lang, key: DictKey, vars?: Record<string, string | number>): string {
   let s: string = LANGUAGES[lang].dict[key] ?? no[key] ?? key;
-  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(String(v));
   return s;
 }
 

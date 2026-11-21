@@ -9,8 +9,11 @@ let ctx: AudioContext | null = null;
 let musicGain: GainNode | null = null;
 let musicTimer: number | null = null;
 
-function ac(): AudioContext {
-  if (!ctx) ctx = new AudioContext();
+export function ac(): AudioContext {
+  if (!ctx) {
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    ctx = new AC();
+  }
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
@@ -34,6 +37,14 @@ export type Sfx = 'tap' | 'flip' | 'match' | 'nope' | 'win' | 'sticker' | 'pop';
 
 export function playSfx(name: Sfx) {
   if (!getState().settings.sfx) return;
+  try {
+    playSfxInner(name);
+  } catch {
+    /* lyd skal aldri kunne stoppe spillet */
+  }
+}
+
+function playSfxInner(name: Sfx) {
   const c = ac();
   const t = c.currentTime;
   switch (name) {
@@ -73,7 +84,12 @@ const midi = (n: number) => 261.63 * Math.pow(2, n / 12);
 
 export function startMusic() {
   if (musicTimer !== null || !getState().settings.music) return;
-  const c = ac();
+  let c: AudioContext;
+  try {
+    c = ac();
+  } catch {
+    return;
+  }
   musicGain = c.createGain();
   musicGain.gain.value = 0.35;
   musicGain.connect(c.destination);

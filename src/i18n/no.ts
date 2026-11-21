@@ -86,7 +86,39 @@ export const no = {
   installAndroidSteps: 'Åpne siden i Chrome|Trykk på menyen ⋮ øverst til høyre|Velg «Installer app» eller «Legg til på startskjermen»|Bekreft',
   installDesktop: 'PC og Mac (Chrome eller Edge)',
   installDesktopSteps: 'Åpne siden i Chrome eller Edge|Klikk på installer-ikonet i adressefeltet (skjerm med pil)|Klikk «Installer»',
-  offlineReady: 'Klar til å spilles uten internett!'
+  offlineReady: 'Klar til å spilles uten internett!',
+  // Nivåer
+  chooseLevel: 'Velg nivå',
+  levelEasy: 'Lett',
+  levelMedium: 'Middels',
+  levelHard: 'Vanskelig',
+  locked: 'Vinn nivået før for å låse opp',
+  // Bokstavlek
+  game_letters: 'Bokstavlek',
+  freePlay: 'Fri lek',
+  wordTasks: 'Ord-oppgaver',
+  readAloud: 'Les opp',
+  clearAll: 'Tøm',
+  removeLast: 'Fjern siste',
+  hint: 'Hjelp',
+  writeYourName: 'Skriv navnet ditt:',
+  dragLetters: 'Dra eller trykk på bokstaver!',
+  whatIsThis: 'Hva heter dette dyret?',
+  wordOf: 'Ord {n} av {total}',
+  done: 'Ferdig',
+  // Tegnebrett
+  game_draw: 'Tegnebrett',
+  tapAgainToClear: 'Trykk igjen for å viske ut alt',
+  myDrawings: 'Mine tegninger',
+  noDrawings: 'Ingen tegninger ennå',
+  drawSomething: 'Tegn hva du vil!',
+  // Dyrelyder
+  game_sounds: 'Dyrelyder',
+  tapAnAnimal: 'Trykk på et dyr!',
+  allAnimalsHeard: 'Du har hørt alle dyrene!',
+  listen: 'Lytt',
+  guessAnimal: 'Gjett dyret',
+  whoSaysThis: 'Hvem sier dette?'
 };
 
 export type Dict = typeof no;

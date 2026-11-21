@@ -9,6 +9,8 @@ import pkg from './package.json' with { type: 'json' };
 export default defineConfig({
   base: './',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+  // Støtt eldre iPader (iOS 13 og nyere), ikke bare de nyeste nettleserne.
+  build: { target: ['es2019', 'safari13'], cssTarget: ['safari13'] },
   plugins: [
     react(),
     VitePWA({
@@ -32,7 +34,18 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mp3,ogg,json}']
+        globPatterns: ['**/*.{js,css,svg,png,woff2,mp3,ogg,json}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: { cacheName: 'pages', networkTimeoutSeconds: 4 }
+          }
+        ]
       }
     })
   ]

@@ -5,6 +5,24 @@ import type { GameDefinition } from './types';
 // så forsiden er rask selv når vi har mange spill.
 export const GAMES: GameDefinition[] = [
   {
+    id: 'sounds',
+    titleKey: 'game_sounds',
+    icon: '🐮',
+    color: '#06d6a0',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    component: lazy(() => import('./sounds/AnimalSounds'))
+  },
+  {
+    id: 'draw',
+    titleKey: 'game_draw',
+    icon: '🎨',
+    color: '#ff9f1c',
+    worlds: ['tiny', 'small', 'mid', 'big'],
+    maxPlayers: 2, // flere fingre samtidig – søsken kan tegne sammen
+    component: lazy(() => import('./draw/DrawGame'))
+  },
+  {
     id: 'memory',
     titleKey: 'game_memory',
     icon: '🃏',
@@ -12,6 +30,15 @@ export const GAMES: GameDefinition[] = [
     worlds: ['tiny', 'small', 'mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./memory/MemoryGame'))
+  },
+  {
+    id: 'letters',
+    titleKey: 'game_letters',
+    icon: '🔤',
+    color: '#8338ec',
+    worlds: ['tiny', 'small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./letters/LetterGame'))
   }
 ];
 

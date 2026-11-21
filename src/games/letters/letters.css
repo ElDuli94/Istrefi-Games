@@ -1,0 +1,67 @@
+.letters-menu { height: 100%; display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.letters-mode {
+  width: min(260px, 80vw); border: 6px solid #fff; border-radius: 30px; background: #fff; padding: 20px;
+  display: flex; flex-direction: column; align-items: center; font-size: 1.6rem; font-weight: 800; box-shadow: 0 6px 0 rgba(0,0,0,.15);
+}
+.letters-mode span { font-size: 80px; line-height: 1.1; }
+.letters-mode:active { transform: scale(.94); }
+
+.letters { --tile: clamp(44px, 9vmin, 64px); height: 100%; display: flex; flex-direction: column; gap: 10px; max-width: 1000px; margin: 0 auto; }
+.letters--big { --tile: clamp(58px, 12vmin, 86px); }
+
+.tile {
+  width: var(--tile); height: var(--tile); border-radius: 16px; display: inline-grid; place-items: center;
+  font-weight: 800; font-size: calc(var(--tile) * .55); line-height: 1; color: #fff; cursor: grab;
+  box-shadow: 0 5px 0 rgba(0,0,0,.2); touch-action: none; flex-shrink: 0; letter-spacing: -1px;
+  text-shadow: 0 2px 0 rgba(0,0,0,.15); transition: transform .1s;
+}
+.tile:active { transform: scale(.92); }
+.tile.is-vowel { background: #ff006e; }
+.tile.is-consonant { background: #3a86ff; }
+.tile.is-correct { background: #06d6a0; }
+.tile.is-dragging { opacity: .25; }
+.tile--slot { background: transparent; border: 4px dashed #ffd60a; box-shadow: none; width: calc(var(--tile) * .6); }
+.tile--ghost { position: fixed; z-index: 100; translate: -50% -70%; scale: 1.25; pointer-events: none; box-shadow: 0 14px 20px rgba(0,0,0,.3); }
+
+.letters__guide { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.letters__guide span {
+  min-width: calc(var(--tile) * .7); padding: 0 6px; height: calc(var(--tile) * .7); border-radius: 12px; display: grid; place-items: center;
+  font-weight: 800; font-size: calc(var(--tile) * .45); color: #00000055; background: #ffffff88; border: 3px dashed #ffffffcc;
+}
+.letters__guide span.is-done { background: #06d6a0; color: #fff; border-style: solid; border-color: #fff; }
+
+.letters__board {
+  min-height: calc(var(--tile) + 32px); background: #fff; border-radius: 26px; padding: 14px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: inset 0 -6px 0 #e9ecef, 0 6px 0 rgba(0,0,0,.12); border: 5px solid #fff; transition: border-color .15s;
+}
+.letters__board.is-target { border-color: #ffd60a; }
+.letters__placeholder { color: #adb5bd; font-weight: 700; font-size: 1.2rem; text-align: center; }
+
+.letters__actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.act {
+  border: 4px solid #fff; background: #fff; border-radius: 999px; padding: 6px 18px; font-size: 1.4rem; font-weight: 800;
+  box-shadow: 0 5px 0 rgba(0,0,0,.15); min-width: 64px;
+}
+.act:disabled { opacity: .45; }
+.act:active:not(:disabled) { transform: scale(.93) translateY(3px); }
+.act--read { background: #ffd60a; font-size: 1.5rem; padding: 6px 26px; }
+.act--done { background: #06d6a0; color: #fff; }
+
+.letters__tray {
+  flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start;
+  gap: 8px; padding: 10px; background: #ffffff44; border-radius: 22px;
+}
+
+.word-task { height: 100%; display: flex; flex-direction: column; gap: 8px; }
+.word-task__top { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.word-task__count { background: #fff; border-radius: 999px; padding: 2px 14px; font-weight: 800; box-shadow: 0 3px 0 rgba(0,0,0,.12); }
+.word-task__pic {
+  font-size: clamp(64px, 14vmin, 110px); line-height: 1.1; border: 0; background: #ffffffaa; border-radius: 50%;
+  width: 1.5em; height: 1.5em; display: grid; place-items: center; box-shadow: 0 6px 0 rgba(0,0,0,.12);
+}
+.word-task__pic.is-solved { animation: bounce .5s ease-in-out 3; background: #06d6a0; }
+.word-task__slots { display: flex; gap: 6px; }
+.word-task__slots span { width: 22px; height: 8px; border-radius: 4px; background: #ffffff88; }
+.word-task__slots span.is-filled { background: #fff; }
+.word-task .letters { flex: 1; min-height: 0; width: 100%; }
