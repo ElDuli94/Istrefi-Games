@@ -2,6 +2,7 @@
  * Tegnebrett – tegn fritt med fingeren (flere fingre samtidig går fint).
  * Tegningen lagres som "streker" (vektor), så angre og skjermrotasjon fungerer uten tap.
  */
+import { Emo, emojiImage } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
 import { EMOJI_FONT } from '../../emojiFont';
@@ -24,6 +25,7 @@ const COLORS_ALL = [...COLORS_TODDLER, '#000000', '#ffffff', '#8ecae6', '#2d6a4f
 const STAMPS = ['⭐', '❤️', '🌸', '☀️', '🌈', '🐶', '🐱', '🦋', '🚗', '🎈', '🍎', '👑'];
 const SIZES = [6, 14, 28];
 const MAX_GALLERY = 8;
+STAMPS.forEach((e) => emojiImage(e)); // last inn 3D-stemplene på forhånd
 
 function drawStroke(ctx: CanvasRenderingContext2D, s: Stroke, from = 0) {
   if (s.tool === 'stamp') {
@@ -31,7 +33,10 @@ function drawStroke(ctx: CanvasRenderingContext2D, s: Stroke, from = 0) {
     ctx.font = `${s.size * 3}px ${EMOJI_FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(s.stamp ?? '⭐', x, y);
+    const img = emojiImage(s.stamp ?? '⭐');
+    const d = s.size * 3.2;
+    if (img) ctx.drawImage(img, x - d / 2, y - d / 2, d, d);
+    else ctx.fillText(s.stamp ?? '⭐', x, y);
     return;
   }
   ctx.lineCap = 'round';
@@ -202,7 +207,7 @@ export default function DrawGame({ world, api, onFinish }: GameProps) {
         </div>
 
         <div className="draw__tools">
-          <button className={`tool ${tool === 'stamp' ? 'is-on' : ''}`} onClick={() => pickTool('stamp')} aria-label="stamp">{stamp}</button>
+          <button className={`tool ${tool === 'stamp' ? 'is-on' : ''}`} onClick={() => pickTool('stamp')} aria-label="stamp"><Emo e={stamp} /></button>
           <button className={`tool ${tool === 'eraser' ? 'is-on' : ''}`} onClick={() => pickTool('eraser')} aria-label="eraser">🧽</button>
           {!toddler && SIZES.map((s) => (
             <button key={s} className={`tool tool--size ${size === s ? 'is-on' : ''}`} onClick={() => { api.sfx('tap'); setSize(s); }} aria-label={`size ${s}`}>
@@ -218,7 +223,7 @@ export default function DrawGame({ world, api, onFinish }: GameProps) {
         {showStamps && (
           <div className="draw__stamps pop-in">
             {STAMPS.map((s) => (
-              <button key={s} className={`tool ${stamp === s ? 'is-on' : ''}`} onClick={() => { api.sfx('pop'); setStamp(s); setShowStamps(false); }}>{s}</button>
+              <button key={s} className={`tool ${stamp === s ? 'is-on' : ''}`} onClick={() => { api.sfx('pop'); setStamp(s); setShowStamps(false); }}><Emo e={s} /></button>
             ))}
           </div>
         )}

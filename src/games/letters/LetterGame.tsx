@@ -4,6 +4,7 @@
  * Fri lek: lag hva du vil. Barn 5–7 får navnet sitt som hjelpelinje.
  * Ord-oppgaver: stav dyret på bildet. Hjelpen blir mindre jo eldre barnet er.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
 import type { GameApi, GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
@@ -299,7 +300,7 @@ function WordTasks({ world, api, onFinish }: GameProps & { world: WorldId }) {
       <div className="word-task__top">
         <span className="word-task__count">{api.t('wordOf', { n: index + 1, total: words.length })}</span>
         <button className={`word-task__pic ${solved ? 'is-solved' : ''}`} onClick={() => api.speak(world === 'small' ? current.name[api.lang] : api.t('whatIsThis'))}>
-          {current.emoji}
+          <Emo e={current.emoji} />
         </button>
         {!cfg.guide && (
           <div className="word-task__slots" aria-hidden>

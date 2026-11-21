@@ -2,6 +2,7 @@
  * To spillere – tre på rad, fire på rad og luft-hockey på samme skjerm.
  * Tre/fire på rad kan også spilles mot Shqipo (enkel datamotstander).
  */
+import { EmojiText } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
 import './duel.css';
@@ -17,7 +18,7 @@ export default function DuelGame(props: GameProps) {
   if (!sub) {
     const card = (s: Sub, icon: string, label: string, allowAi = true) => (
       <div className="duel-card pop-in" key={s}>
-        <span className="duel-card__icon">{icon}</span>
+        <span className="duel-card__icon"><EmojiText text={icon} /></span>
         <b>{label}</b>
         <div className="duel-card__btns">
           <button onClick={() => { api.sfx('pop'); setAi(false); setSub(s); }}>👫 {api.t('twoPlayers')}</button>

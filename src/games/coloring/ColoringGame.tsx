@@ -2,6 +2,7 @@
  * Fargeleggingsbok – velg en tegning, velg farge og trykk på en flate for å fylle den.
  * Alle tegninger er laget for Istrefi Games.
  */
+import { Emo } from '../../components/Emo';
 import { useState } from 'react';
 import type { GameProps } from '../types';
 import { COLOR_PICS, type ColorPic } from './pictures';
@@ -20,7 +21,7 @@ export default function ColoringGame(props: GameProps) {
           {COLOR_PICS.map((p, i) => (
             <button key={p.id} className="coloring-thumb pop-in" style={{ animationDelay: `${i * 0.04}s` }} onClick={() => { api.sfx('pop'); setPic(p); }}>
               <Drawing pic={p} fills={{}} />
-              <span className="coloring-thumb__icon">{p.icon}</span>
+              <span className="coloring-thumb__icon"><Emo e={p.icon} /></span>
             </button>
           ))}
         </div>

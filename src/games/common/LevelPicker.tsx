@@ -1,4 +1,5 @@
 // Felles nivåvelger som alle spill kan bruke: 3 nivåer, låses opp ett etter ett.
+import { Emo } from '../../components/Emo';
 import type { GameApi } from '../types';
 import type { DictKey } from '../../i18n/no';
 import { Stars } from '../../components/ui';
@@ -45,7 +46,7 @@ export function LevelPicker({ api, progress, onPick, details }: {
               }}
               aria-label={open ? api.t(key) : api.t('locked')}
             >
-              <span className="level-btn__icon">{open ? ICONS[i] : '🔒'}</span>
+              <span className="level-btn__icon"><Emo e={open ? ICONS[i] : '🔒'} /></span>
               <span className="level-btn__name">{api.t(key)}</span>
               {details?.[i] && <span className="level-btn__detail">{details[i]}</span>}
               <Stars count={progress.best[i] ?? 0} />

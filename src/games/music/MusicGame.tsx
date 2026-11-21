@@ -4,6 +4,7 @@
  * «Sanger»: tangenten som skal trykkes lyser og hopper, og de neste notene vises over pianoet.
  * «Hør sangen» lar pianoet spille sangen først, så barnet kan herme etter.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
 import { playNote, playDrum, type Drum } from '../../audio/sound';
@@ -36,7 +37,7 @@ function Piano({ onPress, target, hitKey, wrongKey }: { onPress: (i: number) => 
           aria-label={n.n}
         >
           {target === i && <span className="piano__arrow">⬇️</span>}
-          <span className="piano__animal">{n.a}</span>
+          <span className="piano__animal"><Emo e={n.a} /></span>
           <span className="piano__dot" />
         </button>
       ))}
@@ -70,7 +71,7 @@ export default function MusicGame(props: GameProps) {
       <nav className="music__tabs">
         {tabs.map(([id, icon, key]) => (
           <button key={id} className={tab === id ? 'is-active' : ''} onClick={() => { api.sfx('tap'); setTab(id); }} aria-label={api.t(key)}>
-            <span>{icon}</span><small>{api.t(key)}</small>
+            <span><Emo e={icon} /></span><small>{api.t(key)}</small>
           </button>
         ))}
         {tab !== 'songs' && taps >= 20 && <button className="music__done pop-in" onClick={() => props.onFinish({ won: true, stars: 3, coins: 5 })}>✔</button>}
@@ -106,7 +107,7 @@ export default function MusicGame(props: GameProps) {
                 onPointerDown={() => { playDrum(d.kind); flash(d.kind, ((i % 3) + 0.5) * 33); }}
                 aria-label={d.kind}
               >
-                <span key={hit?.key === d.kind ? hit.t : 0}>{d.icon}</span>
+                <span key={hit?.key === d.kind ? hit.t : 0}><Emo e={d.icon} /></span>
               </button>
             ))}
           </div>
@@ -130,7 +131,7 @@ function Songs({ api, world, onFinish }: GameProps) {
         <div className="songs__list">
           {SONGS.map((s, i) => (
             <button key={s.id} className="song-card pop-in" style={{ animationDelay: `${i * 0.04}s` }} onClick={() => { api.sfx('pop'); api.speak(s.title[api.lang]); setSong(s); }}>
-              <span className="song-card__icon">{s.icon}</span>
+              <span className="song-card__icon"><Emo e={s.icon} /></span>
               <span className="song-card__title">{s.title[api.lang]}</span>
               <span className="song-card__meta">
                 <span className="song-card__level">{'🎵'.repeat(s.level)}</span>
@@ -224,7 +225,7 @@ function SongPlayer({ api, song, lenient, onBack, onDone }: {
     <div className="song-player">
       <div className="song-player__top">
         <button className="hud-chip song-player__btn" onClick={() => { demoTimers.current.forEach(clearTimeout); onBack(); }}>⬅️</button>
-        <span className="song-player__title">{song.icon} {song.title[api.lang]}</span>
+        <span className="song-player__title"><Emo e={song.icon} /> {song.title[api.lang]}</span>
         <button className={`hud-chip song-player__btn ${demo ? 'is-on' : ''}`} onClick={toggleDemo}>{demo ? `⏹ ${api.t('stopSong')}` : `🔊 ${api.t('listenSong')}`}</button>
       </div>
       <div className="song-strip">
@@ -233,7 +234,7 @@ function SongPlayer({ api, song, lenient, onBack, onDone }: {
           const state = idx < pos ? 'done' : idx === pos ? 'now' : 'next';
           return (
             <span key={idx} className={`song-note is-${state}`} style={{ ['--c' as string]: NOTES[n.key].c, ['--w' as string]: n.beats }}>
-              {state === 'done' ? '✔' : NOTES[n.key].a}
+              {state === 'done' ? '✔' : <Emo e={NOTES[n.key].a} />}
             </span>
           );
         })}

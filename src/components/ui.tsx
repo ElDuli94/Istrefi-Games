@@ -1,3 +1,4 @@
+import { Emo, EmojiText } from './Emo';
 import type { ReactNode } from 'react';
 import { AVATARS } from '../data/avatars';
 import { playSfx } from '../audio/sound';
@@ -8,7 +9,7 @@ export function Avatar({ avatar, size = 96 }: { avatar: string; size?: number })
   const a = AVATARS[avatar] ?? AVATARS.lion;
   return (
     <span className="avatar" style={{ width: size, height: size, background: a.color, fontSize: size * 0.62 }}>
-      {a.emoji}
+      <Emo e={a.emoji} />
     </span>
   );
 }
@@ -24,7 +25,7 @@ export function RoundButton({ icon, label, onClick, color = '#fff', big }: {
       aria-label={label}
       title={label}
     >
-      {icon}
+      {typeof icon === 'string' ? <EmojiText text={icon} /> : icon}
     </button>
   );
 }

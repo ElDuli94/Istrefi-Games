@@ -3,6 +3,7 @@
  * Nivå 1–6: piler som flytter roboten i den retningen pilen peker.
  * Nivå 7–12: roboten kan bare gå «fram» og snu seg – barnet må tenke på hvilken vei den ser.
  */
+import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameProps } from '../types';
 import { LevelGrid, advanceGrid, emptyGridProgress, type GridProgress } from '../common/LevelGrid';
@@ -169,13 +170,13 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
           const x = i % m.w, y = Math.floor(i / m.w);
           const rock = m.rocks.has(`${x},${y}`);
           const goal = x === m.goal[0] && y === m.goal[1];
-          return <span key={i} className={`rcell ${(x + y) % 2 ? 'is-alt' : ''}`}>{rock ? '🪨' : goal ? '💎' : ''}</span>;
+          return <span key={i} className={`rcell ${(x + y) % 2 ? 'is-alt' : ''}`}>{rock ? <Emo e="🪨" /> : goal ? <Emo e="💎" /> : ''}</span>;
         })}
         <span
           className={`robot__bot ${bump ? 'is-bump' : ''}`}
           style={{ left: `calc(${cell} * ${bot.x})`, top: `calc(${cell} * ${bot.y})`, width: cell, height: cell }}
         >
-          <span className="robot__face">🤖</span>
+          <span className="robot__face"><Emo e="🤖" /></span>
           {rel && <span className="robot__dir" style={{ transform: `rotate(${bot.d * 90}deg)` }}><i>▶</i></span>}
         </span>
       </div>
@@ -184,7 +185,7 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
         {program.length === 0 && <span className="robot__hint">{rel ? api.t('robotHelpTurn') : api.t('robotHelp')}</span>}
         {program.map((c, i) => (
           <button key={i} className={`pcmd ${active === i ? 'is-active' : ''}`} onClick={() => { if (!running) { api.sfx('tap'); setProgram((p) => p.filter((_, k) => k !== i)); } }}>
-            {iconOf(c)}
+            <Emo e={iconOf(c)} />
           </button>
         ))}
       </div>
@@ -193,7 +194,7 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
       <div className="robot__controls">
         {cmds.map(({ c, icon, label }) => (
           <button key={c} className="rcmd" onClick={() => add(c)} aria-label={label || c}>
-            <span>{icon}</span>{label && <small>{label}</small>}
+            <span><Emo e={icon} /></span>{label && <small>{label}</small>}
           </button>
         ))}
         <button className="rcmd rcmd--clear" onClick={() => { api.sfx('nope'); reset(); setProgram([]); setMsg(null); }} aria-label={api.t('clearAll')}>🗑️</button>

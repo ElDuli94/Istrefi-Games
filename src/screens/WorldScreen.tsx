@@ -1,3 +1,4 @@
+import { Emo } from '../components/Emo';
 import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
@@ -25,7 +26,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
         left={<BackButton to={() => go('map')} />}
         title={
           <h1 className="world-title">
-            {world.icon} {t(world.nameKey)} <small>{t(world.ageKey)}</small>
+            <Emo e={world.icon} /> {t(world.nameKey)} <small>{t(world.ageKey)}</small>
           </h1>
         }
       />
@@ -43,7 +44,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
                 go(`play/${g.id}/${world.id}`);
               }}
             >
-              <span className="game-card__icon">{g.icon}</span>
+              <span className="game-card__icon"><Emo e={g.icon} /></span>
               <span className="game-card__title">{t(g.titleKey)}</span>
               <Stars count={stats?.bestStars ?? 0} />
             </button>
@@ -51,7 +52,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
         })}
         {PLACEHOLDERS.slice(0, Math.max(0, 6 - games.length)).map((icon, i) => (
           <div key={i} className="game-card game-card--soon" aria-label={t('comingSoon')}>
-            <span className="game-card__icon">{icon}</span>
+            <span className="game-card__icon"><Emo e={icon} /></span>
             <span className="game-card__title">{t('comingSoon')}</span>
           </div>
         ))}

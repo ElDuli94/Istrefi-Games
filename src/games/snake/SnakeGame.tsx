@@ -3,6 +3,7 @@
  * Styring: sveip på brettet, piltaster/WASD eller de store pilknappene.
  * Nivåer: spis nok frukt før hjertene er brukt opp. Uendelig: slå rekorden.
  */
+import { emojiImage } from '../../components/Emo';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
@@ -12,6 +13,7 @@ import './snake.css';
 
 const LEVELS = 12;
 const FRUITS = ['🍎', '🍓', '🍌', '🍇', '🍉', '🍒', '🍑', '🍐', '🥝'];
+FRUITS.forEach((e) => emojiImage(e)); // last inn 3D-fruktene på forhånd
 type P = [number, number];
 type Dir = 'up' | 'down' | 'left' | 'right';
 const VEC: Record<Dir, P> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -297,7 +299,9 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     ctx.font = `${cs * 0.85}px ${EMOJI_FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(s.fruitEmoji, s.fruit[0] * cs + cs / 2, s.fruit[1] * cs + cs / 2 + bob);
+    const fruitImg = emojiImage(s.fruitEmoji);
+    if (fruitImg) ctx.drawImage(fruitImg, s.fruit[0] * cs + cs * 0.06, s.fruit[1] * cs + cs * 0.06 + bob, cs * 0.88, cs * 0.88);
+    else ctx.fillText(s.fruitEmoji, s.fruit[0] * cs + cs / 2, s.fruit[1] * cs + cs / 2 + bob);
     // Slange
     const n = s.snake.length;
     const flashing = now - s.flash < 500 && Math.floor((now - s.flash) / 80) % 2 === 0;

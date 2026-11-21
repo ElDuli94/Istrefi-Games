@@ -1,3 +1,4 @@
+import { Emo } from '../components/Emo';
 import { useEffect, useState } from 'react';
 import { actions, useStore } from '../storage/store';
 import { useT } from '../i18n';
@@ -56,7 +57,7 @@ export function CreateProfile() {
               style={{ background: w.bg }}
               onClick={() => { playSfx('pop'); setWorld(w.id); speak(t(w.ageKey)); }}
             >
-              <span className="world-option__icon">{w.icon}</span>
+              <span className="world-option__icon"><Emo e={w.icon} /></span>
               <span className="world-option__age">{t(w.ageKey)}</span>
             </button>
           ))}

@@ -240,7 +240,9 @@ export const no = {
   draw: 'Uavgjort!',
   red: 'Rød',
   blue: 'Blå',
-  yourTurn: '{p} sin tur'
+  yourTurn: '{p} sin tur',
+  credits: '3D-figurer: Microsoft Fluent Emoji (MIT-lisens). Skrift: Baloo 2 (OFL).',
+  licenses: 'Se lisenser'
 };
 
 export type Dict = typeof no;

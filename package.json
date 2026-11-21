@@ -1,13 +1,17 @@
 {
   "name": "istrefi-games",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "emoji": "node scripts/sync-emoji.mjs",
+    "postinstall": "node scripts/sync-emoji.mjs",
+    "prebuild": "node scripts/sync-emoji.mjs",
+    "predev": "node scripts/sync-emoji.mjs"
   },
   "dependencies": {
     "@fontsource/baloo-2": "^5.3.0",
@@ -15,6 +19,7 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@lobehub/fluent-emoji-3d": "^1.1.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
