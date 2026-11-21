@@ -2,8 +2,9 @@
  * Puslespill – velg et bilde, dra bitene på plass. Bitene "klikker" inn når de er nær riktig sted.
  * 2–4 år: 4 biter, 5–7 år: 9 biter, 8–11 år: 16 biter. Et svakt bilde i bakgrunnen hjelper.
  */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
+import { SCENES } from './scenes';
 import './puzzle.css';
 
 // Bildene tegnes av appen selv (emoji på fargerik bakgrunn), så de fungerer offline.
@@ -22,42 +23,45 @@ const PICTURES: { bg: [string, string]; main: string; deco: string[] }[] = [
   { bg: ['#fff3b0', '#ffd166'], main: '🦅', deco: ['🏔️', '☁️', '☀️'] }
 ];
 
-function renderPicture(i: number, size: number): string {
-  const p = PICTURES[i];
-  const c = document.createElement('canvas');
-  c.width = c.height = size;
-  const g = c.getContext('2d')!;
-  const grad = g.createLinearGradient(0, 0, size, size);
-  grad.addColorStop(0, p.bg[0]);
-  grad.addColorStop(1, p.bg[1]);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, size, size);
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
+// Alle bilder: egne tegninger (SVG) først, så emoji-bilder.
+type Pic = { id: string; svg?: string; emoji?: (typeof EMOJI_PICS)[number] };
+const EMOJI_PICS = PICTURES;
+const ALL_PICS: Pic[] = [
+  ...SCENES.map((svg, i) => ({ id: `scene-${i}`, svg })),
+  ...EMOJI_PICS.map((emoji, i) => ({ id: `emoji-${i}`, emoji }))
+];
+
+/** Tegner et bilde som vanlig HTML (emoji vises da riktig på iPhone/iPad). */
+function PictureView({ pic, size }: { pic: Pic; size: number }) {
+  if (pic.svg) return <img src={pic.svg} width={size} height={size} draggable={false} alt="" style={{ display: 'block', width: size, height: size }} />;
+  const p = pic.emoji!;
   const spots = [[0.18, 0.18], [0.82, 0.2], [0.2, 0.82], [0.8, 0.82]];
-  p.deco.forEach((d, k) => { g.font = `${size * 0.16}px serif`; g.fillText(d, size * spots[k][0], size * spots[k][1]); });
-  g.font = `${size * 0.55}px serif`;
-  g.fillText(p.main, size / 2, size * 0.54);
-  return c.toDataURL('image/png');
+  return (
+    <div className="pic" style={{ width: size, height: size, background: `linear-gradient(135deg, ${p.bg[0]}, ${p.bg[1]})` }}>
+      {p.deco.map((d, k) => (
+        <span key={k} style={{ left: spots[k][0] * size, top: spots[k][1] * size, fontSize: size * 0.16 }}>{d}</span>
+      ))}
+      <span style={{ left: size / 2, top: size * 0.54, fontSize: size * 0.55 }}>{p.main}</span>
+    </div>
+  );
 }
 
-interface SavedData { solved: number[] }
+interface SavedData { solved: (number | string)[] }
 
 export default function PuzzleGame(props: GameProps) {
   const { api } = props;
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { solved: [] });
-  const [pic, setPic] = useState<number | null>(null);
-  const thumbs = useMemo(() => PICTURES.map((_, i) => renderPicture(i, 160)), []);
+  const [pic, setPic] = useState<Pic | null>(null);
 
   if (pic === null) {
     return (
       <div className="puzzle-pick">
         <h2 className="level-picker__title">{api.t('choosePicture')}</h2>
         <div className="puzzle-pick__grid">
-          {thumbs.map((src, i) => (
-            <button key={i} className="puzzle-thumb pop-in" style={{ animationDelay: `${i * 0.03}s` }} onClick={() => { api.sfx('pop'); setPic(i); }}>
-              <img src={src} alt="" />
-              {saved.solved.includes(i) && <span className="puzzle-thumb__done">✔</span>}
+          {ALL_PICS.map((p, i) => (
+            <button key={p.id} className="puzzle-thumb pop-in" style={{ animationDelay: `${Math.min(i, 12) * 0.03}s` }} onClick={() => { api.sfx('pop'); setPic(p); }}>
+              <span className="puzzle-thumb__pic"><PictureView pic={p} size={132} /></span>
+              {saved.solved.includes(p.id) && <span className="puzzle-thumb__done">✔</span>}
             </button>
           ))}
         </div>
@@ -69,9 +73,9 @@ export default function PuzzleGame(props: GameProps) {
       {...props}
       pic={pic}
       onSolved={() => {
-        const first = !saved.solved.includes(pic);
+        const first = !saved.solved.includes(pic.id);
         if (first) {
-          const next = { solved: [...saved.solved, pic] };
+          const next = { solved: [...saved.solved, pic.id] };
           setSaved(next);
           api.saveData(next);
         }
@@ -83,13 +87,12 @@ export default function PuzzleGame(props: GameProps) {
 
 interface Piece { id: number; r: number; c: number; x: number; y: number; placed: boolean }
 
-function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: number; onSolved: () => boolean }) {
+function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: Pic; onSolved: () => boolean }) {
   const n = world === 'tiny' ? 2 : world === 'small' ? 3 : 4;
   const wrapRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(300);
+  const [size, setSize] = useState(0);
   const [landscape, setLandscape] = useState(true);
-  const img = useMemo(() => renderPicture(pic, 800), [pic]);
   const [pieces, setPieces] = useState<Piece[]>([]);
   const drag = useRef<{ id: number; dx: number; dy: number } | null>(null);
   const done = useRef(false);
@@ -105,32 +108,24 @@ function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: numbe
     return () => ro.disconnect();
   }, []);
 
-  // Legg bitene tilfeldig i "kurven" ved siden av brettet (første gang).
-  // Endres skjermstørrelsen senere (f.eks. iPaden snus), skaleres posisjonene i stedet.
-  const prevSize = useRef(0);
+  // Legg bitene tilfeldig i "kurven" ved siden av brettet. Venter til størrelsen er målt.
+  // Endres skjermen senere (f.eks. iPaden snus), beholdes bitene som er lagt, og de løse legges i kurven på nytt.
   useEffect(() => {
+    if (!size) return;
     const cellNow = size / n;
-    if (prevSize.current && pieces.length) {
-      const k = size / prevSize.current;
-      setPieces((ps) => ps.map((p) => (p.placed ? { ...p, x: p.c * cellNow, y: p.r * cellNow } : { ...p, x: p.x * k, y: p.y * k })));
-      prevSize.current = size;
-      return;
-    }
-    prevSize.current = size;
-    const list: Piece[] = [];
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) list.push({ id: r * n + c, r, c, x: 0, y: 0, placed: false });
-    const shuffled = list.sort(() => Math.random() - 0.5);
     const trayW = landscape ? (wrapRef.current?.clientWidth ?? 600) - size - 30 : size;
     const trayH = landscape ? size : (wrapRef.current?.clientHeight ?? 600) - size - 30;
-    shuffled.forEach((p) => {
+    const scatter = (p: Piece): Piece => {
       const tx = Math.random() * Math.max(10, trayW - cellNow);
       const ty = Math.random() * Math.max(10, trayH - cellNow);
-      p.x = landscape ? size + 30 + tx : tx;
-      p.y = landscape ? ty : size + 30 + ty;
+      return { ...p, x: landscape ? size + 30 + tx : tx, y: landscape ? ty : size + 30 + ty };
+    };
+    setPieces((prev) => {
+      if (prev.length) return prev.map((p) => (p.placed ? { ...p, x: p.c * cellNow, y: p.r * cellNow } : scatter(p)));
+      const list: Piece[] = [];
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) list.push({ id: r * n + c, r, c, x: 0, y: 0, placed: false });
+      return list.sort(() => Math.random() - 0.5).map(scatter);
     });
-    setPieces(shuffled);
-    done.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, landscape, n]);
 
   const cell = size / n;
@@ -174,7 +169,8 @@ function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: numbe
 
   return (
     <div className="puzzle" ref={wrapRef} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-      <div className="puzzle__board" ref={boardRef} style={{ width: size, height: size, backgroundImage: `url(${img})` }}>
+      <div className="puzzle__board" ref={boardRef} style={{ width: size, height: size }}>
+        <PictureView pic={pic} size={size} />
         {Array.from({ length: n * n }, (_, i) => (
           <span key={i} className="puzzle__slot" style={{ left: (i % n) * cell, top: Math.floor(i / n) * cell, width: cell, height: cell }} />
         ))}
@@ -183,12 +179,14 @@ function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: numbe
         <span
           key={p.id}
           className={`puzzle__piece ${p.placed ? 'is-placed' : ''}`}
-          style={{
-            left: p.x, top: p.y, width: cell, height: cell,
-            backgroundImage: `url(${img})`, backgroundSize: `${size}px ${size}px`, backgroundPosition: `${-p.c * cell}px ${-p.r * cell}px`
-          }}
+          style={{ left: p.x, top: p.y, width: cell, height: cell }}
+          data-pos={`${p.c * cell} ${p.r * cell}`}
           onPointerDown={(e) => down(e, p)}
-        />
+        >
+          <span className="puzzle__piece-pic" style={{ left: -p.c * cell, top: -p.r * cell }}>
+            <PictureView pic={pic} size={size} />
+          </span>
+        </span>
       ))}
     </div>
   );

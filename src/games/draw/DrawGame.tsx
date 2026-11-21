@@ -4,6 +4,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
+import { EMOJI_FONT } from '../../emojiFont';
 import './draw.css';
 
 type Tool = 'brush' | 'rainbow' | 'stamp' | 'eraser';
@@ -27,7 +28,7 @@ const MAX_GALLERY = 8;
 function drawStroke(ctx: CanvasRenderingContext2D, s: Stroke, from = 0) {
   if (s.tool === 'stamp') {
     const [x, y] = s.points[0];
-    ctx.font = `${s.size * 3}px serif`;
+    ctx.font = `${s.size * 3}px ${EMOJI_FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(s.stamp ?? '⭐', x, y);
