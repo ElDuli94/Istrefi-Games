@@ -248,5 +248,20 @@ export const sq: Dict = {
   start: 'Fillo',
   recentlyPlayed: 'Luajtur së fundi',
   soundOn: 'Zëri ndezur',
-  soundOff: 'Zëri fikur'
+  soundOff: 'Zëri fikur',
+  game_towers: 'Roja e tortës',
+  help_towers: 'Ndërto kulla përgjatë shtegut, që insektet të mos e hanë tortën!',
+  towerWater: 'Spërkatës uji',
+  towerIce: 'Kulla e akullit',
+  towerBubble: 'Topi i flluskave',
+  towerStar: 'Kulla e yjeve',
+  nextWave: 'Vala tjetër',
+  wave: 'Vala',
+  upgrade: 'Përmirëso',
+  sell: 'Shit',
+  maxLevel: 'Niveli maksimal',
+  buildHere: 'Zgjidh një kullë',
+  waveIncoming: 'Po vijnë insektet!',
+  cakeSaved: 'Torta u shpëtua!',
+  cakeEaten: 'Oh jo, insektet e hëngrën tortën!'
 };

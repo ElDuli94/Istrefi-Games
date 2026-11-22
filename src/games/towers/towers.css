@@ -1,0 +1,35 @@
+.towers { height: 100%; display: flex; flex-direction: column; gap: 8px; }
+.towers__hud { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; flex-shrink: 0; }
+.towers__btn { border: 0; cursor: pointer; font-weight: 800; }
+.towers__wave {
+  border: 4px solid #fff; background: #06d6a0; color: #fff; border-radius: 999px; padding: 6px 18px; font-weight: 800; font-size: 1.1rem;
+  box-shadow: 0 4px 0 rgba(0,0,0,.15); animation: pulseGlow 1.4s ease-in-out infinite;
+}
+.towers__wave:disabled { background: #adb5bd; animation: none; }
+.towers__stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.towers__stage canvas { border-radius: 16px; border: 5px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,.18); touch-action: manipulation; box-sizing: content-box; }
+.towers__menu { min-height: 86px; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+.towers__hint { background: #ffffffcc; border-radius: 16px; padding: 6px 14px; font-weight: 700; text-align: center; max-width: 640px; }
+.tbtn {
+  border: 4px solid #fff; background: #fff; border-radius: 18px; padding: 6px 10px; min-width: 86px; display: flex; flex-direction: column;
+  align-items: center; gap: 1px; box-shadow: 0 4px 0 rgba(0,0,0,.12);
+}
+.tbtn:disabled { opacity: .45; }
+.tbtn__icon { font-size: 30px; line-height: 1.1; }
+.tbtn small { font-weight: 800; font-size: .78rem; }
+.tbtn b { font-size: .9rem; }
+.tbtn--x { min-width: 50px; font-size: 1.3rem; justify-content: center; }
+.tbtn--info { background: #fff8e1; }
+
+/* Lave skjermer (mobil liggende): meny ved siden av brettet */
+@media (max-height: 560px) {
+  .towers { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; gap: 6px; }
+  .towers__hud { grid-column: 1 / -1; gap: 6px; }
+  .towers__hud .hud-chip { padding: 2px 10px; font-size: .95rem; }
+  .towers__wave { padding: 3px 12px; font-size: .95rem; }
+  .towers__stage { grid-column: 1; grid-row: 2; }
+  .towers__menu { grid-column: 2; grid-row: 2; flex-direction: column; flex-wrap: nowrap; overflow-y: auto; min-height: 0; justify-content: flex-start; width: 96px; }
+  .towers__hint { font-size: .8rem; padding: 4px 8px; }
+  .tbtn { min-width: 84px; padding: 3px 6px; }
+  .tbtn__icon { font-size: 22px; }
+}
