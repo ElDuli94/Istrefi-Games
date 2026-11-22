@@ -52,15 +52,24 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
   const done = n > fig.pts.length;
   const finished = useRef(false);
 
-  function toUnits(e: { clientX: number; clientY: number }) {
-    const r = svgRef.current!.getBoundingClientRect();
-    return [((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100];
+  // Gjør skjermkoordinater om til tegningens egne koordinater (tar hensyn til viewBox og skalering)
+  function toUnits(e: { clientX: number; clientY: number }): [number, number] {
+    const svg = svgRef.current!;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return [-100, -100];
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const p = pt.matrixTransform(ctm.inverse());
+    return [p.x, p.y];
   }
   function tryHit(e: RPointerEvent) {
     if (done) return;
     const [x, y] = toUnits(e);
     const target = n < fig.pts.length ? fig.pts[n] : fig.pts[0];
-    if (Math.hypot(target[0] - x, target[1] - y) < 7) {
+    // Stort treffområde: trykk 12 enheter unna (ved dra: 9) teller som treff
+    const radius = e.type === 'pointerdown' ? 12 : 9;
+    if (Math.hypot(target[0] - x, target[1] - y) < radius) {
       api.sfx('pop');
       api.speak(String(n < fig.pts.length ? n + 1 : 1));
       const next = n + 1;
@@ -76,7 +85,7 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
     }
     // Trykk på feil prikk (bare ved trykk, ikke under dra)
     if (e.type === 'pointerdown') {
-      const hit = fig.pts.findIndex(([px, py]) => Math.hypot(px - x, py - y) < 6);
+      const hit = fig.pts.findIndex(([px, py], i) => i !== n && Math.hypot(px - x, py - y) < 5);
       if (hit >= 0) { api.sfx('nope'); setWrong(hit); setTimeout(() => setWrong(null), 400); }
     }
   }
@@ -99,8 +108,9 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
           const state = i < n ? 'done' : i === n ? 'next' : 'todo';
           return (
             <g key={i} className={`dot is-${state} ${wrong === i ? 'is-wrong' : ''}`}>
-              <circle cx={x} cy={y} r={state === 'next' ? 3.4 : 2.4} />
-              <text x={x} y={y - 4.6} textAnchor="middle">{i + 1}</text>
+              {state === 'next' && <circle cx={x} cy={y} r={7} className="dot__ring" />}
+              <circle cx={x} cy={y} r={state === 'next' ? 3.8 : 2.8} />
+              <text x={x} y={y - 5.2} textAnchor="middle">{i + 1}</text>
             </g>
           );
         })}
