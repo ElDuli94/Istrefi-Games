@@ -5,6 +5,7 @@
 import { EmojiText } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
+import type { WorldId } from '../../data/worlds';
 import './duel.css';
 
 type Sub = 'ttt' | 'c4' | 'hockey';
@@ -47,7 +48,7 @@ export default function DuelGame(props: GameProps) {
   };
   if (sub === 'ttt') return <TicTacToe api={api} ai={ai} onEnd={end} />;
   if (sub === 'c4') return <ConnectFour api={api} ai={ai} onEnd={end} />;
-  return <Hockey api={api} ai={ai} onEnd={end} />;
+  return <Hockey api={api} ai={ai} world={props.world} onEnd={end} />;
 }
 
 function Status({ api, turn, winner, ai }: { api: GameApi; turn: Who; winner: Who | 0 | null; ai: boolean }) {
@@ -165,7 +166,17 @@ function ConnectFour({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w:
 }
 
 // ---------------- Luft-hockey ----------------
-function Hockey({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w: Who | 0) => void }) {
+// Hvor flink Shqipo er i luft-hockey, etter alder
+const HOCKEY_AI: Record<WorldId, { speed: number; err: number; miss: number; hit: number }> = {
+  tiny: { speed: 0.3, err: 0.14, miss: 0.35, hit: 0.06 },
+  small: { speed: 0.32, err: 0.12, miss: 0.3, hit: 0.08 },
+  mid: { speed: 0.46, err: 0.08, miss: 0.18, hit: 0.13 },
+  big: { speed: 0.52, err: 0.07, miss: 0.16, hit: 0.15 }
+};
+
+function Hockey({ api, ai, world, onEnd }: { api: GameApi; ai: boolean; world: WorldId; onEnd: (w: Who | 0) => void }) {
+  const aiCfg = HOCKEY_AI[world];
+  const aiState = useRef({ aim: 0, ignore: false, inHalf: false });
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [dim, setDim] = useState({ w: 300, h: 500 });
@@ -217,15 +228,28 @@ function Hockey({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w: Who 
     const ar = dim.h / dim.w; // brettets høyde/bredde
     const PR = 0.075, KR = 0.05; // radius (i bredde-enheter) for kølle og puck
     const resetPuck = (toward: Who) => { st.current.puck = { x: 0.5, y: 0.5, vx: (Math.random() - 0.5) * 0.2, vy: toward === 1 ? 0.25 : -0.25 }; };
+    // Server pucken mot barnet ved start (før lå den stille midt på banen)
+    if (st.current.puck.vx === 0 && st.current.puck.vy === 0) resetPuck(1);
+    let still = 0;
     const loop = (now: number) => {
       const dt = Math.min(0.033, (now - last) / 1000); last = now;
       const s = st.current, k = s.puck;
-      // Shqipo styrer øverste kølle
+      // Shqipo styrer øverste kølle – med vilje litt treg og upresis, så barn kan vinne
       if (ai) {
-        const p2 = s.p[2];
-        const tx = k.y < 0.55 ? k.x : 0.5, ty = k.y < 0.5 && k.vy <= 0.05 ? Math.max(0.08, k.y - 0.06) : 0.14;
-        p2.x += Math.max(-0.9 * dt, Math.min(0.9 * dt, tx - p2.x));
-        p2.y += Math.max(-0.9 * dt, Math.min(0.9 * dt, ty - p2.y));
+        const p2 = s.p[2], a = aiState.current;
+        const inHalf = k.y < 0.5;
+        if (inHalf && !a.inHalf) {
+          // Pucken kom over midtlinja: velg hvor upresis Shqipo er denne gangen, og om han "sover"
+          a.aim = (Math.random() * 2 - 1) * aiCfg.err;
+          a.ignore = Math.random() < aiCfg.miss;
+        }
+        a.inHalf = inHalf;
+        const chase = inHalf && k.vy < 0.05 && !a.ignore;
+        const tx = chase ? k.x + a.aim : 0.5 + a.aim * 0.5;
+        const ty = chase ? Math.min(0.32, Math.max(0.06, k.y - 0.05)) : 0.12;
+        const sp = aiCfg.speed * dt;
+        p2.x += Math.max(-sp, Math.min(sp, tx - p2.x));
+        p2.y += Math.max(-sp, Math.min(sp, ty - p2.y));
       }
       // Kollisjon kølle–puck (y måles i bredde-enheter ved å gange med ar)
       for (const who of [1, 2] as Who[]) {
@@ -236,8 +260,10 @@ function Hockey({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w: Who 
           const nx = dx / dist, ny = dy / dist;
           k.x = p.x + nx * (PR + KR); k.y = p.y + (ny * (PR + KR)) / ar;
           const rv = (k.vx - pvx) * nx + (k.vy - pvy) * ar * ny;
-          if (rv < 0) { k.vx -= 1.9 * rv * nx; k.vy -= (1.9 * rv * ny) / ar; }
-          k.vx += pvx * 0.25; k.vy += pvy * 0.25;
+          const bounce = ai && who === 2 ? 1.6 : 1.9;
+          const push = ai && who === 2 ? aiCfg.hit : 0.25;
+          if (rv < 0) { k.vx -= bounce * rv * nx; k.vy -= (bounce * rv * ny) / ar; }
+          k.vx += pvx * push; k.vy += pvy * push;
           api.sfx('tap');
         }
         p.px = p.x; p.py = p.y;
@@ -246,6 +272,8 @@ function Hockey({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w: Who 
       if (sp > MAX) { k.vx *= MAX / sp; k.vy *= MAX / sp; }
       k.x += k.vx * dt; k.y += k.vy * dt;
       k.vx *= 0.995; k.vy *= 0.995;
+      // Ligger pucken nesten stille en stund, får den et lite dytt mot barnets side
+      if (Math.hypot(k.vx, k.vy) < 0.03) { still += dt; if (still > 2.5) { k.vy = 0.22; k.vx = (Math.random() - 0.5) * 0.15; still = 0; } } else still = 0;
       if (k.x < KR) { k.x = KR; k.vx = Math.abs(k.vx); }
       if (k.x > 1 - KR) { k.x = 1 - KR; k.vx = -Math.abs(k.vx); }
       const inGoal = k.x > 0.3 && k.x < 0.7;
