@@ -77,6 +77,11 @@ export default function BalloonGame({ world, api, onFinish }: GameProps) {
     if (free) api.speak(b.num !== null ? String(b.num) : colorName(b.color));
     const next = count + 1;
     setCount(next);
+    if (free) {
+      // 2–4 år: leken fortsetter for alltid. Hver 15. ballong gir en liten feiring + mynter.
+      if (next % GOAL === 0) api.reward(5);
+      return;
+    }
     if (next >= GOAL) {
       done.current = true;
       const stars = free ? 3 : mistakes === 0 ? 3 : mistakes <= 3 ? 2 : 1;
@@ -96,7 +101,7 @@ export default function BalloonGame({ world, api, onFinish }: GameProps) {
             🔊
           </button>
         )}
-        <span className="hud-chip">🎈 {count} / {GOAL}</span>
+        <span className="hud-chip">🎈 {free ? count : `${count} / ${GOAL}`}</span>
       </div>
       <div className="balloons__sky">
         {balloons.map((b) => {

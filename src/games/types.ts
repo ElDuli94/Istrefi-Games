@@ -38,6 +38,8 @@ export interface GameApi {
    * Send null når spillet er i sin egen hovedmeny – da går ⬅️ ut av spillet.
    */
   setBack: (fn: (() => void) | null) => void;
+  /** Liten belønning midt i spillet (konfetti + mynter) uten at spillet stopper. Brukes i «uendelige» leker. */
+  reward: (coins: number) => void;
 }
 
 export interface GameProps {

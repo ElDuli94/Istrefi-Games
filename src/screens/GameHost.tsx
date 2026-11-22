@@ -32,6 +32,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
   const startedAt = useRef(Date.now());
   const finished = useRef(false);
   const backRef = useRef<(() => void) | null>(null);
+  const [toast, setToast] = useState<{ id: number; coins: number } | null>(null);
   const settings = useStore((s) => s.settings);
   const helpKey = `istrefi-help-${profile?.id}`;
   const [showHelp, setShowHelp] = useState(() => {
@@ -93,7 +94,16 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
     speak,
     loadData: <T,>() => getState().profiles.find((p) => p.id === profile?.id)?.games[statsKey]?.data as T | undefined,
     saveData: (data) => profile && actions.saveGameData(profile.id, statsKey, data),
-    setBack: (fn) => { backRef.current = fn; }
+    setBack: (fn) => { backRef.current = fn; },
+    reward: (coins) => {
+      if (!profile) return;
+      if (coins > 0) actions.addCoins(profile.id, coins);
+      playSfx('sticker');
+      speak(t('wellDone'));
+      const id = Date.now();
+      setToast({ id, coins });
+      setTimeout(() => setToast((x) => (x && x.id === id ? null : x)), 2400);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [lang, profile?.id, profile?.name, statsKey]);
 
@@ -136,6 +146,21 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
           <Game key={round} world={world} players={1} api={api} onFinish={handleFinish} />
         </Suspense>
       </main>
+
+      {toast && (
+        <div className="reward-toast" key={toast.id} aria-live="polite">
+          <div className="confetti" aria-hidden>
+            {Array.from({ length: 24 }, (_, i) => (
+              <i key={i} style={{ left: `${(i * 41) % 100}%`, animationDelay: `${(i % 8) * 0.08}s`, background: ['#ff006e', '#ffd60a', '#06d6a0', '#4cc9f0', '#8338ec'][i % 5] }} />
+            ))}
+          </div>
+          <div className="reward-toast__card pop-in">
+            <Mascot size={56} mood="cheer" />
+            <b>{t('wellDone')}</b>
+            {toast.coins > 0 && <span>+{toast.coins} <Emo e="🪙" /></span>}
+          </div>
+        </div>
+      )}
 
       {showHelp && !result && (
         <div className="help-overlay" role="dialog" onClick={closeHelp}>

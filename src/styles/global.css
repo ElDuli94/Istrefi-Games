@@ -497,3 +497,13 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
   text-shadow: 0 1px 0 rgba(0,0,0,.2);
 }
 .recent__chip .emo { font-size: 1.8rem; }
+
+/* ----- Liten belønning midt i spillet (stopper ikke leken) ----- */
+.reward-toast { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 45; pointer-events: none; overflow: hidden; }
+.reward-toast__card {
+  position: absolute; top: 18%; left: 50%; transform: translateX(-50%); background: #fff; border: 6px solid #ffd60a; border-radius: 999px;
+  padding: 6px 22px 6px 10px; display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: #ff006e;
+  box-shadow: 0 6px 0 rgba(0,0,0,.15); animation: toastFade 2.4s ease forwards;
+}
+.reward-toast__card span { color: #e85d04; }
+@keyframes toastFade { 0%, 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -20px); } }
