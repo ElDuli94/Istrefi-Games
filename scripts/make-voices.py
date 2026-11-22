@@ -20,7 +20,7 @@ URL = f'https://{REGION}.tts.speech.microsoft.com/cognitiveservices/v1'
 VOICES = {'no': ('nb-NO', os.environ.get('VOICE_NO', 'nb-NO-PernilleNeural')),
           'sq': ('sq-AL', os.environ.get('VOICE_SQ', 'sq-AL-AnilaNeural'))}
 BATCH = 22
-PAUSE_MS = 1500
+PAUSE_MS = 3000  # mye lengre enn naturlige pauser i tale (opptil ca. 1,2 s etter «!»)
 RATE = '-4%'
 
 def ffmpeg_exe():
@@ -75,7 +75,7 @@ def split_wav(data, expected):
         chunk = samples[i:i + fl]
         rms.append((sum(s * s for s in chunk) / fl) ** 0.5)
     silent = [v < 250 for v in rms]
-    # Finn tale-biter adskilt av pauser på minst 900 ms
+    # Finn tale-biter adskilt av pauser på minst 2 sekunder
     segs, start, run = [], None, 0
     for i, s in enumerate(silent):
         if not s:
@@ -83,7 +83,7 @@ def split_wav(data, expected):
             run = 0
         else:
             run += 1
-            if start is not None and run >= 90:
+            if start is not None and run >= 200:  # pause på minst 2 sek = ny setning
                 segs.append((start, i - run + 1)); start = None
     if start is not None: segs.append((start, len(silent)))
     if len(segs) != expected: return None
