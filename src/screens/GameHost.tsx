@@ -16,7 +16,7 @@ import type { DictKey } from '../i18n/no';
 import { Mascot } from '../components/Mascot';
 import { LivelyAvatar } from '../components/LivelyAvatar';
 import { playSfx, startMusic, stopMusic } from '../audio/sound';
-import { speak } from '../audio/speech';
+import { speak, stopSpeaking } from '../audio/speech';
 
 export function GameHost({ gameId, worldId }: { gameId: string; worldId: string }) {
   const t = useT();
@@ -58,7 +58,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
   function toggleSound() {
     const on = !(settings.sfx || settings.music);
     actions.updateSettings({ sfx: on, music: on, voice: on });
-    if (on) { startMusic(); playSfx('pop'); } else { stopMusic(); window.speechSynthesis?.cancel(); }
+    if (on) { startMusic(); playSfx('pop'); } else { stopMusic(); stopSpeaking(); }
   }
 
   function goBack() {

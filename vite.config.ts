@@ -43,6 +43,12 @@ export default defineConfig({
         navigateFallback: null,
         runtimeCaching: [
           {
+            // Opplesing: lagres når de spilles første gang, så de virker offline etterpå
+            urlPattern: ({ url }) => url.pathname.includes('/voice/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'voice', expiration: { maxEntries: 3000 } }
+          },
+          {
             urlPattern: ({ request }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
             options: { cacheName: 'pages', networkTimeoutSeconds: 4 }
