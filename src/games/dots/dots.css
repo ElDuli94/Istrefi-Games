@@ -4,13 +4,13 @@
 .dots-thumb.is-done { background: #e9fbe9; border-color: #06d6a0; }
 .dots-thumb__emoji { font-size: 48px; }
 .dots-thumb__q { font-size: 1.8rem; font-weight: 800; color: #8338ec; background: radial-gradient(circle, #23213a 2px, transparent 3px) 0 0/16px 16px; padding: 4px 10px; border-radius: 12px; }
-.dots { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-.dots__svg { height: 100%; max-width: 100%; aspect-ratio: 1; background: #fff; border-radius: 26px; border: 6px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,.15); touch-action: none; }
+.dots { height: 100%; container-type: size; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+.dots__svg { width: min(100%, 100cqh); height: auto; max-height: 100%; aspect-ratio: 1; background: #fff; border-radius: 26px; border: 6px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,.15); touch-action: none; }
 .dot circle { fill: #adb5bd; transition: r .2s; }
-.dot text { font-size: 4.2px; font-weight: 800; fill: #495057; font-family: 'Baloo 2', sans-serif; pointer-events: none; }
+.dot text { font-size: 5px; font-weight: 800; fill: #495057; font-family: 'Baloo 2', sans-serif; pointer-events: none; }
 .dot.is-done circle { fill: #23213a; }
 .dot.is-next circle { fill: #ff006e; animation: dotPulse 1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-.dot.is-next text { fill: #ff006e; font-size: 5.4px; }
+.dot.is-next text { fill: #ff006e; font-size: 6.4px; }
 .dot.is-wrong circle { fill: #ef476f; }
 .dot-back { fill: none; stroke: #ff006e; stroke-width: 1; stroke-dasharray: 2 1.5; animation: dotPulse 1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
@@ -18,3 +18,5 @@
 @keyframes dotsFill { to { opacity: .85; } }
 .dots__emoji { font-size: 30px; animation: popIn .6s .4s both; transform-box: fill-box; transform-origin: center; }
 .dots__name { position: absolute; bottom: 8%; background: #fff; border-radius: 999px; padding: 6px 22px; font-weight: 800; font-size: 1.8rem; box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+.dot__ring { fill: #ff006e22; stroke: #ff006e; stroke-width: .6; stroke-dasharray: 1.5 1.2; animation: dotPulse 1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@supports not (container-type: size) { .dots__svg { width: min(100%, calc(100vh - 170px)); } }
