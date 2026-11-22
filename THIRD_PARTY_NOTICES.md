@@ -29,5 +29,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## Dyrelyder (CC0)
+Ekte dyreopptak i `public/sounds/animals/`, alle med CC0-lisens (fri bruk). Kreditert av høflighet:
+
+- Hund: «Dog barks» av 16FVolejnikovaA (freesound) – CC0 1.0 – https://freesound.org/people/16FVolejnikovaA/sounds/498394
+- Katt: «Cat meow 3» av fthgurdy (freesound) – CC0 1.0 – https://freesound.org/people/fthgurdy/sounds/528194
+- Ku: «Cow - Moo 5 - 96kHz.wav» av JarredGibb (freesound) – CC0 1.0 – https://freesound.org/people/JarredGibb/sounds/233134
+- Sau: «Sheep bleating» av zachrau (freesound) – CC0 1.0 – https://freesound.org/people/zachrau/sounds/362283
+- Gris: «Pig - Grunt 2 - 96kHz.wav» av JarredGibb (freesound) – CC0 1.0 – https://freesound.org/people/JarredGibb/sounds/233170
+- And: «Duck Quacking Loudly Three Times» av Owen_Garcia (freesound) – CC0 1.0 – https://freesound.org/people/Owen_Garcia/sounds/719114
+- Høne: «Chicken clucking 3» av MBPL (freesound) – CC0 1.0 – https://freesound.org/people/MBPL/sounds/668803
+- Fugl: «Bird chirping» av supercell10 (freesound) – CC0 1.0 – https://freesound.org/people/supercell10/sounds/266832
+- Frosk: «Frog croaking sound effect» av betterchinese (freesound) – CC0 1.0 – https://freesound.org/people/betterchinese/sounds/354132
+- Løve: «lion roar» av bkyte (freesound) – CC0 1.0 – https://freesound.org/people/bkyte/sounds/510476
+- Ugle: «owl_hooting_000102_0145S3 002-070 000-002 068-074.wav» av Gerent (freesound) – CC0 1.0 – https://freesound.org/people/Gerent/sounds/558396
+- Hest: «Horse» av poodaddy69 (freesound) – CC0 1.0 – https://freesound.org/people/poodaddy69/sounds/521246
+- Elefant: «Elephant voice - trumpeting» av தகவலுழவன் (wikimedia_audio) – CC0 1.0 – https://commons.wikimedia.org/w/index.php?curid=12880761
+- Ape: «Monkey screaming.wav» av Archeos (freesound) – CC0 1.0 – https://freesound.org/people/Archeos/sounds/325549
+
 ## Baloo 2 (skrift)
 Baloo 2 – Copyright (c) Ek Type – SIL Open Font License 1.1, via `@fontsource/baloo-2`.
