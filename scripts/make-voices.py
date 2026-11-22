@@ -63,6 +63,10 @@ def synth(lang, clips):
         except urllib.error.HTTPError as e:
             if e.code == 429: time.sleep(10 * (attempt + 1)); continue
             raise SystemExit(f'Azure svarte {e.code}: {e.read()[:300]!r}')
+        except (urllib.error.URLError, ConnectionError, TimeoutError, OSError) as e:
+            # Kortvarig nettverksbrudd – vent litt og prøv igjen
+            print(f'  (nettverksfeil: {e} – prøver igjen)', flush=True)
+            time.sleep(5 * (attempt + 1)); continue
     raise SystemExit('For mange forsøk (429)')
 
 def split_wav(data, expected):
