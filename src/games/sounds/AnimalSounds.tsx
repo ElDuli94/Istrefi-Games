@@ -51,7 +51,7 @@ export default function AnimalSounds(props: GameProps) {
   return mode === 'free' ? <Free {...props} /> : <Quiz {...props} />;
 }
 
-function Free({ world, api, onFinish }: GameProps) {
+function Free({ world, api }: GameProps) {
   const animals = useMemo(() => (world === 'tiny' ? FARM.filter((a) => TODDLER.includes(a.id)) : FARM), [world]);
   const [heard, setHeard] = useState<Set<string>>(new Set());
   const [active, setActive] = useState<string | null>(null);
@@ -67,12 +67,15 @@ function Free({ world, api, onFinish }: GameProps) {
     setTick((t) => t + 1); // start animasjonen på nytt ved hvert trykk
     const next = new Set(heard).add(a.id);
     setHeard(next);
-    if (!done.current && next.size === animals.length) {
+    if (next.size === animals.length && !done.current) {
+      // Leken stopper ikke: liten feiring + mynter, og så kan barnet høre alle dyrene igjen
       done.current = true;
       setTimeout(() => {
-        api.speak(api.t('allAnimalsHeard'));
-        onFinish({ won: true, stars: 3, coins: 10 });
-      }, 3500);
+        api.reward(10);
+        setTimeout(() => api.speak(api.t('allAnimalsHeard')), 1600);
+        setHeard(new Set());
+        done.current = false;
+      }, 2200);
     }
   }
 
