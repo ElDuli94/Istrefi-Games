@@ -47,5 +47,11 @@ Ekte dyreopptak i `public/sounds/animals/`, alle med CC0-lisens (fri bruk). Kred
 - Elefant: «Elephant voice - trumpeting» av தகவலுழவன் (wikimedia_audio) – CC0 1.0 – https://commons.wikimedia.org/w/index.php?curid=12880761
 - Ape: «Monkey screaming.wav» av Archeos (freesound) – CC0 1.0 – https://freesound.org/people/Archeos/sounds/325549
 
+## three.js
+
+3D-øya og Shqipo i 3D tegnes med [three.js](https://threejs.org) (MIT-lisens,
+Copyright © 2010–2026 three.js authors). Alle 3D-figurene er laget med kode i
+appen – ingen modellfiler fra andre.
+
 ## Baloo 2 (skrift)
 Baloo 2 – Copyright (c) Ek Type – SIL Open Font License 1.1, via `@fontsource/baloo-2`.

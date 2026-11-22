@@ -34,6 +34,9 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🏠 Mitt hus | Eget rom med 80+ møbler, planter, leker, pynt, dyr, vegger og gulv. Dra ting rundt, gjør dem større/mindre og snu dem. |
 | 📒 Klistremerkebok | Klistremerker kjøpes i butikken (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
+| 🏝️ 3D-øya | Øykartet i 3D (three.js): bølger, skyer, båter, hoppende fisk og Shqipo som flyr rundt. Dra for å snurre, trykk på Shqipo eller havet. Faller automatisk tilbake til 2D på eldre/trege nettbrett. |
+| 🌗 Levende verden | Dag, kveld og natt etter klokka. Snø og snømann om vinteren (juletre i desember), blomster om våren, sommerfugler om sommeren og fallende løv om høsten. Bevegelige bakgrunner i alle verdener. |
+| 🌊 Naturlyder | Bølger, fuglekvitter, vind og sirisser om natta – laget med Web Audio, kan slås av for voksne. |
 | 🌍 Språk | Norsk og albansk (shqip). |
 | 🔊 Lyd | Musikk, lydeffekter og opplesing – alt kan slås av/på. |
 | 📲 App | Kan installeres på hjemskjermen (PWA) og spilles offline. |

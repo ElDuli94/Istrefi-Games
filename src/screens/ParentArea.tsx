@@ -1,3 +1,4 @@
+import { clearSlow } from '../three/support';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { actions, useStore, type Profile } from '../storage/store';
 import { LANGUAGES, useT, type Lang } from '../i18n';
@@ -225,6 +226,9 @@ function SettingsTab() {
       <Toggle label={`🎵 ${t('music')}`} value={settings.music} onChange={(v) => { actions.updateSettings({ music: v }); v ? startMusic() : stopMusic(); }} />
       <Toggle label={`🔊 ${t('sounds')}`} value={settings.sfx} onChange={(v) => actions.updateSettings({ sfx: v })} />
       <Toggle label={`🗣️ ${t('voice')}`} value={settings.voice} onChange={(v) => actions.updateSettings({ voice: v })} />
+      <Toggle label={`🌊 ${t('natureSounds')}`} value={settings.nature} onChange={(v) => actions.updateSettings({ nature: v })} />
+      <Toggle label={`🏝️ ${t('map3d')}`} value={settings.map3d} onChange={(v) => { if (v) clearSlow(); actions.updateSettings({ map3d: v }); }} />
+      <p className="muted">{t('map3dHint')}</p>
       <h3>🛡️ {t('privacyTitle')}</h3>
       <p>{t('privacyText')}</p>
       <p className="muted">{t('credits')} <a href="./licenses.txt" target="_blank" rel="noopener">{t('licenses')}</a></p>

@@ -10,7 +10,8 @@ export default defineConfig({
   base: './',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   // Støtt eldre iPader (iOS 13 og nyere), ikke bare de nyeste nettleserne.
-  build: { target: ['es2019', 'safari13'], cssTarget: ['safari13'] },
+  build: {
+    chunkSizeWarningLimit: 700, target: ['es2019', 'safari13'], cssTarget: ['safari13'] },
   plugins: [
     react(),
     VitePWA({

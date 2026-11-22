@@ -14,6 +14,7 @@ import type { GameApi, GameResult } from '../games/types';
 import { BackButton, RoundButton, Stars, TopBar } from '../components/ui';
 import type { DictKey } from '../i18n/no';
 import { Mascot } from '../components/Mascot';
+import { Shqipo3DView } from '../components/Shqipo3DView';
 import { LivelyAvatar } from '../components/LivelyAvatar';
 import { playSfx, startMusic, stopMusic } from '../audio/sound';
 import { speak, stopSpeaking } from '../audio/speech';
@@ -57,7 +58,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
 
   function toggleSound() {
     const on = !(settings.sfx || settings.music);
-    actions.updateSettings({ sfx: on, music: on, voice: on });
+    actions.updateSettings({ sfx: on, music: on, voice: on, nature: on });
     if (on) { startMusic(); playSfx('pop'); } else { stopMusic(); stopSpeaking(); }
   }
 
@@ -184,7 +185,7 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
           </div>
           <div className="celebrate__card pop-in">
             <div className="celebrate__duo">
-              <Mascot size={110} mood="cheer" className="bounce" />
+              <Shqipo3DView size={130} fallback={<Mascot size={110} mood="cheer" className="bounce" />} />
               <LivelyAvatar profile={profile} size={96} mode={result.won ? 'dance' : 'idle'} />
             </div>
             <h2>{result.won ? t('wellDone') : t('goodTry')}</h2>

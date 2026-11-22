@@ -1,3 +1,4 @@
+import { LiveBackdrop } from '../components/LiveBackdrop';
 import { actions, useStore } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
@@ -17,6 +18,7 @@ export function ProfileSelect() {
 
   return (
     <div className="screen screen--sky profile-select">
+      <LiveBackdrop kind="sky" />
       <div className="clouds" aria-hidden />
       <div className="logo">
         <Mascot size={110} className="bob" />
