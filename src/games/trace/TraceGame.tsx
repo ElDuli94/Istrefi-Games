@@ -24,6 +24,11 @@ export default function TraceGame(props: GameProps) {
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { done: [] });
   const [mode, setMode] = useState<Mode>('upper');
   const [start, setStart] = useState<number | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(start !== null ? () => setStart(null) : null);
+    return () => api.setBack(null);
+  }, [start]); // eslint-disable-line react-hooks/exhaustive-deps
   const chars = charsFor(mode, api);
 
   if (start === null) {
@@ -78,7 +83,9 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
   const wrapRef = useRef<HTMLDivElement>(null);
   const guideRef = useRef<HTMLCanvasElement>(null);
   const paintRef = useRef<HTMLCanvasElement>(null);
-  const mask = useRef<{ pts: [number, number][]; inside: (x: number, y: number) => boolean } | null>(null);
+  const mask = useRef<{ pts: [number, number][]; inside: (x: number, y: number) => boolean; cells: [number, number][][] } | null>(null);
+  const hintRef = useRef<HTMLCanvasElement>(null);
+  const [hinting, setHinting] = useState(false);
   const drawing = useRef(false);
   const last = useRef<[number, number] | null>(null);
   const strokePts = useRef<[number, number][]>([]);
@@ -137,7 +144,23 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
       const pts: [number, number][] = [];
       const step = Math.max(4, Math.round(size / 70));
       for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) if (inside(x, y)) pts.push([x, y]);
-      mask.current = { pts, inside };
+      // Del bokstaven i små ruter. Alle ruter med nok "blekk" må fargelegges,
+      // så f.eks. streken i midten av A ikke kan hoppes over.
+      const G = lenient ? 6 : 8;
+      const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+      const minX = Math.min(...xs), maxX = Math.max(...xs) + 1, minY = Math.min(...ys), maxY = Math.max(...ys) + 1;
+      const grid: [number, number][][] = Array.from({ length: G * G }, () => []);
+      for (const q of pts) {
+        const cx = Math.min(G - 1, Math.floor(((q[0] - minX) / (maxX - minX)) * G));
+        const cy = Math.min(G - 1, Math.floor(((q[1] - minY) / (maxY - minY)) * G));
+        grid[cy * G + cx].push(q);
+      }
+      const minPts = Math.max(3, (pts.length / (G * G)) * 0.3);
+      const cells = grid.filter((c) => c.length >= minPts);
+      mask.current = { pts, inside, cells };
+      hintRef.current!.width = size * dpr; hintRef.current!.height = size * dpr;
+      hintRef.current!.getContext('2d')!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      setHinting(false);
       strokePts.current = [];
       setProgress(0);
       setSuccess(false);
@@ -197,8 +220,22 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
     const step = Math.max(4, Math.round(size / 70));
     for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) if (painted(x, y) && !m.inside(x, y)) outsidePainted++;
     const tooMessy = outsidePainted > coveredPts * (lenient ? 1.6 : 0.9);
-    setProgress(tooMessy ? 0 : Math.min(1, covered / (lenient ? 0.55 : 0.72)));
-    if (covered >= (lenient ? 0.55 : 0.72) && !tooMessy) {
+    const cellNeed = lenient ? 0.3 : 0.5;
+    const missing = m.cells.filter((c) => c.filter(([x, y]) => painted(x, y)).length / c.length < cellNeed);
+    const need = lenient ? 0.55 : 0.72;
+    const partsDone = 1 - missing.length / Math.max(1, m.cells.length);
+    setProgress(tooMessy ? 0 : Math.min(1, Math.min(covered / need, partsDone)));
+    // Vis hvilke biter som mangler når barnet nesten er ferdig
+    const hctx = hintRef.current!.getContext('2d')!;
+    hctx.clearRect(0, 0, size, size);
+    if (!tooMessy && missing.length && covered >= need * 0.75) {
+      hctx.fillStyle = '#ff006e';
+      const r = Math.max(3, size * 0.012);
+      missing.forEach((c) => c.forEach(([x, y]) => { if (!painted(x, y)) { hctx.beginPath(); hctx.arc(x, y, r, 0, Math.PI * 2); hctx.fill(); } }));
+      if (!hinting) { api.speak(api.t('traceMissing')); api.sfx('nope'); }
+      setHinting(true);
+    } else setHinting(false);
+    if (covered >= need && missing.length === 0 && !tooMessy) {
       setSuccess(true);
       api.sfx('win');
       api.speak(ch.toLowerCase());
@@ -226,6 +263,8 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
     paintRef.current!.getContext('2d')!.clearRect(0, 0, size, size);
     strokePts.current = [];
     setProgress(0);
+    hintRef.current?.getContext('2d')!.clearRect(0, 0, size, size);
+    setHinting(false);
   }
 
   return (
@@ -239,6 +278,7 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
       <div className="tracer__stage" ref={wrapRef}>
         <div className={`tracer__paper ${success ? 'is-success' : ''}`} style={{ width: size, height: size }}>
           <canvas ref={guideRef} style={{ width: size, height: size }} />
+          <canvas ref={hintRef} style={{ width: size, height: size }} className={`tracer__hint ${hinting ? 'is-on' : ''}`} />
           <canvas ref={paintRef} style={{ width: size, height: size }} className="tracer__paint"
             onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />
           {success && <span className="tracer__star">⭐</span>}

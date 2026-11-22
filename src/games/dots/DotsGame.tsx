@@ -2,7 +2,7 @@
  * Prikk til prikk – trykk eller dra fra 1 til siste tall, så kommer en figur fram.
  */
 import { Emo, emojiUrl } from '../../components/Emo';
-import { useRef, useState, type PointerEvent as RPointerEvent } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
 import { DOT_FIGS, type DotFig } from './figures';
 import './dots.css';
@@ -13,6 +13,11 @@ export default function DotsGame(props: GameProps) {
   const { api } = props;
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { done: [] });
   const [fig, setFig] = useState<DotFig | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(fig !== null ? () => setFig(null) : null);
+    return () => api.setBack(null);
+  }, [fig]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!fig) {
     return (
       <div className="dots-pick">

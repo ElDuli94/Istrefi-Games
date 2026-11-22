@@ -11,10 +11,11 @@ import { gameById } from '../games/registry';
 import { WORLDS, type WorldId } from '../data/worlds';
 import { coinsFor } from '../data/shop';
 import type { GameApi, GameResult } from '../games/types';
-import { BackButton, Stars, TopBar } from '../components/ui';
+import { BackButton, RoundButton, Stars, TopBar } from '../components/ui';
+import type { DictKey } from '../i18n/no';
 import { Mascot } from '../components/Mascot';
 import { LivelyAvatar } from '../components/LivelyAvatar';
-import { playSfx } from '../audio/sound';
+import { playSfx, startMusic, stopMusic } from '../audio/sound';
 import { speak } from '../audio/speech';
 
 export function GameHost({ gameId, worldId }: { gameId: string; worldId: string }) {
@@ -30,9 +31,45 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
   const [result, setResult] = useState<(GameResult & { earned: number }) | null>(null);
   const startedAt = useRef(Date.now());
   const finished = useRef(false);
+  const backRef = useRef<(() => void) | null>(null);
+  const settings = useStore((s) => s.settings);
+  const helpKey = `istrefi-help-${profile?.id}`;
+  const [showHelp, setShowHelp] = useState(() => {
+    try { return !(JSON.parse(localStorage.getItem(helpKey) || '[]') as string[]).includes(gameId); } catch { return true; }
+  });
+  const helpText = t(`help_${gameId}` as DictKey);
+
+  // Les forklaringen høyt når den vises
+  useEffect(() => {
+    if (showHelp && valid) speak(helpText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showHelp]);
+
+  function closeHelp() {
+    playSfx('pop');
+    setShowHelp(false);
+    try {
+      const seen = JSON.parse(localStorage.getItem(helpKey) || '[]') as string[];
+      if (!seen.includes(gameId)) localStorage.setItem(helpKey, JSON.stringify([...seen, gameId]));
+    } catch { /* ignorer */ }
+  }
+
+  function toggleSound() {
+    const on = !(settings.sfx || settings.music);
+    actions.updateSettings({ sfx: on, music: on, voice: on });
+    if (on) { startMusic(); playSfx('pop'); } else { stopMusic(); window.speechSynthesis?.cancel(); }
+  }
+
+  function goBack() {
+    playSfx('tap');
+    if (backRef.current) backRef.current();
+    else go(`world/${world}`);
+  }
 
   useEffect(() => {
     if (!valid) go('map');
+    else if (profile) actions.touchGame(profile.id, statsKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valid]);
 
   // Lagre spilletid også hvis barnet avslutter midt i et spill.
@@ -55,7 +92,8 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
     sfx: playSfx,
     speak,
     loadData: <T,>() => getState().profiles.find((p) => p.id === profile?.id)?.games[statsKey]?.data as T | undefined,
-    saveData: (data) => profile && actions.saveGameData(profile.id, statsKey, data)
+    saveData: (data) => profile && actions.saveGameData(profile.id, statsKey, data),
+    setBack: (fn) => { backRef.current = fn; }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [lang, profile?.id, profile?.name, statsKey]);
 
@@ -76,18 +114,41 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
   }
 
   function again() {
+    backRef.current = null;
     setResult(null);
     setRound((n) => n + 1);
   }
 
   return (
     <div className="screen game-host" style={{ background: WORLDS.find((w) => w.id === world)!.bg }}>
-      <TopBar left={<BackButton to={() => go(`world/${world}`)} />} title={<h1 className="game-title"><Emo e={game.icon} /> {t(game.titleKey)}</h1>} />
+      <TopBar
+        left={<BackButton to={goBack} />}
+        title={<h1 className="game-title"><Emo e={game.icon} /> {t(game.titleKey)}</h1>}
+        right={
+          <>
+            <RoundButton icon={settings.sfx || settings.music ? '🔊' : '🔇'} label={settings.sfx || settings.music ? t('soundOff') : t('soundOn')} onClick={toggleSound} />
+            <RoundButton icon="❓" label={t('howToPlay')} onClick={() => setShowHelp(true)} color="#ffd60a" />
+          </>
+        }
+      />
       <main className="game-host__stage">
         <Suspense fallback={<div className="loading"><Mascot size={100} className="bob" /></div>}>
           <Game key={round} world={world} players={1} api={api} onFinish={handleFinish} />
         </Suspense>
       </main>
+
+      {showHelp && !result && (
+        <div className="help-overlay" role="dialog" onClick={closeHelp}>
+          <div className="help-card pop-in" onClick={(e) => e.stopPropagation()}>
+            <span className="help-card__icon"><Emo e={game.icon} /></span>
+            <h2>{t('howToPlay')}</h2>
+            <button className="help-card__text" onClick={() => speak(helpText)}>
+              <Mascot size={64} /> <span>{helpText} <Emo e="🔊" /></span>
+            </button>
+            <button className="big-btn big-btn--go help-card__start" onClick={closeHelp}>▶ {t('start')}</button>
+          </div>
+        </div>
+      )}
 
       {result && (
         <div className="celebrate" role="dialog">

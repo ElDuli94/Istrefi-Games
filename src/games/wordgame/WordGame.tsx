@@ -29,6 +29,11 @@ export default function WordGame(props: GameProps) {
   const L = world === 'big' ? 5 : 4;
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? {});
   const [mode, setMode] = useState<'daily' | 'practice' | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(mode !== null ? () => setMode(null) : null);
+    return () => api.setBack(null);
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   const list = useMemo(() => WORDS[api.lang][L as 4 | 5].map((w) => splitLetters(w, api.lang)).filter((w) => w.length === L), [api.lang, L]);
   const dailyDone = saved.daily?.date === today() && saved.daily.lang === api.lang;
 

@@ -101,6 +101,11 @@ export default function BlockGame(props: GameProps) {
   const { api } = props;
   const [progress, setProgress] = useState<GridProgress>(() => api.loadData<GridProgress>() ?? emptyGridProgress());
   const [mode, setMode] = useState<number | 'endless' | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(mode !== null ? () => setMode(null) : null);
+    return () => api.setBack(null);
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   const save = (p: GridProgress) => { setProgress(p); api.saveData(p); };
 
   if (mode === null) {
