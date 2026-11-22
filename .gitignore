@@ -6,3 +6,4 @@ dev-dist
 *.tsbuildinfo
 public/emoji3d
 src/emoji3dList.ts
+__pycache__
