@@ -19,6 +19,13 @@ export function WorldScreen({ worldId }: { worldId: string }) {
   }
   const world = worldById(worldId as WorldId);
   const games = GAMES.filter((g) => g.worlds.includes(world.id));
+  // De 3 sist spilte spillene i denne verdenen
+  const recent = games
+    .map((g) => ({ g, last: profile.games[`${g.id}:${world.id}`]?.lastPlayed ?? 0 }))
+    .filter((x) => x.last > 0)
+    .sort((x, y) => y.last - x.last)
+    .slice(0, 3)
+    .map((x) => x.g);
 
   return (
     <div className={`screen world-screen world-screen--${world.id}`} style={{ background: world.bg }}>
@@ -30,6 +37,24 @@ export function WorldScreen({ worldId }: { worldId: string }) {
           </h1>
         }
       />
+      {recent.length > 0 && (
+        <div className="recent">
+          <span className="recent__label"><Emo e="⭐" /> {t('recentlyPlayed')}</span>
+          <div className="recent__row">
+            {recent.map((g) => (
+              <button
+                key={g.id}
+                className="recent__chip pop-in"
+                style={{ ['--c' as string]: g.color }}
+                onClick={() => { playSfx('pop'); speak(t(g.titleKey)); go(`play/${g.id}/${world.id}`); }}
+                aria-label={t(g.titleKey)}
+              >
+                <Emo e={g.icon} /> <span>{t(g.titleKey)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="game-grid">
         {games.map((g) => {
           const stats = profile.games[`${g.id}:${world.id}`];

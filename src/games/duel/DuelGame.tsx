@@ -14,6 +14,11 @@ const COLORS: Record<Who, string> = { 1: '#ff4d6d', 2: '#3a86ff' };
 export default function DuelGame(props: GameProps) {
   const { api } = props;
   const [sub, setSub] = useState<Sub | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(sub !== null ? () => setSub(null) : null);
+    return () => api.setBack(null);
+  }, [sub]); // eslint-disable-line react-hooks/exhaustive-deps
   const [ai, setAi] = useState(false);
   if (!sub) {
     const card = (s: Sub, icon: string, label: string, allowAi = true) => (

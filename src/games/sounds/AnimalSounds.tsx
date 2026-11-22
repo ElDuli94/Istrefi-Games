@@ -31,6 +31,11 @@ function useAnimalVoice(api: GameApi) {
 export default function AnimalSounds(props: GameProps) {
   const { world, api } = props;
   const [mode, setMode] = useState<'free' | 'quiz' | null>(world === 'tiny' ? 'free' : null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(mode !== null && world !== 'tiny' ? () => setMode(null) : null);
+    return () => api.setBack(null);
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   if (mode === null) {
     return (
       <div className="sounds-menu">

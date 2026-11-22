@@ -123,6 +123,11 @@ export default function MusicGame(props: GameProps) {
 function Songs({ api, world, onFinish }: GameProps) {
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { songs: {} });
   const [song, setSong] = useState<Song | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(song !== null ? () => setSong(null) : null);
+    return () => api.setBack(null);
+  }, [song]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!song) {
     return (

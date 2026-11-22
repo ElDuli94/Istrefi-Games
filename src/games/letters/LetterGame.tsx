@@ -40,6 +40,11 @@ const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
 export default function LetterGame(props: GameProps) {
   const { world, api } = props;
   const [mode, setMode] = useState<'free' | 'tasks' | null>(world === 'tiny' ? 'free' : null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(mode !== null && world !== 'tiny' ? () => setMode(null) : null);
+    return () => api.setBack(null);
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (mode === null) {
     return (

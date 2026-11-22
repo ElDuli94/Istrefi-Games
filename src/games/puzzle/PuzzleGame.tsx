@@ -53,6 +53,11 @@ export default function PuzzleGame(props: GameProps) {
   const { api } = props;
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { solved: [] });
   const [pic, setPic] = useState<Pic | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(pic !== null ? () => setPic(null) : null);
+    return () => api.setBack(null);
+  }, [pic]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (pic === null) {
     return (

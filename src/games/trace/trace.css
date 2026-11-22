@@ -17,3 +17,6 @@
 .tracer__paint { touch-action: none; cursor: crosshair; }
 .tracer__paper.is-success { animation: popIn .5s ease; border-color: #ffd60a; }
 .tracer__star { position: absolute; top: -20px; right: -10px; font-size: 64px; animation: stickerIn .7s cubic-bezier(.3,1.6,.5,1) both; }
+.tracer__hint { pointer-events: none; opacity: 0; }
+.tracer__hint.is-on { animation: hintBlink 1s ease-in-out infinite; }
+@keyframes hintBlink { 0%, 100% { opacity: .15; } 50% { opacity: .9; } }

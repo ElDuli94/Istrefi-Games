@@ -33,6 +33,11 @@ export interface GameApi {
   loadData: <T>() => T | undefined;
   /** Lagre spillets egne data (nivå, innstillinger osv.). */
   saveData: (data: unknown) => void;
+  /**
+   * Smart tilbake-knapp: spillet registrerer hva ⬅️ skal gjøre (f.eks. gå tilbake til nivåvalget).
+   * Send null når spillet er i sin egen hovedmeny – da går ⬅️ ut av spillet.
+   */
+  setBack: (fn: (() => void) | null) => void;
 }
 
 export interface GameProps {

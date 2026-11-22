@@ -3,7 +3,7 @@
  * Alle tegninger er laget for Istrefi Games.
  */
 import { Emo } from '../../components/Emo';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { GameProps } from '../types';
 import { COLOR_PICS, type ColorPic } from './pictures';
 import './coloring.css';
@@ -13,6 +13,11 @@ const PALETTE = ['#ff595e', '#ff924c', '#ffca3a', '#8ac926', '#2d6a4f', '#4cc9f0
 export default function ColoringGame(props: GameProps) {
   const { api } = props;
   const [pic, setPic] = useState<ColorPic | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(pic !== null ? () => setPic(null) : null);
+    return () => api.setBack(null);
+  }, [pic]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!pic) {
     return (
       <div className="coloring-pick">

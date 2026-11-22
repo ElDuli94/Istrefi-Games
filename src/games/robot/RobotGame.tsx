@@ -63,6 +63,11 @@ export default function RobotGame(props: GameProps) {
   const { api } = props;
   const [progress, setProgress] = useState<GridProgress>(() => api.loadData<GridProgress>() ?? emptyGridProgress());
   const [level, setLevel] = useState<number | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(level !== null ? () => setLevel(null) : null);
+    return () => api.setBack(null);
+  }, [level]); // eslint-disable-line react-hooks/exhaustive-deps
   if (level === null) return <LevelGrid api={api} count={LEVELS} progress={progress} onPick={setLevel} />;
   return (
     <Play

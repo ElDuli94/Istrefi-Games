@@ -84,6 +84,11 @@ export default function MemoryGame(props: GameProps) {
   const { world, api } = props;
   const [progress, setProgress] = useState<LevelProgress>(() => api.loadData<LevelProgress>() ?? emptyProgress());
   const [level, setLevel] = useState<number | null>(null);
+  // ⬅️ går først tilbake til spillets egen meny
+  useEffect(() => {
+    api.setBack(level !== null ? () => setLevel(null) : null);
+    return () => api.setBack(null);
+  }, [level]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (level === null) {
     return (

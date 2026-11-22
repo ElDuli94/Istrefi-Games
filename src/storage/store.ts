@@ -182,6 +182,13 @@ export const actions = {
       };
     });
   },
+  /** Marker at et spill er åpnet (brukes til «Sist spilt»), uten å telle det som spilt. */
+  touchGame(profileId: string, gameId: string) {
+    updateProfile(profileId, (p) => {
+      const g = p.games[gameId] ?? { plays: 0, wins: 0, bestStars: 0, totalSeconds: 0, lastPlayed: 0 };
+      return { ...p, games: { ...p.games, [gameId]: { ...g, lastPlayed: Date.now() } } };
+    });
+  },
   saveGameData(profileId: string, gameId: string, data: unknown) {
     updateProfile(profileId, (p) => {
       const g = p.games[gameId] ?? { plays: 0, wins: 0, bestStars: 0, totalSeconds: 0, lastPlayed: 0 };

@@ -242,7 +242,30 @@ export const no = {
   blue: 'Blå',
   yourTurn: '{p} sin tur',
   credits: '3D-figurer: Microsoft Fluent Emoji (MIT-lisens). Skrift: Baloo 2 (OFL).',
-  licenses: 'Se lisenser'
+  licenses: 'Se lisenser',
+  traceMissing: 'Nesten! Det mangler en bit – se der det blinker.',
+  help_sounds: 'Trykk på et dyr for å høre hva det sier!',
+  help_draw: 'Tegn med fingeren! Velg farger, regnbue eller stempler.',
+  help_memory: 'Snu to kort. Finner du to like, får du beholde dem!',
+  help_letters: 'Dra bokstaver til tavla, og trykk på høyttaleren for å høre ordet.',
+  help_blocks: 'Dra klossene inn på brettet. Fyll en hel rad eller kolonne, så forsvinner den!',
+  help_snake: 'Sveip eller bruk pilene for å styre slangen. Spis frukt, men ikke krasj!',
+  help_math: 'Regn ut og trykk på riktig svar!',
+  help_balloons: 'Trykk på ballongene for å sprekke dem!',
+  help_music: 'Trykk på tangenten som lyser for å spille sangen – eller spill fritt!',
+  help_puzzle: 'Dra bitene til riktig plass på bildet.',
+  help_words: 'Gjett det hemmelige ordet. Grønn er riktig plass, gul betyr at bokstaven finnes i ordet.',
+  help_flags: 'Se på flagget og trykk på riktig land!',
+  help_trace: 'Følg den stiplede bokstaven med fingeren til hele bokstaven er farget.',
+  help_coloring: 'Velg en farge og trykk på et felt for å fargelegge det.',
+  help_dots: 'Trykk på tallene i rekkefølge, fra 1 og oppover!',
+  help_robot: 'Legg pilene i riktig rekkefølge og trykk Kjør, så finner roboten diamanten.',
+  help_duel: 'Velg et spill og spill mot hverandre – eller mot Shqipo!',
+  howToPlay: 'Slik spiller du',
+  start: 'Start',
+  recentlyPlayed: 'Sist spilt',
+  soundOn: 'Lyd på',
+  soundOff: 'Lyd av'
 };
 
 export type Dict = typeof no;
