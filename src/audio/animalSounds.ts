@@ -1,6 +1,6 @@
 /**
- * Tegneserieaktige dyrelyder laget med Web Audio (ingen lydfiler, fungerer offline).
- * Kan senere byttes ut med ekte opptak: legg mp3-filer i public/sounds/ og spill dem her.
+ * Dyrelyder: ekte opptak (CC0) spilles fra public/sounds/animals/.
+ * De syntetiske lydene under (Web Audio) brukes bare som reserve hvis en fil ikke kan spilles.
  */
 import { ac } from './sound';
 import { getState } from '../storage/store';
@@ -69,13 +69,28 @@ function noise(at: number, dur: number, filter: Pt[], vol = 0.4, q = 1) {
   src.start(t0);
 }
 
-/** Spiller lyden og returnerer omtrent hvor lang den er (sek). */
+// Ekte opptak av dyr (CC0, fra Freesound/Wikimedia Commons via Openverse) i public/sounds/animals/.
+// Lengde i sekunder, brukt for å vente med opplesingen til dyret er ferdig.
+const RECORDED: Record<AnimalSound, number> = {"dog": 2.2, "cat": 1.23, "cow": 2.38, "sheep": 2.2, "pig": 1.07, "duck": 0.55, "chicken": 0.99, "bird": 2.2, "frog": 1.33, "lion": 3.0, "owl": 3.0, "horse": 1.91, "elephant": 1.34, "monkey": 2.5};
+const BASE = `${import.meta.env.BASE_URL}sounds/animals/`;
+let player: HTMLAudioElement | null = null;
+
+/** Spiller ekte dyrelyd og returnerer hvor lang den er (sek). Faller tilbake til datalyd ved feil. */
 export function playAnimal(s: AnimalSound): number {
   if (!getState().settings.sfx) return 0;
   try {
-    return playAnimalInner(s);
+    player ??= new Audio();
+    player.pause();
+    player.src = `${BASE}${s}.mp3`;
+    player.currentTime = 0;
+    player.play().catch(() => { try { playAnimalInner(s); } catch { /* ignorer */ } });
+    return RECORDED[s] ?? 1.5;
   } catch {
-    return 0;
+    try {
+      return playAnimalInner(s);
+    } catch {
+      return 0;
+    }
   }
 }
 
