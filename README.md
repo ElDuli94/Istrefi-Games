@@ -82,6 +82,12 @@ src/
   styles/       design
 ```
 
+## Stemmer
+
+Opplesingen bruker naturlige AI-stemmer fra Microsoft Azure: **Pernille** (norsk) og **Anila** (albansk).
+Lydfilene ligger i `public/voice/` og lages med `python3 scripts/make-voices.py` (krever en Azure Speech-nøkkel – den lagres aldri i appen).
+Skriptet lager bare nye klipp for tekster som er lagt til siden sist. Tekster som varierer (f.eks. barnets navn) leses av enhetens egen stemme.
+
 ## 3D-figurer
 
 Alle emoji i appen vises som 3D-figurer fra **Microsoft Fluent Emoji 3D** (MIT-lisens), via npm-pakken `@lobehub/fluent-emoji-3d`.

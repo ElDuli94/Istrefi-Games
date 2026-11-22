@@ -37,6 +37,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,svg,png,webp,woff2,mp3,ogg,json}'],
+        // Opplesing (14 MB, to språk) lastes ikke ned på forhånd – hvert klipp lagres første gang det spilles
+        globIgnores: ['voice/**'],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
