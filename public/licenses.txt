@@ -49,3 +49,5 @@ Ekte dyreopptak i `public/sounds/animals/`, alle med CC0-lisens (fri bruk). Kred
 
 ## Baloo 2 (skrift)
 Baloo 2 – Copyright (c) Ek Type – SIL Open Font License 1.1, via `@fontsource/baloo-2`.
+
+three.js – MIT License – Copyright (c) 2010-2026 three.js authors – https://threejs.org

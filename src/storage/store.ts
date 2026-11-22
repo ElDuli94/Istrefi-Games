@@ -44,6 +44,10 @@ export interface Settings {
   music: boolean;
   sfx: boolean;
   voice: boolean;
+  /** 3D-øykart (faller tilbake til 2D på svake enheter) */
+  map3d: boolean;
+  /** Naturlyder i bakgrunnen (bølger, fugler, vind) */
+  nature: boolean;
 }
 
 export interface AppState {
@@ -57,7 +61,7 @@ const defaultState = (): AppState => ({
   version: SCHEMA_VERSION,
   profiles: [],
   activeProfileId: null,
-  settings: { lang: 'no', music: true, sfx: true, voice: true }
+  settings: { lang: 'no', music: true, sfx: true, voice: true, map3d: true, nature: true }
 });
 
 function migrate(raw: unknown): AppState {

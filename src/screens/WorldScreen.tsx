@@ -1,3 +1,5 @@
+import { LiveBackdrop } from '../components/LiveBackdrop';
+import { useAmbient, type Ambient } from '../audio/ambient';
 import { Emo } from '../components/Emo';
 import { useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
@@ -8,11 +10,13 @@ import { BackButton, Stars, TopBar } from '../components/ui';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 
+const AMBIENT: Record<WorldId, Ambient> = { tiny: 'meadow', small: 'forest', mid: 'mountain', big: 'city' };
 const PLACEHOLDERS = ['🔢', '🧩', '🎵', '🚗', '🎈', '🧮'];
 
 export function WorldScreen({ worldId }: { worldId: string }) {
   const t = useT();
   const profile = useActiveProfile();
+  useAmbient(AMBIENT[worldId as WorldId] ?? 'none');
   if (!WORLDS.some((w) => w.id === worldId) || !profile) {
     go('map');
     return null;
@@ -29,6 +33,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
 
   return (
     <div className={`screen world-screen world-screen--${world.id}`} style={{ background: world.bg }}>
+      <LiveBackdrop kind={world.id} />
       <TopBar
         left={<BackButton to={() => go('map')} />}
         title={

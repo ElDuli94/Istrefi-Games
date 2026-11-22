@@ -10,9 +10,11 @@ import App from './App';
 import { hideSplashWhenReady } from './splash';
 import { installHistoryGuard } from './router';
 import { installTouchGuard } from './touchGuard';
+import { installSparkles } from './fx/sparkles';
 
 installHistoryGuard();
 installTouchGuard();
+installSparkles();
 
 registerSW({ immediate: true });
 

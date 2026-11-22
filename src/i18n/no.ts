@@ -264,6 +264,9 @@ export const no = {
   howToPlay: 'Slik spiller du',
   start: 'Start',
   recentlyPlayed: 'Sist spilt',
+  natureSounds: 'Naturlyder',
+  map3d: '3D-øykart',
+  map3dHint: '3D-øya slås av automatisk hvis nettbrettet er for tregt. Skru den på igjen her.',
   soundOn: 'Lyd på',
   soundOff: 'Lyd av',
   // Kakevakt

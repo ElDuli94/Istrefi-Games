@@ -1,6 +1,10 @@
 import { Emo } from '../components/Emo';
-import { useEffect } from 'react';
-import { useActiveProfile } from '../storage/store';
+import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { useActiveProfile, useStore } from '../storage/store';
+import { can3D, markSlow } from '../three/support';
+import type { WorldId } from '../data/worlds';
+import { useAmbient } from '../audio/ambient';
+import { LiveBackdrop } from '../components/LiveBackdrop';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { WORLDS } from '../data/worlds';
@@ -10,6 +14,16 @@ import { CoinChip } from './Shop';
 import { MascotSays } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
+
+const Island3D = lazy(() => import('../three/Island3D'));
+
+/** Hvis 3D krasjer: vis 2D-kartet i stedet. */
+class Fallback extends Component<{ children: ReactNode; fallback: ReactNode; onError(): void }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch() { this.props.onError(); }
+  render() { return this.state.failed ? this.props.fallback : this.props.children; }
+}
 
 function IslandArt() {
   return (
@@ -61,11 +75,42 @@ export function IslandMap() {
     if (!profile) go('');
   }, [profile]);
 
+  const map3d = useStore((s) => s.settings.map3d);
+  const [use3D, setUse3D] = useState(() => map3d && can3D());
+  useEffect(() => { setUse3D(map3d && can3D()); }, [map3d]);
+  useAmbient('sea');
+
   if (!profile) return null;
+  const openWorld = (id: WorldId) => {
+    playSfx('pop');
+    speak(t(WORLDS.find((w) => w.id === id)!.nameKey));
+    go(`world/${id}`);
+  };
+  const flat = (
+    <div className="island-wrap">
+      <div className="island">
+        <IslandArt />
+        {WORLDS.map((w, i) => (
+          <button
+            key={w.id}
+            className={`world-spot pop-in ${profile.world === w.id ? 'is-mine' : ''}`}
+            style={{ left: `${w.map.x}%`, top: `${w.map.y}%`, ['--c' as string]: w.color, animationDelay: `${i * 0.1}s` }}
+            onClick={() => openWorld(w.id)}
+          >
+            <span className="world-spot__icon"><Emo e={w.icon} /></span>
+            <span className="world-spot__label">
+              {t(w.nameKey)}
+              <small>{t(w.ageKey)}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
   const hello = t('mapHello', { name: profile.name || '' }).replace(/\s+!/, '!');
 
   return (
-    <div className="screen screen--sea island-screen">
+    <div className={`screen screen--sea island-screen ${use3D ? 'is-3d' : ''}`}>
       <TopBar
         left={
           <>
@@ -84,31 +129,27 @@ export function IslandMap() {
           </>
         }
       />
-      <div className="island-wrap">
-        <div className="island">
-          <IslandArt />
-          {WORLDS.map((w, i) => (
-            <button
-              key={w.id}
-              className={`world-spot pop-in ${profile.world === w.id ? 'is-mine' : ''}`}
-              style={{ left: `${w.map.x}%`, top: `${w.map.y}%`, ['--c' as string]: w.color, animationDelay: `${i * 0.1}s` }}
-              onClick={() => {
-                playSfx('pop');
-                speak(t(w.nameKey));
-                go(`world/${w.id}`);
-              }}
-            >
-              <span className="world-spot__icon"><Emo e={w.icon} /></span>
-              <span className="world-spot__label">
-                {t(w.nameKey)}
-                <small>{t(w.ageKey)}</small>
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
+      {use3D ? (
+        <Fallback fallback={flat} onError={() => { markSlow(); setUse3D(false); }}>
+          <Suspense fallback={flat}>
+            <Island3D
+              myWorld={profile.world}
+              onWorld={openWorld}
+              onShqipo={() => { playSfx('sticker'); speak(hello); }}
+              onSlow={() => { markSlow(); setUse3D(false); }}
+            />
+          </Suspense>
+        </Fallback>
+      ) : (
+        <>
+          <LiveBackdrop kind="sea" />
+          {flat}
+        </>
+      )}
       <div className="island-mascot">
-        <MascotSays text={hello} onTap={() => speak(hello)} size={80} />
+        {use3D
+          ? <button className="island-bubble pop-in" onClick={() => speak(hello)}>{hello}</button>
+          : <MascotSays text={hello} onTap={() => speak(hello)} size={80} />}
       </div>
     </div>
   );
