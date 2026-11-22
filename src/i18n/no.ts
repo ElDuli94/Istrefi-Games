@@ -265,7 +265,23 @@ export const no = {
   start: 'Start',
   recentlyPlayed: 'Sist spilt',
   soundOn: 'Lyd på',
-  soundOff: 'Lyd av'
+  soundOff: 'Lyd av',
+  // Kakevakt
+  game_towers: 'Kakevakt',
+  help_towers: 'Bygg tårn langs stien, så krypene ikke når fram og spiser kaken!',
+  towerWater: 'Vannsprut',
+  towerIce: 'Istårn',
+  towerBubble: 'Boblekanon',
+  towerStar: 'Stjernetårn',
+  nextWave: 'Neste bølge',
+  wave: 'Bølge',
+  upgrade: 'Oppgrader',
+  sell: 'Selg',
+  maxLevel: 'Maks nivå',
+  buildHere: 'Velg et tårn',
+  waveIncoming: 'Her kommer krypene!',
+  cakeSaved: 'Kaken er reddet!',
+  cakeEaten: 'Å nei, krypene spiste kaken!'
 };
 
 export type Dict = typeof no;

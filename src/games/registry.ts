@@ -156,6 +156,15 @@ export const GAMES: GameDefinition[] = [
     worlds: ['small', 'mid', 'big'],
     maxPlayers: 2,
     component: lazy(() => import('./duel/DuelGame'))
+  },
+  {
+    id: 'towers',
+    titleKey: 'game_towers',
+    icon: '🎂',
+    color: '#ff70a6',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 1,
+    component: lazy(() => import('./towers/TowerGame'))
   }
 ];
 

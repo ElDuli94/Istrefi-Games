@@ -507,3 +507,22 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 }
 .reward-toast__card span { color: #e85d04; }
 @keyframes toastFade { 0%, 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -20px); } }
+
+/* Feiring og «Slik spiller du» på lave skjermer (mobil liggende): knappene skal alltid synes */
+.celebrate__card, .help-card { max-height: calc(100dvh - 32px); overflow-y: auto; }
+@media (max-height: 560px) {
+  .celebrate__card { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px 14px; padding: 10px 16px; max-width: 640px; }
+  .celebrate__card h2 { font-size: 1.6rem; }
+  .celebrate__duo .mascot { width: 64px; height: 64px; }
+  .celebrate__duo .av { transform: scale(.7); transform-origin: bottom center; }
+  .celebrate__card .stars { font-size: 1.6em !important; }
+  .coin-burst { font-size: 40px; }
+  .celebrate__coins p { font-size: 1rem; }
+  .celebrate__actions { width: 100%; margin-top: 2px; }
+  .celebrate__actions .big-btn { padding: 8px 18px; font-size: 1.1rem; }
+  .help-card { padding: 10px 16px 14px; gap: 6px; }
+  .help-card__icon { font-size: 44px; }
+  .help-card h2 { font-size: 1.3rem; }
+  .help-card__text { font-size: 1rem; }
+  .help-card__start { font-size: 1.2rem; padding: 8px 28px; }
+}

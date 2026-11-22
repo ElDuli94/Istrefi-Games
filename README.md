@@ -28,6 +28,7 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🔢 Prikk til prikk | 9 figurer som kommer fram når man kobler tallene i rekkefølge. |
 | 🤖 Robotkoding | 12 nivåer: piler i rekkefølge, så «fram/snu» – roboten skal finne diamanten. |
 | 👫 To spillere | Tre på rad, fire på rad (også mot Shqipo) og luft-hockey på samme skjerm. |
+| 🎂 Kakevakt | Tårnforsvar (5–15 år): bygg vann-, is-, boble- og stjernetårn langs stien så krypene ikke spiser kaken. 10 nivåer, 4 kart, oppgradering og salg, dobbel fart. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). 128 ting i 8 kategorier (hatter, briller, leker, kjæledyr, spesialdyr, bakgrunner, rammer, effekter) fra 15 til 1500 mynter, med sjeldenhetsnivåer og samlingsmåler. |
 | 🏠 Mitt hus | Eget rom med 80+ møbler, planter, leker, pynt, dyr, vegger og gulv. Dra ting rundt, gjør dem større/mindre og snu dem. |
