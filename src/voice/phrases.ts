@@ -7,6 +7,7 @@ import { no } from '../i18n/no';
 import { sq } from '../i18n/sq';
 import type { Lang } from '../i18n';
 import { ANIMALS } from '../data/animals';
+import { VOCAB, wordForLetter } from '../data/vocab';
 import { FARM } from '../data/farm';
 import { COUNTRIES } from '../data/countries';
 import { WORDS } from '../data/words';
@@ -54,6 +55,10 @@ export function phrasesFor(lang: Lang): Clip[] {
   for (const a of FARM) { add(a.name[lang]); add(a.says[lang]); add(`${a.name[lang]}! ${a.says[lang]}`); }
   for (const s of SONGS) add(s.title[lang]);
   for (const f of DOT_FIGS) add(f.name[lang]);
+  // Hva heter det? og Tallek
+  for (const c of VOCAB) for (const it of c.items) { add(it[lang]); add(fill(d.findThe, { x: it[lang] })); add(fill(d.whichLetter, { x: it[lang] })); }
+  for (const ch of ALPHABETS[lang]) { const ex = wordForLetter(ch, lang); if (ex) add(fill(d.asIn, { l: ch, w: ex[lang] })); }
+  for (let n = 0; n <= 20; n++) { add(fill(d.itIs, { n })); add(fill(d.findNumber, { n })); add(fill(d.whatAfter, { n })); add(fill(d.whatBefore, { n })); }
   // 4) Bokstaver (uttales som bokstav) og tall
   for (const ch of ALPHABETS[lang]) add(ch.toLowerCase(), true);
   for (let n = 0; n <= 100; n++) add(String(n));

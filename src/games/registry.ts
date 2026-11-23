@@ -5,6 +5,24 @@ import type { GameDefinition } from './types';
 // så forsiden er rask selv når vi har mange spill.
 export const GAMES: GameDefinition[] = [
   {
+    id: 'numbers',
+    titleKey: 'game_numbers',
+    icon: '🔢',
+    color: '#ff9f1c',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    component: lazy(() => import('./numbers/NumbersGame'))
+  },
+  {
+    id: 'naming',
+    titleKey: 'game_naming',
+    icon: '🖼️',
+    color: '#06d6a0',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    component: lazy(() => import('./naming/NamingGame'))
+  },
+  {
     id: 'sounds',
     titleKey: 'game_sounds',
     icon: '🐮',

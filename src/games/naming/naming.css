@@ -1,0 +1,36 @@
+.naming-cats { height: 100%; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; padding: 6px; align-content: start; }
+.naming-cat { position: relative; background: #fff; border: 0; border-radius: 26px; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 6px 0 rgba(0,0,0,.15); font-size: 1.15rem; }
+.naming-cat__icon { font-size: 60px; line-height: 1; }
+.naming-cat__done { position: absolute; top: 8px; right: 10px; font-size: 26px; }
+.naming-cat:active { transform: scale(.94); }
+
+.naming { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 6px; overflow-y: auto; }
+.naming-book { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; width: min(100%, 640px); }
+@media (max-aspect-ratio: 3/4) { .naming-book { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.naming-pic {
+  position: relative; background: #fff; border: 6px solid #fff; border-radius: 28px; aspect-ratio: 1; padding: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-size: clamp(48px, 13vmin, 110px); line-height: 1; box-shadow: 0 6px 0 rgba(0,0,0,.15);
+}
+.naming-pic.is-heard { border-color: #caffbf; }
+.naming-pic.is-bounce > .emo { animation: namingBounce .5s cubic-bezier(.3,1.6,.5,1); }
+.naming-word { font-size: clamp(16px, 3.4vmin, 26px); font-weight: 800; color: #333; text-transform: lowercase; }
+.naming-pic.is-wrong, .naming-letter.is-wrong { opacity: .35; transform: scale(.92); }
+.naming-pic.is-hint, .naming-letter.is-hint { animation: namingHint .9s ease-in-out infinite; border-color: #ffd60a; }
+.naming-pic.is-right, .naming-letter.is-right { border-color: #06d6a0; background: #e9fff6; animation: namingBounce .5s cubic-bezier(.3,1.6,.5,1); }
+.naming-ask { background: #fff; border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 800; font-size: clamp(1.1rem, 3.6vmin, 1.6rem); box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+.naming-choices { display: grid; gap: 14px; width: min(100%, 720px); grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); }
+.naming-choices--2 { --n: 2; width: min(100%, 520px); }
+.naming-choices--3 { --n: 3; }
+.naming-choices--4 { --n: 4; }
+@media (max-aspect-ratio: 3/4) { .naming-choices--4 { --n: 2; } .naming-choices--3 { --n: 3; } }
+.naming-progress { display: flex; gap: 6px; }
+.naming-progress i { width: 14px; height: 14px; border-radius: 50%; background: #ffffff66; }
+.naming-progress i.is-done { background: #ffd60a; }
+.naming-letterq { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.naming-pic--big { width: min(56vmin, 280px); }
+.naming-blank { color: #ff006e; }
+.naming-letters { display: flex; gap: 14px; }
+.naming-letter { width: clamp(70px, 16vmin, 110px); aspect-ratio: 1; border: 6px solid #fff; border-radius: 24px; background: #fff; font-size: clamp(36px, 9vmin, 60px); font-weight: 800; box-shadow: 0 6px 0 rgba(0,0,0,.15); }
+@keyframes namingBounce { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes namingHint { 0%, 100% { rotate: 0deg; } 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
