@@ -33,3 +33,35 @@
   .tbtn { min-width: 84px; padding: 3px 6px; }
   .tbtn__icon { font-size: 22px; }
 }
+
+/* Kakevakt 2.0 */
+.towers__power { border: 0; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; background: #fff3b0; animation: pulseGlow 1.6s ease-in-out infinite; }
+.towers__power.is-cd { background: #e9ecef; animation: none; opacity: .7; }
+.towers__power small { font-size: .8rem; }
+.towers__btn.is-on { background: #caffbf; }
+.towers-extra { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.towers-extra__btn { border: 4px solid #fff; border-radius: 999px; padding: 10px 20px; font-weight: 800; font-size: 1.1rem; background: #ffd60a; box-shadow: 0 5px 0 rgba(0,0,0,.15); display: flex; align-items: center; gap: 8px; }
+.towers-extra__btn--shop { background: #ff70a6; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
+.towers-extra__btn:disabled { opacity: .55; }
+.towers-extra__btn small { font-size: .8rem; }
+.towers-extra__stars { background: #fff; color: #333; text-shadow: none; border-radius: 999px; padding: 0 10px; }
+.workshop { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 6px 6px 20px; }
+.workshop h2, .workshop h3 { color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.2); margin: 4px 0; display: flex; align-items: center; gap: 10px; }
+.workshop__stars { background: #fff; color: #333; text-shadow: none; border-radius: 999px; padding: 0 14px; font-size: 1.2rem; }
+.workshop__hint { background: #ffffffcc; border-radius: 16px; padding: 6px 14px; font-weight: 700; text-align: center; margin: 0; max-width: 640px; }
+.workshop__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; width: 100%; max-width: 760px; }
+.perk { border: 4px solid #fff; border-radius: 22px; background: #fff; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+.perk.is-max { background: #e9fff6; border-color: #06d6a0; }
+.perk__icon { font-size: 40px; line-height: 1; }
+.perk__pips { display: flex; gap: 4px; }
+.perk__pips i { width: 12px; height: 12px; border-radius: 50%; background: #dee2e6; }
+.perk__pips i.on { background: #ffd60a; }
+.perk__cost { font-weight: 800; }
+.workshop__cakes { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.cakebtn { border: 4px solid #fff; border-radius: 20px; background: #fff; padding: 8px 10px; display: flex; flex-direction: column; align-items: center; min-width: 76px; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+.cakebtn span { font-size: 40px; line-height: 1; }
+.cakebtn small { font-weight: 800; min-height: 1.2em; }
+.cakebtn.is-on { border-color: #ffd60a; background: #fff8e1; }
+.towers__menu { overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; scrollbar-width: none; padding: 2px 4px; }
+@media (min-width: 900px) { .towers__menu { justify-content: center; flex-wrap: wrap; } }
+.towers__menu .tbtn { flex: 0 0 auto; min-width: 78px; }
