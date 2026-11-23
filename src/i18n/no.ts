@@ -309,6 +309,12 @@ export const no = {
   cat_home: 'Hjemme',
   cat_nature: 'Natur og vær',
   cat_colors: 'Farger',
+  game_ladders: 'Stigespillet',
+  help_ladders: 'Trykk på terningen og tell rutene. Klatre opp stigene og skli ned sklia. Først til flagget vinner!',
+  laddersShort: 'Kort brett (36)',
+  laddersLong: 'Langt brett (100)',
+  ladderUp: 'Stige! Opp, opp!',
+  slideDown: 'Sklia! Wiii!',
   soundOn: 'Lyd på',
   soundOff: 'Lyd av',
   // Kakevakt
