@@ -28,7 +28,7 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🔢 Prikk til prikk | 9 figurer som kommer fram når man kobler tallene i rekkefølge. |
 | 🤖 Robotkoding | 12 nivåer: piler i rekkefølge, så «fram/snu» – roboten skal finne diamanten. |
 | 👫 To spillere | Tre på rad, fire på rad (også mot Shqipo) og luft-hockey på samme skjerm. |
-| 🎂 Kakevakt | Tårnforsvar (5–15 år): bygg vann-, is-, boble- og stjernetårn langs stien så krypene ikke spiser kaken. 10 nivåer, 4 kart, oppgradering og salg, dobbel fart. |
+| 🎂 Kakevakt | Tårnforsvar (5–15 år): 30 nivåer i tre kapitler (Hagen, Stranden, Snølandet) + uendelig modus med rekord. 8 tårn (vann, is, bobler, solsikke, stjerne, honning, lyn, regnbue) som kan oppgraderes til ★5 superkraft. 11 kryp med skjold, hopp, deling og bosser. Kraftknapper og Kakeverkstedet der stjernene brukes på varige forbedringer og nye kaker. |
 | 🔢 Tallek | Tall og telling (2–7 år). 2–4 år: «Tell med meg» (trykk på hver ting og hør tallet) og «Hvor mange?». 5–7 år: 10 nivåer – telle til 5/10/20 i rader på fem, finn tallet, hva mangler, hvor er det flest, før og etter. |
 | 🖼️ Hva heter det? | Ordforråd (2–7 år) i 8 temaer: dyr, mat, kjøretøy, kroppen, klær, hjemme, natur og farger – over 100 ord på norsk og albansk. 2–4 år: bildebok + «Finn …» med to valg. 5–7 år: flere valg og «Hvilken bokstav starter ordet med?». |
 | 🪜 Stigespillet | Stiger og sklier for 2–4 spillere (2–11 år), person eller robot. Kort brett (36) eller langt (100). Stegene telles høyt, 6 gir nytt kast. |
