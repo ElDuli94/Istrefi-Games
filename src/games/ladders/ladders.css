@@ -1,0 +1,13 @@
+.ladders__board { width: min(100%, calc(100vh - 200px), 680px); }
+.ladders__board svg { filter: drop-shadow(0 8px 0 rgba(0,0,0,.18)); overflow: visible; }
+.lad-num { font-size: .24px; font-weight: 800; fill: #00000055; }
+.lad-goal { font-size: .55px; text-anchor: middle; }
+.lad-ladder line { stroke: #a0522d; stroke-width: .09; stroke-linecap: round; }
+.lad-ladder .lad-rung { stroke: #cd853f; stroke-width: .07; }
+.lad-slide path { fill: none; stroke-linecap: round; }
+.lad-pawn { transition: transform .2s ease-out; }
+.lad-pawn.is-glide { transition: transform .85s cubic-bezier(.45,.05,.4,1); }
+.lad-pawn.is-turn .lad-pawn__body { animation: pawnBob .6s ease-in-out infinite; }
+@media (max-aspect-ratio: 1/1) {
+  .ladders__board { width: min(100%, calc(100vh - 290px)); }
+}

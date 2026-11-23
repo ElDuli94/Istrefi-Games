@@ -31,6 +31,7 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 🎂 Kakevakt | Tårnforsvar (5–15 år): bygg vann-, is-, boble- og stjernetårn langs stien så krypene ikke spiser kaken. 10 nivåer, 4 kart, oppgradering og salg, dobbel fart. |
 | 🔢 Tallek | Tall og telling (2–7 år). 2–4 år: «Tell med meg» (trykk på hver ting og hør tallet) og «Hvor mange?». 5–7 år: 10 nivåer – telle til 5/10/20 i rader på fem, finn tallet, hva mangler, hvor er det flest, før og etter. |
 | 🖼️ Hva heter det? | Ordforråd (2–7 år) i 8 temaer: dyr, mat, kjøretøy, kroppen, klær, hjemme, natur og farger – over 100 ord på norsk og albansk. 2–4 år: bildebok + «Finn …» med to valg. 5–7 år: flere valg og «Hvilken bokstav starter ordet med?». |
+| 🪜 Stigespillet | Stiger og sklier for 2–4 spillere (2–11 år), person eller robot. Kort brett (36) eller langt (100). Stegene telles høyt, 6 gir nytt kast. |
 | 🎲 Ludo | Klassisk ludo for 2–4 spillere (8–15 år). Hver farge kan være person, robot eller av. Kort spill (2 brikker) eller vanlig (4 brikker). Slå 6 for å komme ut, ta motstandere, trygge stjernefelt. |
 | 🔤 Bokstavlek | Dra eller trykk bokstaver til tavla og få ordet lest opp. Fri lek (med navnet ditt som hjelp) og ord-oppgaver der man staver dyr. Norsk og albansk alfabet. |
 | 🪙 Mynter og butikk | Spill gir mynter (5 per stjerne, +10 første gang et nivå klares). 128 ting i 8 kategorier (hatter, briller, leker, kjæledyr, spesialdyr, bakgrunner, rammer, effekter) fra 15 til 1500 mynter, med sjeldenhetsnivåer og samlingsmåler. |
