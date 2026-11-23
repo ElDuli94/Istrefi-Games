@@ -1,5 +1,5 @@
 /**
- * Dyrelyder – trykk på et dyr og hør lyden og navnet.
+ * Dyrelyder – trykk på et dyr og hør den ekte lyden, og så navnet.
  * 2–4 år: 9 store dyr, fri lek. 5–7 år: alle dyr + "Gjett dyret"-quiz.
  */
 import { Emo } from '../../components/Emo';
@@ -21,10 +21,8 @@ function useAnimalVoice(api: GameApi) {
     clearTimeout(timer.current);
     window.speechSynthesis?.cancel();
     const dur = playAnimal(a.id);
-    timer.current = window.setTimeout(
-      () => api.speak(withName ? `${a.name[api.lang]}! ${a.says[api.lang]}` : a.says[api.lang]),
-      dur * 1000 + 150
-    );
+    // Først ekte dyrelyd, så sier stemmen bare navnet på dyret (i quizen: bare lyden)
+    if (withName) timer.current = window.setTimeout(() => api.speak(a.name[api.lang]), dur * 1000 + 150);
   };
 }
 
@@ -90,7 +88,7 @@ function Free({ world, api }: GameProps) {
           aria-label={a.name[api.lang]}
         >
           <span key={active === a.id ? tick : 0} className="farm-animal__emoji"><Emo e={a.emoji} /></span>
-          {active === a.id && <span key={`b${tick}`} className="farm-animal__says">{a.says[api.lang]}</span>}
+          {active === a.id && <span key={`b${tick}`} className="farm-animal__says">{a.name[api.lang]}</span>}
         </button>
       ))}
     </div>
