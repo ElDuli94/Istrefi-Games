@@ -6,6 +6,7 @@ import type { GameDefinition } from './types';
 export const GAMES: GameDefinition[] = [
   {
     id: 'numbers',
+    group: 'numbers',
     titleKey: 'game_numbers',
     icon: '🔢',
     color: '#ff9f1c',
@@ -16,6 +17,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'naming',
+    group: 'letters',
     titleKey: 'game_naming',
     icon: '🖼️',
     color: '#06d6a0',
@@ -26,6 +28,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'stories',
+    group: 'letters',
     titleKey: 'game_stories',
     icon: '📖',
     color: '#8338ec',
@@ -36,6 +39,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'shapes',
+    group: 'numbers',
     titleKey: 'game_shapes',
     icon: '🔷',
     color: '#3a86ff',
@@ -46,6 +50,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'sounds',
+    group: 'explore',
     titleKey: 'game_sounds',
     icon: '🐮',
     color: '#06d6a0',
@@ -56,6 +61,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'draw',
+    group: 'create',
     titleKey: 'game_draw',
     icon: '🎨',
     color: '#ff9f1c',
@@ -65,6 +71,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'memory',
+    group: 'numbers',
     titleKey: 'game_memory',
     icon: '🃏',
     color: '#ff006e',
@@ -74,6 +81,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'letters',
+    group: 'letters',
     titleKey: 'game_letters',
     icon: '🔤',
     color: '#8338ec',
@@ -83,6 +91,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'blocks',
+    group: 'action',
     titleKey: 'game_blocks',
     icon: '🧱',
     color: '#3a86ff',
@@ -92,6 +101,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'snake',
+    group: 'action',
     titleKey: 'game_snake',
     icon: '🐍',
     color: '#38b000',
@@ -101,6 +111,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'math',
+    group: 'numbers',
     titleKey: 'game_math',
     icon: '🧮',
     color: '#ff9f1c',
@@ -110,6 +121,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'balloons',
+    group: 'create',
     titleKey: 'game_balloons',
     icon: '🎈',
     color: '#ff4d6d',
@@ -119,6 +131,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'music',
+    group: 'create',
     titleKey: 'game_music',
     icon: '🎹',
     color: '#8338ec',
@@ -128,6 +141,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'puzzle',
+    group: 'numbers',
     titleKey: 'game_puzzle',
     icon: '🧩',
     color: '#2ec4b6',
@@ -137,6 +151,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'words',
+    group: 'letters',
     titleKey: 'game_words',
     icon: '🔠',
     color: '#06d6a0',
@@ -146,6 +161,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'flags',
+    group: 'explore',
     titleKey: 'game_flags',
     icon: '🌍',
     color: '#ef476f',
@@ -155,6 +171,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'trace',
+    group: 'letters',
     titleKey: 'game_trace',
     icon: '✍️',
     color: '#ff70a6',
@@ -164,6 +181,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'coloring',
+    group: 'create',
     titleKey: 'game_coloring',
     icon: '🖍️',
     color: '#ffca3a',
@@ -173,6 +191,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'dots',
+    group: 'create',
     titleKey: 'game_dots',
     icon: '🔢',
     color: '#4cc9f0',
@@ -182,6 +201,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'robot',
+    group: 'numbers',
     titleKey: 'game_robot',
     icon: '🤖',
     color: '#6a4c93',
@@ -191,6 +211,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'duel',
+    group: 'together',
     titleKey: 'game_duel',
     icon: '👫',
     color: '#ff006e',
@@ -200,6 +221,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'towers',
+    group: 'action',
     titleKey: 'game_towers',
     icon: '🎂',
     color: '#ff70a6',
@@ -209,6 +231,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'ludo',
+    group: 'together',
     titleKey: 'game_ludo',
     icon: '🎲',
     color: '#ef233c',
@@ -218,6 +241,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'ladders',
+    group: 'together',
     titleKey: 'game_ladders',
     icon: '🪜',
     color: '#fb5607',
@@ -227,6 +251,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'clock',
+    group: 'numbers',
     titleKey: 'game_clock',
     icon: '⏰',
     color: '#ff9f1c',
