@@ -1,0 +1,60 @@
+.ludo-setup { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 6px; }
+.ludo-setup h2 { color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.2); margin: 0; }
+.ludo-seats { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.ludo-seat {
+  width: 130px; border: 5px solid var(--c); border-radius: 24px; background: #fff; padding: 10px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 6px 0 rgba(0,0,0,.15); position: relative;
+}
+.ludo-seat__pawn { position: absolute; top: 8px; left: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--c); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--c); }
+.ludo-seat__icon { font-size: 44px; line-height: 1; }
+.ludo-seat b { font-size: 1.15rem; color: var(--c); filter: brightness(.85); }
+.ludo-seat small { font-weight: 800; font-size: .95rem; background: #f1f1f1; border-radius: 999px; padding: 2px 12px; }
+.ludo-seat.is-off { opacity: .45; border-style: dashed; }
+.ludo-seat:active { transform: scale(.94); }
+.ludo-len { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.ludo-len button { border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 800; font-size: 1.05rem; background: #ffffffaa; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+.ludo-len button.is-on { background: #ffd60a; }
+.ludo-setup .big-btn:disabled { opacity: .5; }
+.ludo-hint { color: #fff; font-weight: 800; margin: 0; text-shadow: 0 2px 0 rgba(0,0,0,.2); }
+
+.ludo { height: 100%; display: flex; align-items: center; justify-content: center; gap: 16px; }
+.ludo__board { width: min(100%, calc(100vh - 200px), 640px); aspect-ratio: 1; flex: none; }
+.ludo__board svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 8px 0 rgba(0,0,0,.18)); }
+.ludo__side { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 220px; }
+.ludo__msg { background: #fff; border: 5px solid; border-radius: 22px; padding: 8px 14px; font-weight: 800; font-size: 1.1rem; text-align: center; min-height: 3.2em; display: flex; align-items: center; gap: 8px; }
+.ludo__msg i { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.ludo-die { width: 110px; height: 110px; border: 6px solid var(--c); border-radius: 28px; padding: 6px; background: #fff; box-shadow: 0 8px 0 rgba(0,0,0,.18); }
+.ludo-die__face { width: 100%; height: 100%; display: block; }
+.ludo-die.is-ready { animation: dieWiggle 1.2s ease-in-out infinite; }
+.ludo-die.is-rolling { animation: dieRoll .14s linear infinite; }
+.ludo-die:active { scale: .92; }
+@keyframes dieWiggle { 0%, 100% { rotate: 0deg; scale: 1; } 20% { rotate: -8deg; scale: 1.06; } 40% { rotate: 8deg; scale: 1.06; } 60% { rotate: 0deg; scale: 1; } }
+@keyframes dieRoll { from { rotate: 0deg; } to { rotate: 360deg; } }
+
+.ludo-cell { stroke: #e3d5b8; stroke-width: .04; }
+.ludo-star { font-size: .6px; text-anchor: middle; fill: #c9b78f; }
+.ludo-arrow { font-size: .5px; text-anchor: middle; fill: #fff; }
+.ludo-pawn { transition: transform .15s ease-out; }
+.ludo-pawn.is-movable { cursor: pointer; }
+.ludo-pawn__ring { fill: #ffffff; opacity: .85; animation: pawnRing .9s ease-in-out infinite; }
+.ludo-pawn.is-movable .ludo-pawn__body { animation: pawnBob .6s ease-in-out infinite; }
+.ludo-pawn.is-hop .ludo-pawn__body { animation: pawnHop .13s ease-out; }
+.ludo-turnglow { fill: none; stroke: #fff; stroke-width: .18; animation: turnGlow 1s ease-in-out infinite; }
+@keyframes pawnRing { 0%, 100% { opacity: .35; } 50% { opacity: .95; } }
+@keyframes pawnBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.18px); } }
+@keyframes pawnHop { 0% { transform: translateY(0); } 50% { transform: translateY(-.3px); } 100% { transform: translateY(0); } }
+@keyframes turnGlow { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+
+/* Stående skjerm: terningen under brettet */
+@media (max-aspect-ratio: 1/1) {
+  .ludo { flex-direction: column; gap: 10px; }
+  .ludo__board { width: min(100%, calc(100vh - 290px)); }
+  .ludo__side { flex-direction: row; width: auto; max-width: 100%; }
+  .ludo__msg { font-size: 1rem; max-width: 220px; }
+  .ludo-die { width: 90px; height: 90px; flex: none; }
+}
+@media (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .ludo__board { width: min(100%, calc(100vh - 110px)); }
+  .ludo__side { width: 180px; }
+  .ludo-die { width: 86px; height: 86px; }
+}
