@@ -605,3 +605,17 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .lang-toggle.is-on { background: #fff3b0; opacity: 1; }
 .lang-toggle__plus { font-size: 22px; font-weight: 800; }
 @media (max-width: 560px), (max-height: 520px) { .lang-toggle { height: 46px; min-width: 46px; font-size: 20px; padding: 0 8px; border-width: 3px; } .lang-toggle__plus { font-size: 17px; } }
+
+/* Ekte 3D-modeller (Thing) */
+.thing { display: inline-flex; align-items: center; justify-content: center; line-height: 1; position: relative; }
+.thing--3d { width: 1.6em; height: 1.6em; }
+.thing--3d .model-view { width: 100%; height: 100%; display: block; touch-action: pan-y; opacity: 0; transition: opacity .3s; }
+.thing--3d .model-view.is-ready { opacity: 1; }
+.thing__wait { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: .62em; }
+.thing--hop { animation: thingHop .6s cubic-bezier(.3,1.6,.5,1); }
+@keyframes thingHop { 0% { transform: scale(1); } 40% { transform: scale(1.2) translateY(-12%); } 100% { transform: scale(1); } }
+
+/* Huset i 3D */
+.room-wrap--3d { flex: 1; min-height: 220px; }
+.house3d { width: 100%; height: 100%; min-height: 220px; border-radius: 24px; overflow: hidden; border: 6px solid #fff; box-shadow: var(--shadow); }
+.house3d__canvas { width: 100%; height: 100%; display: block; touch-action: none; }

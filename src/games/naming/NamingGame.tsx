@@ -9,6 +9,7 @@ import type { GameApi, GameProps } from '../types';
 import { VOCAB, firstLetter, type VocabCat, type VocabItem } from '../../data/vocab';
 import { ALPHABETS } from '../../data/alphabets';
 import { Emo } from '../../components/Emo';
+import { Thing } from '../../components/Thing';
 import './naming.css';
 
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
@@ -72,6 +73,7 @@ function Toddler({ api, cat, onDone }: { api: GameApi; cat: VocabCat; onDone: (s
   const [phase, setPhase] = useState<'book' | 'quiz'>('book');
   const [heard, setHeard] = useState<Set<string>>(new Set());
   const [bounce, setBounce] = useState<string | null>(null);
+  const [taps, setTaps] = useState(0);
 
   useEffect(() => { api.speak(api.t('tapToHear')); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -90,9 +92,10 @@ function Toddler({ api, cat, onDone }: { api: GameApi; cat: VocabCat; onDone: (s
               setBounce(null);
               requestAnimationFrame(() => setBounce(it.e));
               setHeard((h) => new Set(h).add(it.e));
+              setTaps((n) => n + 1);
             }}
           >
-            <Emo e={it.e} />
+            <Thing e={it.e} play={bounce === it.e ? taps : 0} />
             <Word api={api} it={it} />
           </button>
         ))}
@@ -185,7 +188,7 @@ function Quiz({ api, pool, rounds, choices, letters, onDone }: {
                 disabled={wrong.includes(o.e)}
                 onClick={() => answer(isT, o.e)}
               >
-                <Emo e={o.e} />
+                <Thing e={o.e} play={solved && isT ? 1 : 0} />
                 {solved && isT && <Word api={api} it={o} />}
               </button>
             );
@@ -194,7 +197,7 @@ function Quiz({ api, pool, rounds, choices, letters, onDone }: {
       ) : (
         <div className="naming-letterq">
           <div className={`naming-pic naming-pic--big ${solved ? 'is-right' : ''}`}>
-            <Emo e={q.target.e} />
+            <Thing e={q.target.e} play={solved ? 1 : 0} />
             <span className="naming-word">
               {solved ? name(api, q.target) : <><b className="naming-blank">_</b>{name(api, q.target).slice(q.answer.length)}</>}
             </span>
