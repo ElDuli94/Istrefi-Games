@@ -5,8 +5,6 @@
  */
 import * as THREE from 'three';
 import { buildShqipo } from './shqipo3d';
-import { instance } from './modelStage';
-import type { ModelInfo } from './models';
 import type { Phase, Season } from '../data/time';
 import type { WorldId } from '../data/worlds';
 
@@ -259,8 +257,6 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
   const leafColors = season === 'autumn' ? [0xf77f00, 0xd62828, 0xfcbf49, 0x2d6a4f]
     : season === 'spring' ? [0xffafcc, 0x2d6a4f, 0x52b788, 0xffc8dd]
     : [0x2d6a4f, 0x40916c, 0x1b4332, 0x52b788];
-  const procTrees: THREE.Group[] = [];
-  const procPalms: THREE.Group[] = [];
   function tree(x: number, z: number, s: number, i: number, parent: THREE.Object3D) {
     const t = new THREE.Group();
     t.position.set(x, 0, z);
@@ -278,7 +274,6 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
       t.add(cap);
     }
     parent.add(t);
-    procTrees.push(t);
     const ph = i * 1.3;
     anim.push((tt) => { t.rotation.z = Math.sin(tt * 1.5 + ph) * 0.05; t.rotation.x = Math.cos(tt * 1.2 + ph) * 0.03; });
     return t;
@@ -421,7 +416,6 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
     }
     lean.add(crown);
     island.add(p);
-    procPalms.push(p);
     anim.push((t) => { crown.rotation.y = Math.sin(t * 0.9 + i) * 0.15; crown.rotation.z = Math.sin(t * 1.3 + i) * 0.08; });
   }
 
@@ -565,98 +559,6 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
       g.attributes.position.needsUpdate = true;
     });
   }
-
-  // ---- Ekte 3D-modeller (Kenney, CC0) – lastes etter at øya vises; de enkle figurene er reserve ----
-  const mixers: THREE.AnimationMixer[] = [];
-  anim.push((_t, dt) => { for (const m of mixers) m.update(dt); });
-  let disposed = false;
-  void (async () => {
-    try {
-      const N = (f: string): ModelInfo => ({ path: `nature/${f}.glb` });
-      const P = (f: string): ModelInfo => ({ path: `pets/animal-${f}.glb`, animated: true });
-      const sway = (o: THREE.Object3D, k: number) => anim.push((t) => { o.rotation.z = Math.sin(t * 1.4 + k) * 0.04; });
-      // Skogen: ekte trær (høstfarger om høsten)
-      const treeFiles = season === 'autumn' ? ['tree_oak_fall', 'tree_default_fall', 'tree_pineRoundA'] : ['tree_oak', 'tree_pineRoundA', 'tree_default', 'tree_fat', 'tree_cone'];
-      for (let k = 0; k < procTrees.length; k++) {
-        const pt = procTrees[k];
-        const { root } = await instance(N(treeFiles[k % treeFiles.length]), 2.3 * pt.scale.x);
-        if (disposed) return;
-        const holder = new THREE.Group();
-        holder.position.copy(pt.position);
-        holder.rotation.y = k * 1.7;
-        holder.add(root);
-        pt.parent!.add(holder);
-        pt.visible = false;
-        sway(holder, k);
-      }
-      // Palmer på stranden
-      for (let k = 0; k < procPalms.length; k++) {
-        const pp = procPalms[k];
-        const { root } = await instance(N(k % 2 ? 'tree_palmTall' : 'tree_palmBend'), 3);
-        if (disposed) return;
-        root.position.copy(pp.position);
-        root.rotation.y = k * 2.1;
-        island.add(root);
-        pp.visible = false;
-        sway(root, k + 3);
-      }
-      // Blomster, sopp og busker spredt på gresset (ikke om vinteren)
-      if (!winter) {
-        const deco = ['flower_redA', 'flower_yellowA', 'flower_purpleA', 'mushroom_redGroup', 'plant_bushLarge', 'flower_redA', 'flower_yellowA'];
-        for (let k = 0; k < 16; k++) {
-          const a = k * 2.39996, r = 3 + (k % 5) * 1.25;
-          const x = Math.cos(a) * r, z = Math.sin(a) * r;
-          if (opts.worlds.some((w) => Math.hypot(w.x - x, w.z - z) < 2.6)) continue;
-          const f = deco[k % deco.length];
-          const { root } = await instance(N(f), f.startsWith('plant') ? 1.1 : 0.85);
-          if (disposed) return;
-          root.position.set(x, TOP, z);
-          root.rotation.y = k;
-          island.add(root);
-        }
-      }
-      // Dyr som rusler rundt i verdenene
-      const zonePos = (id: WorldId) => opts.worlds.find((w) => w.id === id)!;
-      const pets: [string, WorldId | 'beach', number][] = [
-        ['dog', 'tiny', 0], ['cat', 'tiny', 2.1], ['chick', 'tiny', 4.2],
-        ['bunny', 'small', 0], ['deer', 'small', 2], ['fox', 'small', 4],
-        [winter ? 'polar' : 'giraffe', 'mid', 1], ['penguin', 'mid', 3.5],
-        ['monkey', 'big', 0.5], ['panda', 'big', 3],
-        ['crab', 'beach', 0]
-      ];
-      for (const [name, where, phase] of pets) {
-        const { root, clips } = await instance(P(name), name === 'giraffe' ? 1.9 : 1.2);
-        if (disposed) return;
-        const mixer = new THREE.AnimationMixer(root);
-        mixers.push(mixer);
-        const act = (n: string) => { const c = clips.find((x) => x.name === n); return c ? mixer.clipAction(c) : null; };
-        const walk = act('walk'), idle = act('idle'), eat = act('eat') ?? idle;
-        walk?.play();
-        island.add(root);
-        const beach = where === 'beach';
-        const cx = beach ? 0 : zonePos(where).x, cz = beach ? 0 : zonePos(where).z;
-        const R = beach ? 10.5 : 2.7;
-        let ang = phase, walking = true, timer = 4 + Math.random() * 5;
-        anim.push((_t, dt) => {
-          timer -= dt;
-          if (timer <= 0) {
-            walking = !walking;
-            timer = walking ? 5 + Math.random() * 6 : 2 + Math.random() * 2;
-            const to = walking ? walk : Math.random() < 0.5 ? eat : idle;
-            for (const a of [walk, idle, eat]) if (a && a !== to) a.fadeOut(0.3);
-            to?.reset().fadeIn(0.3).play();
-          }
-          if (walking) ang += dt * (beach ? 0.05 : 0.22);
-          const x = cx + Math.cos(ang) * R, z = cz + Math.sin(ang) * R;
-          root.position.set(x, beach ? 0.55 : TOP, z);
-          // Se i gåretningen (tangenten)
-          root.rotation.y = Math.atan2(-Math.sin(ang), Math.cos(ang)) + (beach ? Math.PI / 2 : 0);
-        });
-      }
-    } catch {
-      /* modellene kunne ikke lastes – de enkle figurene vises fortsatt */
-    }
-  })();
 
   // ---- Shqipo ----
   const shq = buildShqipo();
@@ -805,7 +707,6 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
       return { x: (v.x * 0.5 + 0.5) * width, y: (-v.y * 0.5 + 0.5) * height };
     },
     dispose() {
-      disposed = true;
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange', onVis);
       canvas.removeEventListener('pointerdown', onDown);

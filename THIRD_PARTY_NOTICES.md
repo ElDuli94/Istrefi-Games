@@ -53,11 +53,5 @@ Ekte dyreopptak i `public/sounds/animals/`, alle med CC0-lisens (fri bruk). Kred
 Copyright © 2010–2026 three.js authors). Alle 3D-figurene er laget med kode i
 appen – ingen modellfiler fra andre.
 
-## 3D-modeller (Kenney, CC0)
-
-Dyrene (Cube Pets), maten (Food Kit), kjøretøyene (Car Kit), møblene (Furniture Kit) og
-naturen (Nature Kit) er laget av Kenney (www.kenney.nl) og lisensiert CC0 1.0 (Public Domain).
-Lisensfilene ligger i public/models/. Takk, Kenney!
-
 ## Baloo 2 (skrift)
 Baloo 2 – Copyright (c) Ek Type – SIL Open Font License 1.1, via `@fontsource/baloo-2`.

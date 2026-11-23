@@ -337,9 +337,6 @@ export const no = {
   setClock: 'Still klokka på {t}! Dra den lange viseren.',
   notQuite: 'Ikke helt. Prøv igjen!',
   check: 'Sjekk',
-  view3d: 'Se huset i 3D',
-  edit2d: 'Tilbake til å innrede',
-  house3dHint: 'Dra for å se deg rundt. Trykk, så danser figuren din!',
   soundOn: 'Lyd på',
   soundOff: 'Lyd av',
   // Kakevakt

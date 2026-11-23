@@ -3,7 +3,6 @@
  * 2–4 år: 9 store dyr, fri lek. 5–7 år: alle dyr + "Gjett dyret"-quiz.
  */
 import { Emo } from '../../components/Emo';
-import { Thing } from '../../components/Thing';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
 import { FARM } from '../../data/farm';
@@ -88,7 +87,7 @@ function Free({ world, api }: GameProps) {
           onPointerDown={() => tap(a)}
           aria-label={a.name[api.lang]}
         >
-          <span className="farm-animal__emoji"><Thing e={a.emoji} play={active === a.id ? tick : 0} spin={false} /></span>
+          <span key={active === a.id ? tick : 0} className="farm-animal__emoji"><Emo e={a.emoji} /></span>
           {active === a.id && <span key={`b${tick}`} className="farm-animal__says">{a.name[api.lang]}</span>}
         </button>
       ))}
@@ -150,7 +149,7 @@ function Quiz({ api, onFinish }: GameProps) {
             onClick={() => pick(a)}
             aria-label={a.name[api.lang]}
           >
-            <span className="farm-animal__emoji"><Thing e={a.emoji} play={right === a.id ? 1 : 0} spin={false} /></span>
+            <span className="farm-animal__emoji"><Emo e={a.emoji} /></span>
           </button>
         ))}
       </div>

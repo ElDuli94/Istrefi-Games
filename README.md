@@ -43,7 +43,6 @@ Maskoten heter **Shqipo** – en liten ørneunge inspirert av ørnen i det alban
 | 📒 Klistremerkebok | Klistremerker kjøpes i butikken (36 totalt). |
 | 🔒 For voksne | Foreldrelås med regnestykke. Statistikk, profiler, sikkerhetskopi, innstillinger og app-guide. |
 | 🏝️ 3D-øya | Øykartet i 3D (three.js): bølger, skyer, båter, hoppende fisk og Shqipo som flyr rundt. Dra for å snurre, trykk på Shqipo eller havet. Faller automatisk tilbake til 2D på eldre/trege nettbrett. |
-| 🧸 Ekte 3D-modeller | Animerte 3D-dyr (Kenney Cube Pets) i Dyrelyder og Hva heter det? – de danser og nikker når man trykker, og kan snurres med fingeren. 3D-mat, -biler og -ting i ordspillet, ekte trær, palmer, blomster og dyr som rusler rundt på øya, og huset i 3D. Lastes ved behov og lagres for offline bruk. |
 | 🌗 Levende verden | Dag, kveld og natt etter klokka. Snø og snømann om vinteren (juletre i desember), blomster om våren, sommerfugler om sommeren og fallende løv om høsten. Bevegelige bakgrunner i alle verdener. |
 | 🌊 Naturlyder | Bølger, fuglekvitter, vind og sirisser om natta – laget med Web Audio, kan slås av for voksne. |
 | 🌍 Språk | Norsk og albansk (shqip). |
