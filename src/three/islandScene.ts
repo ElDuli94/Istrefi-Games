@@ -601,12 +601,15 @@ export function createIsland(canvas: HTMLCanvasElement, opts: IslandOptions): Is
     // Sørg for at hele øya (radius ~13) får plass både i høyde og bredde
     const vf = (camera.fov * Math.PI) / 360;
     const hf = Math.atan(Math.tan(vf) * camera.aspect);
-    dist = Math.max(13.5 / Math.tan(vf) * 0.78, 13.5 / Math.tan(hf)) + 2;
+    // Stående skjerm: zoom inn så øya (sandkanten, radius ~11.8) fyller bredden
+    const portrait = camera.aspect < 0.8;
+    const fitR = portrait ? 11.4 : 13.5;
+    dist = Math.max(fitR / Math.tan(vf) * 0.78, fitR / Math.tan(hf)) + (portrait ? 0 : 2);
     camera.far = dist + 120;
     fog.near = dist + 4;
     fog.far = dist + 50;
     // Stående skjerm: se mer rett ovenfra så øya fyller mer av høyden
-    if (!touchedPitch) pitch = camera.aspect < 0.8 ? 1.18 : camera.aspect < 1.2 ? 1.05 : 0.95;
+    if (!touchedPitch) pitch = camera.aspect < 0.8 ? 1.22 : camera.aspect < 1.2 ? 1.05 : 0.95;
     camera.updateProjectionMatrix();
   }
 
