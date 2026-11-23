@@ -563,7 +563,8 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
   .world-pin__label { font-size: .82rem; padding: 2px 9px; }
 }
 @media (max-width: 520px) {
-  .world-pin__label small { display: none; }
+  .world-pin__label { line-height: 1.05; }
+  .world-pin__label small { font-size: .78em; }
 }
 .island-screen.is-3d .island-mascot { position: absolute; }
 .island-bubble {
