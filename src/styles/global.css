@@ -559,8 +559,11 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .world-pin:active .world-pin__icon { scale: .9; }
 @keyframes pinBob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
 @media (max-height: 520px), (max-width: 520px) {
-  .world-pin__icon { width: 48px; height: 48px; font-size: 26px; border-width: 4px; }
-  .world-pin__label { font-size: .85rem; padding: 2px 9px; }
+  .world-pin__icon { width: 46px; height: 46px; font-size: 25px; border-width: 4px; }
+  .world-pin__label { font-size: .82rem; padding: 2px 9px; }
+}
+@media (max-width: 520px) {
+  .world-pin__label small { display: none; }
 }
 .island-screen.is-3d .island-mascot { position: absolute; }
 .island-bubble {

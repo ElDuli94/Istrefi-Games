@@ -9,7 +9,7 @@ import { getPhase, getSeason, isChristmas } from '../data/time';
 import { Emo } from '../components/Emo';
 import { useT } from '../i18n';
 
-const S = 9; // kartprosent → 3D-koordinater
+const S = 12; // kartprosent → 3D-koordinater (større tall = verdenene lenger fra hverandre)
 
 export default function Island3D({ myWorld, onWorld, onShqipo, onSlow }: {
   myWorld: WorldId;
