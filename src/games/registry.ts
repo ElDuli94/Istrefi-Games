@@ -11,6 +11,7 @@ export const GAMES: GameDefinition[] = [
     color: '#ff9f1c',
     worlds: ['tiny', 'small'],
     maxPlayers: 1,
+    bilingual: true,
     component: lazy(() => import('./numbers/NumbersGame'))
   },
   {
@@ -20,7 +21,28 @@ export const GAMES: GameDefinition[] = [
     color: '#06d6a0',
     worlds: ['tiny', 'small'],
     maxPlayers: 1,
+    bilingual: true,
     component: lazy(() => import('./naming/NamingGame'))
+  },
+  {
+    id: 'stories',
+    titleKey: 'game_stories',
+    icon: '📖',
+    color: '#8338ec',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    bilingual: true,
+    component: lazy(() => import('./stories/StoryGame'))
+  },
+  {
+    id: 'shapes',
+    titleKey: 'game_shapes',
+    icon: '🔷',
+    color: '#3a86ff',
+    worlds: ['tiny', 'small'],
+    maxPlayers: 1,
+    bilingual: true,
+    component: lazy(() => import('./shapes/ShapesGame'))
   },
   {
     id: 'sounds',
@@ -29,6 +51,7 @@ export const GAMES: GameDefinition[] = [
     color: '#06d6a0',
     worlds: ['tiny', 'small'],
     maxPlayers: 1,
+    bilingual: true,
     component: lazy(() => import('./sounds/AnimalSounds'))
   },
   {
@@ -201,6 +224,15 @@ export const GAMES: GameDefinition[] = [
     worlds: ['tiny', 'small', 'mid'],
     maxPlayers: 2,
     component: lazy(() => import('./ladders/LaddersGame'))
+  },
+  {
+    id: 'clock',
+    titleKey: 'game_clock',
+    icon: '⏰',
+    color: '#ff9f1c',
+    worlds: ['small', 'mid'],
+    maxPlayers: 1,
+    component: lazy(() => import('./clock/ClockGame'))
   }
 ];
 

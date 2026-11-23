@@ -22,7 +22,7 @@ function useAnimalVoice(api: GameApi) {
     window.speechSynthesis?.cancel();
     const dur = playAnimal(a.id);
     // Først ekte dyrelyd, så sier stemmen bare navnet på dyret (i quizen: bare lyden)
-    if (withName) timer.current = window.setTimeout(() => api.speak(a.name[api.lang]), dur * 1000 + 150);
+    if (withName) timer.current = window.setTimeout(() => api.sayBoth(a.name[api.lang], a.name[api.otherLang]), dur * 1000 + 150);
   };
 }
 
@@ -119,7 +119,7 @@ function Quiz({ api, onFinish }: GameProps) {
     if (a.id === target.id) {
       setRight(a.id);
       api.sfx('match');
-      setTimeout(() => api.speak(a.name[api.lang]), 300);
+      setTimeout(() => api.sayBoth(a.name[api.lang], a.name[api.otherLang]), 300);
       setTimeout(() => {
         setRight(null);
         if (round + 1 < ROUNDS) setRound(round + 1);

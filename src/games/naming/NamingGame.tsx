@@ -55,6 +55,16 @@ export default function NamingGame(props: GameProps) {
 }
 
 const name = (api: GameApi, it: VocabItem) => it[api.lang];
+const other = (api: GameApi, it: VocabItem) => it[api.otherLang];
+/** Ordet skrevet – og på det andre språket under, hvis «Lær begge språk» er på */
+function Word({ api, it }: { api: GameApi; it: VocabItem }) {
+  return (
+    <span className="naming-word">
+      {name(api, it)}
+      {api.bilingual && <small className="naming-word__other">{api.otherLang === 'sq' ? '🇦🇱' : '🇳🇴'} {other(api, it)}</small>}
+    </span>
+  );
+}
 
 // ---------------- 2–4 år ----------------
 function Toddler({ api, cat, onDone }: { api: GameApi; cat: VocabCat; onDone: (stars: number) => void }) {
@@ -76,14 +86,14 @@ function Toddler({ api, cat, onDone }: { api: GameApi; cat: VocabCat; onDone: (s
             style={{ animationDelay: `${i * 0.06}s` }}
             onClick={() => {
               api.sfx('pop');
-              api.speak(name(api, it));
+              api.sayBoth(name(api, it), other(api, it));
               setBounce(null);
               requestAnimationFrame(() => setBounce(it.e));
               setHeard((h) => new Set(h).add(it.e));
             }}
           >
             <Emo e={it.e} />
-            <span className="naming-word">{name(api, it)}</span>
+            <Word api={api} it={it} />
           </button>
         ))}
       </div>
@@ -134,7 +144,8 @@ function Quiz({ api, pool, rounds, choices, letters, onDone }: {
     if (ok) {
       api.sfx('match');
       setSolved(true);
-      api.speak(q.kind === 'find' ? name(api, q.target) : `${q.answer}. ${api.t('asIn', { l: q.answer, w: name(api, q.target) })}`);
+      if (q.kind === 'find') api.sayBoth(name(api, q.target), other(api, q.target));
+      else api.speak(`${q.answer}. ${api.t('asIn', { l: q.answer, w: name(api, q.target) })}`);
       setTimeout(() => {
         if (i + 1 >= rounds) {
           const m = mistakes.current;
@@ -175,7 +186,7 @@ function Quiz({ api, pool, rounds, choices, letters, onDone }: {
                 onClick={() => answer(isT, o.e)}
               >
                 <Emo e={o.e} />
-                {solved && isT && <span className="naming-word">{name(api, o)}</span>}
+                {solved && isT && <Word api={api} it={o} />}
               </button>
             );
           })}
