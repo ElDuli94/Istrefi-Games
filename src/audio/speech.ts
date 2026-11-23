@@ -15,19 +15,22 @@ import { VOICE_FILES } from '../voice/manifest';
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
 const BASE = `${import.meta.env.BASE_URL}voice/`;
 
-type Item = { kind: 'clip'; url: string } | { kind: 'tts'; text: string };
+type Item = ({ kind: 'clip'; url: string } | { kind: 'tts'; text: string }) & { lang: Lang; onStart?: () => void };
+/** En bit som skal leses: tekst, valgfritt språk og en funksjon som kalles når biten starter. */
+export interface SpeakPart { text: string; lang?: Lang; onStart?: () => void }
 
 let audio: HTMLAudioElement | null = null;
 let queue: Item[] = [];
 let token = 0;
+let doneCb: (() => void) | null = null;
 
 function clipUrl(lang: Lang, text: string): string | null {
   const id = VOICE_FILES[lang]?.[norm(text)];
   return id ? `${BASE}${lang}/${id}.mp3` : null;
 }
 
-function findVoice(): SpeechSynthesisVoice | null {
-  const lang = LANGUAGES[getState().settings.lang];
+function findVoice(l: Lang = getState().settings.lang): SpeechSynthesisVoice | null {
+  const lang = LANGUAGES[l];
   const voices = window.speechSynthesis?.getVoices() ?? [];
   const prefixes = [lang.speechLang.toLowerCase(), ...lang.speechFallback];
   // Foretrekk "forbedrede"/"premium" stemmer hvis enheten har dem
@@ -47,17 +50,17 @@ export function canSpeak(): boolean {
 /** Del opp teksten i biter som kan spilles som lydfil, ellers leses av enheten. */
 function plan(lang: Lang, text: string): Item[] {
   const whole = clipUrl(lang, text);
-  if (whole) return [{ kind: 'clip', url: whole }];
+  if (whole) return [{ kind: 'clip', url: whole, lang }];
   const items: Item[] = [];
   const parts = text.split(/(?<=[.!?:–])\s+/).filter(Boolean);
   for (const part of parts) {
     const url = clipUrl(lang, part);
-    if (url) { items.push({ kind: 'clip', url }); continue; }
+    if (url) { items.push({ kind: 'clip', url, lang }); continue; }
     // Prøv ord for ord (f.eks. "12 pluss 7", "Hei Ilir!")
     const words = part.split(/\s+/);
     const urls = words.map((w) => clipUrl(lang, w) ?? clipUrl(lang, w.replace(/[!?.,:]+$/, '')));
-    if (urls.every(Boolean)) urls.forEach((u) => items.push({ kind: 'clip', url: u! }));
-    else items.push({ kind: 'tts', text: part });
+    if (urls.every(Boolean)) urls.forEach((u) => items.push({ kind: 'clip', url: u!, lang }));
+    else items.push({ kind: 'tts', text: part, lang });
   }
   return items;
 }
@@ -65,7 +68,8 @@ function plan(lang: Lang, text: string): Item[] {
 function next(my: number) {
   if (my !== token) return;
   const item = queue.shift();
-  if (!item) return;
+  if (!item) { const cb = doneCb; doneCb = null; cb?.(); return; }
+  item.onStart?.();
   if (item.kind === 'clip') {
     audio ??= new Audio();
     audio.src = item.url;
@@ -73,7 +77,7 @@ function next(my: number) {
     audio.onerror = () => next(my);
     audio.play().catch(() => next(my));
   } else {
-    const voice = findVoice();
+    const voice = findVoice(item.lang);
     if (!voice || !('speechSynthesis' in window)) return next(my);
     const u = new SpeechSynthesisUtterance(item.text);
     try { u.voice = voice; } catch { /* enkelte enheter godtar ikke stemmen – bruk språk i stedet */ }
@@ -89,15 +93,32 @@ function next(my: number) {
 export function stopSpeaking() {
   token++;
   queue = [];
+  doneCb = null;
   if (audio) { audio.pause(); audio.onended = null; }
   window.speechSynthesis?.cancel();
 }
 
 export function speak(text: string) {
-  if (!getState().settings.voice || !text) return;
+  speakParts([{ text }]);
+}
+
+/**
+ * Les flere biter etter hverandre – f.eks. først norsk, så albansk («hund … qen»),
+ * eller setning for setning i et eventyr (onStart brukes til å lyse opp teksten).
+ * onDone kalles når alt er lest (også når stemmen er slått av).
+ */
+export function speakParts(parts: SpeakPart[], onDone?: () => void) {
   stopSpeaking();
-  const lang = getState().settings.lang;
-  queue = plan(lang, text);
+  if (!getState().settings.voice) { onDone?.(); return; }
+  const main = getState().settings.lang;
+  queue = [];
+  for (const p of parts) {
+    if (!p.text) continue;
+    const items = plan(p.lang ?? main, p.text);
+    if (items[0] && p.onStart) items[0].onStart = p.onStart;
+    queue.push(...items);
+  }
+  doneCb = onDone ?? null;
   next(token);
 }
 

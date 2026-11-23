@@ -40,6 +40,12 @@ export interface GameApi {
   setBack: (fn: (() => void) | null) => void;
   /** Liten belønning midt i spillet (konfetti + mynter) uten at spillet stopper. Brukes i «uendelige» leker. */
   reward: (coins: number) => void;
+  /** Det andre språket (norsk ↔ albansk) */
+  otherLang: Lang;
+  /** Er «Lær begge språk» slått på? */
+  bilingual: boolean;
+  /** Les ordet på hovedspråket, og (hvis tospråklig) så på det andre språket. */
+  sayBoth: (main: string, other: string) => void;
 }
 
 export interface GameProps {
@@ -58,5 +64,7 @@ export interface GameDefinition {
   color: string;
   worlds: WorldId[];
   maxPlayers: 1 | 2;
+  /** Spillet støtter «Lær begge språk» (viser flaggknapp) */
+  bilingual?: boolean;
   component: LazyExoticComponent<ComponentType<GameProps>>;
 }

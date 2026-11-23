@@ -34,3 +34,4 @@
 .naming-letter { width: clamp(70px, 16vmin, 110px); aspect-ratio: 1; border: 6px solid #fff; border-radius: 24px; background: #fff; font-size: clamp(36px, 9vmin, 60px); font-weight: 800; box-shadow: 0 6px 0 rgba(0,0,0,.15); }
 @keyframes namingBounce { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes namingHint { 0%, 100% { rotate: 0deg; } 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+.naming-word__other { display: block; font-size: .8em; color: #8338ec; text-transform: none; }

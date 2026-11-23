@@ -8,6 +8,9 @@ import { sq } from '../i18n/sq';
 import type { Lang } from '../i18n';
 import { ANIMALS } from '../data/animals';
 import { VOCAB, wordForLetter } from '../data/vocab';
+import { STORIES, sentencesOf } from '../games/stories/stories';
+import { SHAPE_NAMES } from '../games/shapes/names';
+import { ALL_TIMES, timeText } from '../games/clock/time';
 import { FARM } from '../data/farm';
 import { COUNTRIES } from '../data/countries';
 import { WORDS } from '../data/words';
@@ -55,6 +58,13 @@ export function phrasesFor(lang: Lang): Clip[] {
   for (const a of FARM) { add(a.name[lang]); add(a.says[lang]); add(`${a.name[lang]}! ${a.says[lang]}`); }
   for (const s of SONGS) add(s.title[lang]);
   for (const f of DOT_FIGS) add(f.name[lang]);
+  // Eventyr, former og klokka
+  for (const st of STORIES) {
+    add(st.title[lang]);
+    for (const pg of st.pages) { for (const s of sentencesOf(pg.text[lang])) add(s); for (const c of pg.choices ?? []) add(c.label[lang]); }
+  }
+  for (const n of Object.values(SHAPE_NAMES)) { add(n[lang]); add(fill(d.findThe, { x: n[lang] })); }
+  for (const [h, m] of ALL_TIMES) { const tt = timeText(h, m, lang); add(tt); add(fill(d.setClock, { t: tt })); }
   // Hva heter det? og Tallek
   for (const c of VOCAB) for (const it of c.items) { add(it[lang]); add(fill(d.findThe, { x: it[lang] })); add(fill(d.whichLetter, { x: it[lang] })); }
   for (const ch of ALPHABETS[lang]) { const ex = wordForLetter(ch, lang); if (ex) add(fill(d.asIn, { l: ch, w: ex[lang] })); }

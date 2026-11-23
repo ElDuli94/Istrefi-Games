@@ -48,6 +48,8 @@ export interface Settings {
   map3d: boolean;
   /** Naturlyder i bakgrunnen (bølger, fugler, vind) */
   nature: boolean;
+  /** Lær begge språk: ord leses også på det andre språket */
+  bilingual: boolean;
 }
 
 export interface AppState {
@@ -61,7 +63,7 @@ const defaultState = (): AppState => ({
   version: SCHEMA_VERSION,
   profiles: [],
   activeProfileId: null,
-  settings: { lang: 'no', music: true, sfx: true, voice: true, map3d: true, nature: true }
+  settings: { lang: 'no', music: true, sfx: true, voice: true, map3d: true, nature: true, bilingual: false }
 });
 
 function migrate(raw: unknown): AppState {

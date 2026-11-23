@@ -1,0 +1,26 @@
+.clockgame { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 6px; overflow-y: auto; }
+.clock { display: block; filter: drop-shadow(0 6px 0 rgba(0,0,0,.15)); max-width: 62vmin; height: auto; }
+.clock.is-drag { touch-action: none; cursor: grab; }
+.clock__num { font-size: 20px; font-weight: 800; fill: #333; font-family: inherit; }
+.clock__knob { animation: knobPulse 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes knobPulse { 0%, 100% { scale: 1; } 50% { scale: 1.2; } }
+.clock-options { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.clock-opt { border: 5px solid #fff; border-radius: 22px; background: #fff; padding: 12px 18px; font-weight: 800; font-size: clamp(1.05rem, 3.2vmin, 1.45rem); box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+.clock-opt--clock { padding: 6px; }
+.clock-opt--clock .clock { max-width: 28vmin; }
+.clock-opt.is-wrong { opacity: .35; transform: scale(.92); }
+.clock-opt.is-right { border-color: #06d6a0; background: #e9fff6; animation: shapeBounce .5s cubic-bezier(.3,1.6,.5,1); }
+.clock-opt.is-hint { border-color: #ffd60a; animation: shapeHint .9s ease-in-out infinite; }
+.clock-digital { background: #222; color: #39ff14; font-family: 'Courier New', monospace; font-weight: 800; font-size: clamp(2.6rem, 10vmin, 4.5rem); padding: 6px 26px; border-radius: 18px; box-shadow: 0 6px 0 rgba(0,0,0,.2); letter-spacing: 2px; }
+.clock-digital--small { font-size: 1.8rem; padding: 4px 16px; }
+.clock-set { border-radius: 50%; }
+.clock-set.is-right .clock { filter: drop-shadow(0 0 14px #06d6a0); }
+.clock-set.is-wrong { animation: shapeHint .5s ease-in-out 1; }
+.clock-setrow { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center; }
+@keyframes shapeBounce { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes shapeHint { 0%, 100% { rotate: 0deg; } 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+
+.clockgame .shapes-ask { background: #fff; border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 800; font-size: clamp(1.1rem, 3.6vmin, 1.6rem); box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+.clockgame .shapes-progress { display: flex; gap: 6px; }
+.clockgame .shapes-progress i { width: 14px; height: 14px; border-radius: 50%; background: #ffffff66; }
+.clockgame .shapes-progress i.is-done { background: #ffd60a; }

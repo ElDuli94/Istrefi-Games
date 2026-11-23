@@ -126,7 +126,7 @@ function Choices({ options, answer, onRight, api, wrongHint = 2 }: { options: nu
           className={`num-choice pop-in ${wrong.includes(o) ? 'is-wrong' : ''} ${ok && o === answer ? 'is-right' : ''} ${!ok && wrong.length >= wrongHint && o === answer ? 'is-hint' : ''}`}
           disabled={wrong.includes(o) || ok}
           onClick={() => {
-            if (o === answer) { setOk(true); api.sfx('match'); api.speak(String(o)); onRight(); }
+            if (o === answer) { setOk(true); api.sfx('match'); api.sayBoth(String(o), String(o)); onRight(); }
             else { api.sfx('nope'); api.speak(String(o)); setWrong([...wrong, o]); }
           }}
         >{o}</button>
@@ -159,7 +159,7 @@ function Toddler({ api, onDone }: { api: GameApi; onDone: (stars: number) => voi
       </button>
       <Things key={`t${round}`} n={q.n} thing={q.thing} api={api} big onCounted={counting ? () => {
         setCounted(true);
-        setTimeout(() => { api.sfx('match'); api.speak(api.t('itIs', { n: q.n })); }, 500);
+        setTimeout(() => { api.sfx('match'); api.sayBoth(api.t('itIs', { n: q.n }), String(q.n)); }, 500);
         next();
       } : undefined} />
       {counting

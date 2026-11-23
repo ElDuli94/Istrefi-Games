@@ -17,7 +17,7 @@ import { Mascot } from '../components/Mascot';
 import { Shqipo3DView } from '../components/Shqipo3DView';
 import { LivelyAvatar } from '../components/LivelyAvatar';
 import { playSfx, startMusic, stopMusic } from '../audio/sound';
-import { speak, stopSpeaking } from '../audio/speech';
+import { speak, speakParts, stopSpeaking } from '../audio/speech';
 
 export function GameHost({ gameId, worldId }: { gameId: string; worldId: string }) {
   const t = useT();
@@ -104,9 +104,12 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
       const id = Date.now();
       setToast({ id, coins });
       setTimeout(() => setToast((x) => (x && x.id === id ? null : x)), 2400);
-    }
+    },
+    otherLang: lang === 'no' ? 'sq' : 'no',
+    bilingual: settings.bilingual,
+    sayBoth: (main, other) => speakParts(settings.bilingual ? [{ text: main }, { text: other, lang: lang === 'no' ? 'sq' : 'no' }] : [{ text: main }])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [lang, profile?.id, profile?.name, statsKey]);
+  }), [lang, profile?.id, profile?.name, statsKey, settings.bilingual]);
 
   if (!valid || !game || !profile) return null;
   const Game = game.component;
@@ -137,6 +140,21 @@ export function GameHost({ gameId, worldId }: { gameId: string; worldId: string 
         title={<h1 className="game-title"><Emo e={game.icon} /> {t(game.titleKey)}</h1>}
         right={
           <>
+            {game.bilingual && (
+              <button
+                className={`lang-toggle ${settings.bilingual ? 'is-on' : ''}`}
+                onClick={() => {
+                  const on = !settings.bilingual;
+                  actions.updateSettings({ bilingual: on });
+                  playSfx('pop');
+                  speak(on ? t('bilingualOn') : t('bilingualOff'));
+                }}
+                aria-label={t('bilingual')}
+                aria-pressed={settings.bilingual}
+              >
+                <span>{lang === 'no' ? '🇳🇴' : '🇦🇱'}</span>{settings.bilingual && <span className="lang-toggle__plus">+{lang === 'no' ? '🇦🇱' : '🇳🇴'}</span>}
+              </button>
+            )}
             <RoundButton icon={settings.sfx || settings.music ? '🔊' : '🔇'} label={settings.sfx || settings.music ? t('soundOff') : t('soundOn')} onClick={toggleSound} />
             <RoundButton icon="❓" label={t('howToPlay')} onClick={() => setShowHelp(true)} color="#ffd60a" />
           </>

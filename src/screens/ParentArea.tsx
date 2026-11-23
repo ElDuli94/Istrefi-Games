@@ -226,6 +226,8 @@ function SettingsTab() {
       <Toggle label={`🎵 ${t('music')}`} value={settings.music} onChange={(v) => { actions.updateSettings({ music: v }); v ? startMusic() : stopMusic(); }} />
       <Toggle label={`🔊 ${t('sounds')}`} value={settings.sfx} onChange={(v) => actions.updateSettings({ sfx: v })} />
       <Toggle label={`🗣️ ${t('voice')}`} value={settings.voice} onChange={(v) => actions.updateSettings({ voice: v })} />
+      <Toggle label={`🇳🇴🇦🇱 ${t('bilingual')}`} value={settings.bilingual} onChange={(v) => actions.updateSettings({ bilingual: v })} />
+      <p className="muted">{t('bilingualHint')}</p>
       <Toggle label={`🌊 ${t('natureSounds')}`} value={settings.nature} onChange={(v) => actions.updateSettings({ nature: v })} />
       <Toggle label={`🏝️ ${t('map3d')}`} value={settings.map3d} onChange={(v) => { if (v) clearSlow(); actions.updateSettings({ map3d: v }); }} />
       <p className="muted">{t('map3dHint')}</p>
