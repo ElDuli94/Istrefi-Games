@@ -39,7 +39,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,svg,png,webp,woff2,mp3,ogg,json}'],
         // Opplesing (14 MB, to språk) lastes ikke ned på forhånd – hvert klipp lagres første gang det spilles
-        globIgnores: ['voice/**'],
+        globIgnores: ['voice/**', 'models/**'],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
@@ -50,6 +50,12 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.includes('/voice/'),
             handler: 'CacheFirst',
             options: { cacheName: 'voice', expiration: { maxEntries: 3000 } }
+          },
+          {
+            // 3D-modeller lastes første gang de trengs og lagres så for offline bruk
+            urlPattern: ({ url }) => url.pathname.includes('/models/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'models', expiration: { maxEntries: 300 } }
           },
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
