@@ -57,6 +57,8 @@ export interface GameProps {
   onFinish: (result: GameResult) => void;
 }
 
+export type GameGroup = 'letters' | 'numbers' | 'create' | 'explore' | 'action' | 'together';
+
 export interface GameDefinition {
   id: string;
   titleKey: DictKey;
@@ -64,6 +66,8 @@ export interface GameDefinition {
   color: string;
   worlds: WorldId[];
   maxPlayers: 1 | 2;
+  /** Hylle på verden-skjermen */
+  group: GameGroup;
   /** Spillet støtter «Lær begge språk» (viser flaggknapp) */
   bilingual?: boolean;
   component: LazyExoticComponent<ComponentType<GameProps>>;

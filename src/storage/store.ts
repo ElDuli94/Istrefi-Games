@@ -37,6 +37,8 @@ export interface Profile {
   equipped: Partial<Record<string, string>>; // spor (hatt, briller ...) -> ting-id
   house: House; // barnets eget hus
   games: Record<string, GameStats>;
+  /** Spill barnet har merket med ❤️ (spill-id-er) */
+  favorites: string[];
 }
 
 export interface Settings {
@@ -80,7 +82,8 @@ function migrate(raw: unknown): AppState {
           coins: typeof p.coins === 'number' ? p.coins : 30 + (p.stickers?.length ?? 0) * 5,
           owned: Array.isArray(p.owned) ? p.owned : [],
           equipped: p.equipped && typeof p.equipped === 'object' ? p.equipped : {},
-          house: p.house && Array.isArray(p.house.items) ? p.house : defaultHouse()
+          house: p.house && Array.isArray(p.house.items) ? p.house : defaultHouse(),
+          favorites: Array.isArray(p.favorites) ? p.favorites : []
         }))
       : [],
     activeProfileId: r.activeProfileId ?? null,
@@ -147,7 +150,7 @@ function updateProfile(id: string, fn: (p: Profile) => Profile) {
 
 export const actions = {
   createProfile(input: { name: string; avatar: string; world: WorldId }) {
-    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, coins: 30, owned: [], equipped: {}, house: defaultHouse(), ...input };
+    const profile: Profile = { id: uid(), createdAt: Date.now(), stickers: [], games: {}, coins: 30, owned: [], equipped: {}, house: defaultHouse(), favorites: [], ...input };
     setState((s) => ({ ...s, profiles: [...s.profiles, profile], activeProfileId: profile.id }));
     return profile;
   },
@@ -186,6 +189,13 @@ export const actions = {
           }
         }
       };
+    });
+  },
+  /** Legg til eller fjern et spill fra «Mine favoritter». */
+  toggleFavorite(profileId: string, gameId: string) {
+    updateProfile(profileId, (p) => {
+      const fav = p.favorites ?? [];
+      return { ...p, favorites: fav.includes(gameId) ? fav.filter((x) => x !== gameId) : [...fav, gameId] };
     });
   },
   /** Marker at et spill er åpnet (brukes til «Sist spilt»), uten å telle det som spilt. */
