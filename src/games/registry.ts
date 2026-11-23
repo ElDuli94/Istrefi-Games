@@ -165,6 +165,15 @@ export const GAMES: GameDefinition[] = [
     worlds: ['small', 'mid', 'big'],
     maxPlayers: 1,
     component: lazy(() => import('./towers/TowerGame'))
+  },
+  {
+    id: 'ludo',
+    titleKey: 'game_ludo',
+    icon: '🎲',
+    color: '#ef233c',
+    worlds: ['mid', 'big'],
+    maxPlayers: 2,
+    component: lazy(() => import('./ludo/LudoGame'))
   }
 ];
 
