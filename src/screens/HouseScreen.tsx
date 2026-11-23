@@ -3,17 +3,13 @@
  * gjør dem større/mindre, snu dem, eller legg dem tilbake i kassen.
  */
 import { Emo } from '../components/Emo';
-import { lazy, Suspense, useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
-import { can3D } from '../three/support';
-import { AVATARS } from '../data/avatars';
-
-const House3D = lazy(() => import('../three/House3D'));
+import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { actions, useActiveProfile } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { HOUSE_CATS, HOUSE_ITEMS, DEFAULT_FLOOR, DEFAULT_WALL, houseItemById, defaultHouse, type House, type HouseCat, type HouseItem } from '../data/house';
 import { LivelyAvatar } from '../components/LivelyAvatar';
-import { BackButton, RoundButton, TopBar } from '../components/ui';
+import { BackButton, TopBar } from '../components/ui';
 import { CoinChip } from './Shop';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
@@ -28,7 +24,6 @@ export function HouseScreen() {
   const [selected, setSelected] = useState<number | null>(null); // indeks i house.items
   const [pending, setPending] = useState<string | null>(null); // ting som venter på "trykk igjen for å kjøpe"
   const [bump, setBump] = useState(false);
-  const [view3d, setView3d] = useState(false);
   const roomRef = useRef<HTMLDivElement>(null);
   const drag = useRef<DragState | null>(null);
 
@@ -138,15 +133,8 @@ export function HouseScreen() {
 
   return (
     <div className="screen house-screen">
-      <TopBar left={<BackButton to={() => go('map')} />} title={<h1>🏠 {t('myHouse')}</h1>} right={<>{can3D() && <RoundButton icon={view3d ? '✏️' : '🎥'} label={view3d ? t('edit2d') : t('view3d')} color={view3d ? '#fff' : '#ffd60a'} onClick={() => { playSfx('pop'); if (!view3d) speak(t('house3dHint')); setView3d((v) => !v); setSelected(null); }} />}<CoinChip coins={profile.coins} bump={bump} /></>} />
+      <TopBar left={<BackButton to={() => go('map')} />} title={<h1>🏠 {t('myHouse')}</h1>} right={<CoinChip coins={profile.coins} bump={bump} />} />
 
-      {view3d ? (
-        <div className="room-wrap room-wrap--3d">
-          <Suspense fallback={<div className="loading">…</div>}>
-            <House3D house={house} avatarEmoji={AVATARS[profile.avatar]?.emoji ?? '🦊'} />
-          </Suspense>
-        </div>
-      ) : (
       <div className="room-wrap">
         <div className="room" ref={roomRef} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerDown={() => setSelected(null)}>
           <div className="room__wall" style={{ background: wall }}>
@@ -185,7 +173,6 @@ export function HouseScreen() {
           </div>
         )}
       </div>
-      )}
 
       <nav className="shop-tabs house-tabs">
         {HOUSE_CATS.map((c) => (
