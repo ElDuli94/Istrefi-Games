@@ -1,0 +1,28 @@
+.numbers { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 6px; overflow-y: auto; }
+.num-ask { background: #fff; border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 800; font-size: clamp(1.1rem, 3.6vmin, 1.6rem); box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+.num-things { display: grid; grid-template-columns: repeat(5, auto); gap: 8px; background: #ffffffaa; border-radius: 24px; padding: 12px; }
+.num-thing { position: relative; width: clamp(46px, 10vmin, 74px); aspect-ratio: 1; border: 0; border-radius: 18px; background: #fff; font-size: clamp(30px, 7vmin, 52px); line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+.num-things.is-big .num-thing { width: clamp(64px, 15vmin, 110px); font-size: clamp(44px, 11vmin, 80px); }
+.num-things.is-many .num-thing { width: clamp(38px, 8vmin, 58px); font-size: clamp(24px, 5.5vmin, 40px); }
+.num-thing.is-tapped { background: #fff3b0; transform: scale(1.06); }
+.num-thing__n { position: absolute; top: -8px; right: -8px; background: #ff006e; color: #fff; font-weight: 800; font-size: 16px; min-width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; animation: popIn .3s both; }
+.num-big { font-size: clamp(70px, 18vmin, 140px); font-weight: 800; color: #fff; text-shadow: 0 6px 0 rgba(0,0,0,.2); line-height: 1; }
+.num-choices { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.num-choice { width: clamp(76px, 17vmin, 120px); aspect-ratio: 1; border: 6px solid #fff; border-radius: 26px; background: #fff; font-size: clamp(40px, 10vmin, 70px); font-weight: 800; box-shadow: 0 6px 0 rgba(0,0,0,.15); }
+.num-choice.is-wrong { opacity: .35; transform: scale(.9); }
+.num-choice.is-right { border-color: #06d6a0; background: #e9fff6; animation: namingBounce .5s cubic-bezier(.3,1.6,.5,1); }
+.num-choice.is-hint { border-color: #ffd60a; animation: namingHint .9s ease-in-out infinite; }
+.num-seq { display: flex; gap: 10px; }
+.num-seq span { width: clamp(64px, 14vmin, 100px); aspect-ratio: 1; border-radius: 22px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: clamp(34px, 8vmin, 56px); font-weight: 800; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+.num-seq span.is-hole { background: #fff3b0; color: #ff006e; border: 4px dashed #ff006e; }
+.num-more { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.num-group { position: relative; background: #fff; border: 6px solid #fff; border-radius: 26px; padding: 12px; min-width: clamp(140px, 34vmin, 260px); min-height: 140px; box-shadow: 0 6px 0 rgba(0,0,0,.15); display: flex; align-items: center; justify-content: center; }
+.num-group__grid { display: grid; grid-template-columns: repeat(5, auto); gap: 4px; font-size: clamp(24px, 5.5vmin, 40px); }
+.num-group.is-wrong { opacity: .45; }
+.num-group.is-right { border-color: #06d6a0; background: #e9fff6; }
+.num-group__n { position: absolute; top: -14px; right: -10px; background: #06d6a0; color: #fff; border-radius: 999px; padding: 2px 12px; font-size: 1.5rem; }
+@keyframes namingBounce { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes namingHint { 0%, 100% { rotate: 0deg; } 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+.numbers .naming-progress { display: flex; gap: 6px; }
+.numbers .naming-progress i { width: 14px; height: 14px; border-radius: 50%; background: #ffffff66; }
+.numbers .naming-progress i.is-done { background: #ffd60a; }

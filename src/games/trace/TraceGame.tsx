@@ -6,6 +6,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameApi, GameProps } from '../types';
 import { ALPHABETS } from '../../data/alphabets';
+import { wordForLetter } from '../../data/vocab';
+import { Emo } from '../../components/Emo';
 import './trace.css';
 
 type Mode = 'upper' | 'lower' | 'digits';
@@ -238,7 +240,9 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
     if (covered >= need && missing.length === 0 && !tooMessy) {
       setSuccess(true);
       api.sfx('win');
-      api.speak(ch.toLowerCase());
+      // «A som i ape» – kobler bokstaven til et ord barnet kjenner. Tall: vis så mange stjerner.
+      const ex = /\d/.test(ch) ? null : wordForLetter(ch, api.lang);
+      api.speak(ex ? `${ch.toLowerCase()}. ${api.t('asIn', { l: ch, w: ex[api.lang] })}` : ch.toLowerCase());
       if (isNew(ch)) newCount.current += 1;
       onLetterDone(ch);
       // Fyll bokstaven med regnbuefarger
@@ -282,8 +286,25 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
           <canvas ref={paintRef} style={{ width: size, height: size }} className="tracer__paint"
             onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />
           {success && <span className="tracer__star">⭐</span>}
+          {success && <Example ch={ch} api={api} />}
         </div>
       </div>
     </div>
+  );
+}
+
+/** Bilde under bokstaven når den er ferdig: «A – ape 🐵», eller tre ⭐ for tallet 3. */
+function Example({ ch, api }: { ch: string; api: GameApi }) {
+  if (/\d/.test(ch)) {
+    const n = Number(ch);
+    return <div className="tracer__example pop-in">{n === 0 ? <b>0</b> : Array.from({ length: n }, (_, i) => <Emo key={i} e="⭐" />)}</div>;
+  }
+  const ex = wordForLetter(ch, api.lang);
+  if (!ex) return null;
+  const w = ex[api.lang];
+  return (
+    <button className="tracer__example pop-in" onClick={() => api.speak(api.t('asIn', { l: ch, w }))}>
+      <Emo e={ex.e} /> <span><b>{w.slice(0, ch.length)}</b>{w.slice(ch.length)}</span>
+    </button>
   );
 }
