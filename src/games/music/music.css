@@ -82,3 +82,9 @@
   .piano { gap: 4px; padding: 8px; }
   .piano__animal { font-size: 26px; }
 }
+.music__rec { position: absolute; top: 6px; right: 8px; z-index: 5; display: flex; gap: 8px; }
+.music__recbtn { width: 48px; height: 48px; border-radius: 50%; border: 0; background: #fff; font-size: 1.3rem; box-shadow: 0 4px 0 rgba(0,0,0,.15); }
+.music__recbtn:disabled { opacity: .4; }
+.music__recbtn.is-rec { background: #ff595e; animation: recPulse 1s infinite; }
+.music__recbtn.is-on { background: #8ac926; }
+@keyframes recPulse { 50% { box-shadow: 0 0 0 8px rgba(255, 89, 94, .35); } }

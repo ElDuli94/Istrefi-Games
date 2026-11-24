@@ -1,6 +1,8 @@
 /**
  * Klossmester – dra klosser inn på brettet. Fulle rader og kolonner forsvinner og gir poeng.
  * Nivåer: nå målpoengsummen før brettet blir fullt. Uendelig modus: slå rekorden din.
+ * Trykk på en kloss for å snu den (🔄 begrenset antall – flere linjer på én gang gir nye snu).
+ * Kombo ×3 gir en 💣 bombe som rydder et 3×3-område. Tomt brett gir «Perfekt!»-bonus.
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
@@ -51,6 +53,12 @@ function makePiece(pool: string[]): Piece {
     w: Math.max(...cells.map((c) => c[1])) + 1,
     h: Math.max(...cells.map((c) => c[0])) + 1
   };
+}
+
+/** Snu klossen 90° med klokka */
+function rotate(p: Piece): Piece {
+  const cells = p.cells.map(([r, c]) => [c, p.h - 1 - r] as [number, number]);
+  return { ...p, cells, w: p.h, h: p.w };
 }
 
 const idx = (r: number, c: number) => r * N + c;
@@ -154,6 +162,9 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
   const [clearing, setClearing] = useState<Set<number>>(new Set());
   const [pops, setPops] = useState<{ id: number; text: string; big?: boolean }[]>([]);
   const [over, setOver] = useState(false);
+  const [turns, setTurns] = useState(3); // snu-klosser igjen
+  const [bombs, setBombs] = useState(0);
+  const [arming, setArming] = useState(false); // venter på at barnet trykker hvor bomben skal
   const boardRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [cell, setCell] = useState(40);
@@ -198,6 +209,7 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     api.sfx('tap');
     const offY = e.pointerType === 'mouse' ? 0 : cell * 1.5; // løft brikken over fingeren
     const d = { piece, slot, x: e.clientX, y: e.clientY, offY };
+    const sx = e.clientX, sy = e.clientY;
     dragRef.current = d;
     setDrag(d);
     const move = (ev: PointerEvent) => {
@@ -211,12 +223,59 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
       const cur = dragRef.current!;
       dragRef.current = null;
       setDrag(null);
+      // Bare et trykk (ingen dra): snu klossen
+      if (Math.hypot(cur.x - sx, cur.y - sy) < 10) { turnPiece(slot); return; }
       const t = target(cur);
       if (t) place(cur, t.r, t.c);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
+  }
+
+  function turnPiece(slot: number) {
+    const p = tray[slot];
+    if (!p || turns <= 0 || p.w === p.h && p.cells.length === p.w * p.h) { if (turns <= 0) api.sfx('nope'); return; }
+    api.sfx('flip');
+    setTurns(turns - 1);
+    const t = tray.map((x, i) => (i === slot ? rotate(p) : x));
+    setTray(t);
+    checkStuck(board, t, score, bombs, turns - 1);
+  }
+
+  function bomb(i: number) {
+    if (!arming) return;
+    const r0 = Math.floor(i / N), c0 = i % N;
+    const clear = new Set<number>();
+    for (let r = r0 - 1; r <= r0 + 1; r++) for (let c = c0 - 1; c <= c0 + 1; c++) if (r >= 0 && c >= 0 && r < N && c < N) clear.add(idx(r, c));
+    const b = board.map((v, k) => (clear.has(k) ? null : v));
+    api.sfx('win');
+    setArming(false);
+    setBombs(bombs - 1);
+    setClearing(clear);
+    setTimeout(() => { setClearing(new Set()); setBoard(b); }, 330);
+    checkStuck(b, tray, score, bombs - 1);
+    pop('💥', true);
+  }
+
+  /** Ingen kloss får plass? Da er spillet over – med mindre snu eller bombe kan redde. */
+  function checkStuck(finalBoard: Cell[], t: (Piece | null)[], newScore = score, bombsLeft = bombs, turnsLeft = turns) {
+    const left = t.filter(Boolean) as Piece[];
+    const canTurn = turnsLeft > 0 && left.some((p) => [rotate(p), rotate(rotate(p)), rotate(rotate(rotate(p)))].some((q) => fitsAnywhere(finalBoard, q)));
+    if (left.some((p) => fitsAnywhere(finalBoard, p)) || canTurn || bombsLeft > 0) return;
+    ended.current = true;
+    setOver(true);
+    api.speak(api.t('noMoves'));
+    setTimeout(() => {
+      if (level === null) {
+        onEnd(false, 0, newScore);
+        const stars = newScore >= 600 ? 3 : newScore >= 300 ? 2 : newScore >= 100 ? 1 : 0;
+        onFinish({ won: stars > 0, stars, score: newScore, coins: Math.min(25, Math.floor(newScore / 40)) });
+      } else {
+        onEnd(false, 0, newScore);
+        onFinish({ won: false, stars: 0, score: newScore });
+      }
+    }, 1500);
   }
 
   function pop(text: string, big = false) {
@@ -247,6 +306,9 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
       api.sfx(lines > 1 || nextCombo > 1 ? 'win' : 'match');
       pop(`+${bonus}`);
       if (nextCombo > 1) pop(`${api.t('combo')} ×${nextCombo}!`, true);
+      if (lines > 1) setTurns((x) => x + 1);
+      if (nextCombo > 0 && nextCombo % 3 === 0) { setBombs((x) => x + 1); setTimeout(() => pop('💣 +1', true), 400); }
+      if (finalBoard.every((v) => !v || v === 'stone')) { gained += 100; setTimeout(() => pop(`${api.t('perfect')} +100`, true), 600); }
     }
     setCombo(nextCombo);
     const newScore = score + gained;
@@ -271,22 +333,7 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
       return;
     }
     // Tapt? (ingen av de gjenværende klossene får plass)
-    const left = t.filter(Boolean) as Piece[];
-    if (!left.some((p) => fitsAnywhere(finalBoard, p))) {
-      ended.current = true;
-      setOver(true);
-      api.speak(api.t('noMoves'));
-      setTimeout(() => {
-        if (level === null) {
-          onEnd(false, 0, newScore);
-          const stars = newScore >= 600 ? 3 : newScore >= 300 ? 2 : newScore >= 100 ? 1 : 0;
-          onFinish({ won: stars > 0, stars, score: newScore, coins: Math.min(25, Math.floor(newScore / 40)) });
-        } else {
-          onEnd(false, 0, newScore);
-          onFinish({ won: false, stars: 0, score: newScore });
-        }
-      }, 1500);
-    }
+    checkStuck(finalBoard, t, newScore);
   }
 
   // Forhåndsvisning av plassering
@@ -320,9 +367,11 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
             <span className="blocks__bar"><i style={{ width: `${progressPct}%` }} /></span>
           </>
         )}
+        <button className={`hud-chip blocks__tool ${turns ? '' : 'is-empty'}`} onClick={() => { api.sfx('tap'); api.speak(api.t('tapToTurn')); }}>🔄 <b>{turns}</b></button>
+        {bombs > 0 && <button className={`hud-chip blocks__tool pop-in ${arming ? 'is-armed' : ''}`} onClick={() => { api.sfx('tap'); setArming(!arming); if (!arming) api.speak(api.t('tapToBomb')); }}>💣 <b>{bombs}</b></button>}
       </div>
       <div className="blocks__main">
-        <div className="blocks__board" ref={boardRef} style={{ gridTemplateColumns: `repeat(${N}, ${cell}px)`, gridAutoRows: `${cell}px` }}>
+        <div className={`blocks__board ${arming ? 'is-arming' : ''}`} ref={boardRef} style={{ gridTemplateColumns: `repeat(${N}, ${cell}px)`, gridAutoRows: `${cell}px` }}>
           {board.map((v, i) => {
             const preview = previewCells.has(i);
             const color = v === 'stone' ? undefined : v ?? (preview ? drag!.piece.color : undefined);
@@ -331,6 +380,7 @@ function Board({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
                 key={i}
                 className={`bcell ${v ? 'is-filled' : ''} ${v === 'stone' ? 'is-stone' : ''} ${preview ? 'is-preview' : ''} ${previewClear.has(i) ? 'is-willclear' : ''} ${clearing.has(i) ? 'is-clearing' : ''}`}
                 style={color ? { background: color } : undefined}
+                onPointerDown={arming ? () => bomb(i) : undefined}
               />
             );
           })}

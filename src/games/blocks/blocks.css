@@ -40,3 +40,8 @@
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; border-radius: 22px; padding: 14px 24px;
   font-weight: 800; font-size: 1.6rem; color: #ff006e; box-shadow: 0 8px 0 rgba(0,0,0,.25); white-space: nowrap;
 }
+.blocks__tool { border: 0; cursor: pointer; }
+.blocks__tool.is-empty { opacity: .45; }
+.blocks__tool.is-armed { background: #ff595e; color: #fff; animation: wiggle .6s infinite; }
+.blocks__board.is-arming .bcell { cursor: crosshair; }
+.blocks__board.is-arming { box-shadow: 0 0 0 4px #ff595e, 0 8px 0 rgba(0,0,0,.15); }

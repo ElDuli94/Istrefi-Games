@@ -58,6 +58,21 @@ export const VOCAB: VocabCat[] = [
     ]
   },
   {
+    id: 'toys', icon: '🧸', nameKey: 'cat_toys', items: [
+      v('⚽', 'ball', 'top'), v('🧸', 'bamse', 'arush pelushi'), v('🪁', 'drage', 'balonë letre'), v('🎈', 'ballong', 'tullumbace'),
+      v('🧩', 'puslespill', 'enigmë'), v('🎲', 'terning', 'zar'), v('🛝', 'sklie', 'rrëshqitëse'), v('🥁', 'tromme', 'daulle'),
+      v('🖍️', 'fargestift', 'lapsa me ngjyra'), v('📚', 'bøker', 'libra'), v('✏️', 'blyant', 'laps'), v('🎒', 'sekk', 'çantë'),
+      v('🛹', 'skateboard', 'skejtbord'), v('🪀', 'jojo', 'jojo')
+    ]
+  },
+  {
+    id: 'sea', icon: '🐳', nameKey: 'cat_sea', items: [
+      v('🐟', 'fisk', 'peshk'), v('🐙', 'blekksprut', 'oktapod'), v('🦀', 'krabbe', 'gaforre'), v('🐳', 'hval', 'balenë'),
+      v('🐬', 'delfin', 'delfin'), v('🦈', 'hai', 'peshkaqen'), v('🐢', 'skilpadde', 'breshkë'), v('🐚', 'skjell', 'guaskë'),
+      v('🦭', 'sel', 'fokë'), v('🦞', 'hummer', 'karavidhe'), v('⛵', 'seilbåt', 'varkë me vela'), v('🏖️', 'strand', 'plazh'), v('⚓', 'anker', 'spirancë')
+    ]
+  },
+  {
     id: 'colors', icon: '🎨', nameKey: 'cat_colors', items: [
       v('🔴', 'rød', 'e kuqe'), v('🟠', 'oransje', 'portokalli'), v('🟡', 'gul', 'e verdhë'), v('🟢', 'grønn', 'jeshile'),
       v('🔵', 'blå', 'blu'), v('🟣', 'lilla', 'vjollcë'), v('🟤', 'brun', 'kafe'), v('⚫', 'svart', 'e zezë'), v('⚪', 'hvit', 'e bardhë')

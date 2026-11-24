@@ -3,6 +3,7 @@
  *
  * «Sanger»: tangenten som skal trykkes lyser og hopper, og de neste notene vises over pianoet.
  * «Hør sangen» lar pianoet spille sangen først, så barnet kan herme etter.
+ * 🔴 Opptak: spill inn din egen melodi på piano, xylofon eller trommer og spill den av igjen.
  */
 import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -51,6 +52,49 @@ export default function MusicGame(props: GameProps) {
   const [taps, setTaps] = useState(0);
   const [hit, setHit] = useState<{ key: string; t: number } | null>(null);
   const [notes, setNotes] = useState<{ id: number; x: number; s: string }[]>([]);
+  // Opptak: liste med (tid, lyd). Lagres så melodien er der neste gang også.
+  type Ev = { t: number; k: string };
+  const [rec, setRec] = useState<Ev[]>(() => api.loadData<{ rec?: Ev[] }>()?.rec ?? []);
+  const [recording, setRecording] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const recStart = useRef(0);
+  const recBuf = useRef<Ev[]>([]);
+  const playTimers = useRef<number[]>([]);
+  useEffect(() => () => playTimers.current.forEach(clearTimeout), []);
+  /** Spill en lyd fra nøkkel: p3 = piano, x3 = xylofon, ellers tromme */
+  const sound = (k: string) => {
+    if (k[0] === 'p' || k[0] === 'x') { const i = Number(k.slice(1)); playNote(NOTES[i].f, k[0] === 'p' ? 'piano' : 'xylo'); flash(k, (i + 0.5) * 12.5); }
+    else { playDrum(k as Drum); const i = DRUMS.findIndex((d) => d.kind === k); flash(k, ((i % 3) + 0.5) * 33); }
+  };
+  const hitSound = (k: string) => {
+    sound(k);
+    if (recording) recBuf.current.push({ t: performance.now() - recStart.current, k });
+  };
+  function toggleRec() {
+    if (playing) return;
+    if (recording) {
+      setRecording(false);
+      const r = recBuf.current.slice(0, 300);
+      setRec(r);
+      const old = api.loadData<Record<string, unknown>>() ?? {};
+      api.saveData({ ...old, rec: r });
+      api.sfx('sticker');
+      return;
+    }
+    api.sfx('tap');
+    recBuf.current = [];
+    recStart.current = performance.now();
+    setRecording(true);
+  }
+  function togglePlay() {
+    if (recording || !rec.length) return;
+    playTimers.current.forEach(clearTimeout);
+    playTimers.current = [];
+    if (playing) { setPlaying(false); return; }
+    setPlaying(true);
+    rec.forEach((e) => playTimers.current.push(window.setTimeout(() => sound(e.k), e.t + 200)));
+    playTimers.current.push(window.setTimeout(() => setPlaying(false), rec[rec.length - 1].t + 900));
+  }
 
   function flash(key: string, x: number) {
     const t = Date.now();
@@ -77,10 +121,16 @@ export default function MusicGame(props: GameProps) {
         {tab !== 'songs' && taps >= 20 && <button className="music__done pop-in" onClick={() => props.onFinish({ won: true, stars: 3, coins: 5 })}>✔</button>}
       </nav>
       <div className="music__stage">
+        {tab !== 'songs' && (
+          <div className="music__rec">
+            <button className={`music__recbtn ${recording ? 'is-rec' : ''}`} onClick={toggleRec} aria-label={api.t('record')}>{recording ? '⏹' : '🔴'}</button>
+            <button className={`music__recbtn ${playing ? 'is-on' : ''}`} onClick={togglePlay} disabled={!rec.length || recording} aria-label={api.t('playRecording')}>{playing ? '⏹' : '▶️'}</button>
+          </div>
+        )}
         <div className="music__notes" aria-hidden>{notes.map((n) => <span key={n.id} style={{ left: `${n.x}%` }}>{n.s}</span>)}</div>
         {tab === 'songs' && <Songs {...props} />}
         {tab === 'piano' && (
-          <Piano hitKey={hit?.key} onPress={(i) => { playNote(NOTES[i].f, 'piano'); flash(`p${i}`, (i + 0.5) * 12.5); }} />
+          <Piano hitKey={hit?.key} onPress={(i) => hitSound(`p${i}`)} />
         )}
         {tab === 'xylo' && (
           <div className="xylo">
@@ -89,7 +139,7 @@ export default function MusicGame(props: GameProps) {
                 key={i}
                 className={`xylo__bar ${hit?.key === `x${i}` ? 'is-hit' : ''}`}
                 style={{ background: n.c, height: `${92 - i * 7}%` }}
-                onPointerDown={() => { playNote(n.f, 'xylo'); flash(`x${i}`, (i + 0.5) * 12.5); }}
+                onPointerDown={() => hitSound(`x${i}`)}
                 aria-label={n.n}
               >
                 <i /><i />
@@ -99,12 +149,12 @@ export default function MusicGame(props: GameProps) {
         )}
         {tab === 'drums' && (
           <div className="drums">
-            {DRUMS.map((d, i) => (
+            {DRUMS.map((d) => (
               <button
                 key={d.kind}
                 className={`drum ${hit?.key === d.kind ? 'is-hit' : ''}`}
                 style={{ background: d.c }}
-                onPointerDown={() => { playDrum(d.kind); flash(d.kind, ((i % 3) + 0.5) * 33); }}
+                onPointerDown={() => hitSound(d.kind)}
                 aria-label={d.kind}
               >
                 <span key={hit?.key === d.kind ? hit.t : 0}><Emo e={d.icon} /></span>
@@ -121,7 +171,7 @@ export default function MusicGame(props: GameProps) {
 // Sangmodus
 // ---------------------------------------------------------------------------
 function Songs({ api, world, onFinish }: GameProps) {
-  const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { songs: {} });
+  const [saved, setSaved] = useState<SavedData>(() => ({ songs: api.loadData<Partial<SavedData>>()?.songs ?? {} }));
   const [song, setSong] = useState<Song | null>(null);
   // ⬅️ går først tilbake til spillets egen meny
   useEffect(() => {
@@ -158,7 +208,7 @@ function Songs({ api, world, onFinish }: GameProps) {
         const first = !(saved.songs[song.id] > 0);
         const next = { songs: { ...saved.songs, [song.id]: Math.max(saved.songs[song.id] ?? 0, stars) } };
         setSaved(next);
-        api.saveData(next);
+        api.saveData({ ...(api.loadData<Record<string, unknown>>() ?? {}), ...next });
         setTimeout(() => onFinish({ won: true, stars, firstClear: first }), 900);
       }}
     />

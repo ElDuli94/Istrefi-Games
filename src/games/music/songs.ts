@@ -18,7 +18,15 @@ export const SONGS: Song[] = [
   { id: 'bus', icon: '🚌', level: 3, title: { no: 'Hjulene på bussen', sq: 'Rrotat e autobusit' },
     notes: 'C F F F F A c A F2 G E C2 c A F2 C F F F F A c A F2 G2 C2 F4' },
   { id: 'jingle', icon: '🔔', level: 3, title: { no: 'Bjelleklang', sq: 'Zilet e Krishtlindjes' },
-    notes: 'E E E2 E E E2 E G C D E4 F F F F F E E E E D D E D2 G2 E E E2 E E E2 E G C D E4 F F F F F E E E G G F D C4' }
+    notes: 'E E E2 E E E2 E G C D E4 F F F F F E E E E D D E D2 G2 E E E2 E E E2 E G C D E4 F F F F F E E E G G F D C4' },
+  { id: 'buns', icon: '🥐', level: 1, title: { no: 'Varme boller', sq: 'Simite të ngrohta' },
+    notes: 'E D C2 E D C2 C C C C D D D D E D C2' },
+  { id: 'farm', icon: '🐄', level: 2, title: { no: 'Gamle MacDonald', sq: 'Plaku MacDonald' },
+    notes: 'C C C G A A G2 E E D D C3 G C C C G A A G2 E E D D C4' },
+  { id: 'bridge', icon: '🌉', level: 2, title: { no: 'London bru', sq: 'Ura e Londrës' },
+    notes: 'G A G F E F G2 D E F2 E F G2 G A G F E F G2 D2 G2 E C2' },
+  { id: 'jakob', icon: '🔔', level: 3, title: { no: 'Fader Jakob', sq: 'Vëlla Jakob' },
+    notes: 'C D E C C D E C E F G2 E F G2 G A G F E C G A G F E C C G C2 C G C2' }
 ];
 
 const INDEX: Record<string, number> = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, H: 6, c: 7 };

@@ -1,5 +1,5 @@
 /**
- * To spillere – tre på rad, fire på rad og luft-hockey på samme skjerm.
+ * To spillere – tre på rad, fire på rad, luft-hockey og lynrask (reaksjon) på samme skjerm.
  * Tre/fire på rad kan også spilles mot Shqipo (enkel datamotstander).
  */
 import { EmojiText } from '../../components/Emo';
@@ -8,7 +8,7 @@ import type { GameApi, GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
 import './duel.css';
 
-type Sub = 'ttt' | 'c4' | 'hockey';
+type Sub = 'ttt' | 'c4' | 'hockey' | 'react';
 type Who = 1 | 2;
 const COLORS: Record<Who, string> = { 1: '#ff4d6d', 2: '#3a86ff' };
 
@@ -37,6 +37,7 @@ export default function DuelGame(props: GameProps) {
         {card('ttt', '❌⭕', api.t('ticTacToe'))}
         {card('c4', '🔴🔵', api.t('connectFour'))}
         {card('hockey', '🏒', api.t('airHockey'))}
+        {card('react', '⚡', api.t('quickTap'))}
       </div>
     );
   }
@@ -48,7 +49,66 @@ export default function DuelGame(props: GameProps) {
   };
   if (sub === 'ttt') return <TicTacToe api={api} ai={ai} onEnd={end} />;
   if (sub === 'c4') return <ConnectFour api={api} ai={ai} onEnd={end} />;
+  if (sub === 'react') return <Reaction api={api} ai={ai} onEnd={end} />;
   return <Hockey api={api} ai={ai} world={props.world} onEnd={end} />;
+}
+
+/** Lynrask: når lyset blir grønt, trykk først på din halvdel. For tidlig trykk gir poeng til den andre. Først til 3. */
+function Reaction({ api, ai, onEnd }: { api: GameApi; ai: boolean; onEnd: (w: Who) => void }) {
+  const WIN = 3;
+  const [phase, setPhase] = useState<'wait' | 'go' | 'point'>('wait');
+  const [score, setScore] = useState<Record<Who, number>>({ 1: 0, 2: 0 });
+  const [last, setLast] = useState<{ w: Who; early: boolean } | null>(null);
+  const scoreRef = useRef<Record<Who, number>>({ 1: 0, 2: 0 });
+  const timers = useRef<number[]>([]);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+  const clear = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  const round = () => {
+    clear();
+    setPhase('wait');
+    timers.current.push(window.setTimeout(() => {
+      setPhase('go');
+      api.sfx('pop');
+      // Shqipo reagerer på 0,35–0,8 sekunder
+      if (ai) timers.current.push(window.setTimeout(() => tap(2), 350 + Math.random() * 450));
+    }, 1500 + Math.random() * 2500));
+  };
+  useEffect(() => { api.speak(api.t('quickTapHelp')); round(); return clear; }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function tap(w: Who) {
+    const ph = phaseRef.current;
+    if (ph === 'point') return;
+    clear();
+    const early = ph === 'wait';
+    const winner: Who = early ? (w === 1 ? 2 : 1) : w;
+    setPhase('point');
+    phaseRef.current = 'point';
+    setLast({ w: winner, early });
+    api.sfx(early ? 'nope' : 'match');
+    const next = { ...scoreRef.current, [winner]: scoreRef.current[winner] + 1 };
+    scoreRef.current = next;
+    setScore(next);
+    if (next[winner] >= WIN) { api.sfx('win'); onEnd(winner); }
+    else timers.current.push(window.setTimeout(round, 1400));
+  }
+  const half = (w: Who) => (
+    <button className={`react-half react-half--${w} is-${phase}`} style={{ ['--c' as string]: COLORS[w] }}
+      onPointerDown={(e) => { e.preventDefault(); if (!(ai && w === 2)) tap(w); }}>
+      <span className="react-half__score">{'⭐'.repeat(score[w])}{'☆'.repeat(WIN - score[w])}</span>
+      <span className="react-half__msg">
+        {phase === 'wait' ? `✋ ${api.t('quickWait')}` : phase === 'go' ? `👆 ${api.t('quickGo')}` : last?.w === w ? (last.early ? `😅 ${api.t('quickEarly')}` : '🏆') : ''}
+      </span>
+      {ai && w === 2 && <span className="react-half__ai">🦅</span>}
+    </button>
+  );
+  return (
+    <div className="react">
+      {half(2)}
+      <div className={`react-light is-${phase}`} />
+      {half(1)}
+    </div>
+  );
 }
 
 function Status({ api, turn, winner, ai }: { api: GameApi; turn: Who; winner: Who | 0 | null; ai: boolean }) {

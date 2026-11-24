@@ -1,6 +1,7 @@
 /**
  * Dyrelyder – trykk på et dyr og hør den ekte lyden, og så navnet.
  * 2–4 år: 9 store dyr, fri lek. 5–7 år: alle dyr + "Gjett dyret"-quiz.
+ * Lydmemory: kortene viser ikke dyret – bare lyden. Finn to like lyder!
  */
 import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -28,7 +29,7 @@ function useAnimalVoice(api: GameApi) {
 
 export default function AnimalSounds(props: GameProps) {
   const { world, api } = props;
-  const [mode, setMode] = useState<'free' | 'quiz' | null>(world === 'tiny' ? 'free' : null);
+  const [mode, setMode] = useState<'free' | 'quiz' | 'memo' | null>(world === 'tiny' ? 'free' : null);
   // ⬅️ går først tilbake til spillets egen meny
   useEffect(() => {
     api.setBack(mode !== null && world !== 'tiny' ? () => setMode(null) : null);
@@ -43,10 +44,62 @@ export default function AnimalSounds(props: GameProps) {
         <button className="sounds-mode pop-in" style={{ animationDelay: '.08s' }} onClick={() => { api.sfx('pop'); api.speak(api.t('guessAnimal')); setMode('quiz'); }}>
           <span><Emo e="❓" /></span>{api.t('guessAnimal')}
         </button>
+        <button className="sounds-mode pop-in" style={{ animationDelay: '.16s' }} onClick={() => { api.sfx('pop'); api.speak(api.t('soundMemoryHelp')); setMode('memo'); }}>
+          <span><Emo e="👂" /></span>{api.t('soundMemory')}
+        </button>
       </div>
     );
   }
-  return mode === 'free' ? <Free {...props} /> : <Quiz {...props} />;
+  return mode === 'free' ? <Free {...props} /> : mode === 'quiz' ? <Quiz {...props} /> : <SoundMemory {...props} />;
+}
+
+/** Lydmemory: snu et kort og hør lyden. Finn to kort med samme dyrelyd. */
+function SoundMemory({ api, world, onFinish }: GameProps) {
+  const pairs = world === 'small' ? 4 : 6;
+  const [cards] = useState(() => shuffle(shuffle(FARM).slice(0, pairs).flatMap((a, k) => [{ a, k: k * 2 }, { a, k: k * 2 + 1 }])));
+  const [open, setOpen] = useState<number[]>([]);
+  const [found, setFound] = useState<Set<string>>(new Set());
+  const [tries, setTries] = useState(0);
+  const say = useAnimalVoice(api);
+  const busy = useRef(false);
+  function flip(i: number) {
+    const c = cards[i];
+    if (busy.current || open.includes(i) || found.has(c.a.id)) return;
+    say(c.a, false);
+    const o = [...open, i];
+    setOpen(o);
+    if (o.length < 2) return;
+    busy.current = true;
+    setTries((t) => t + 1);
+    const [a, b] = o.map((k) => cards[k].a);
+    setTimeout(() => {
+      if (a.id === b.id) {
+        api.sfx('match');
+        api.sayBoth(a.name[api.lang], a.name[api.otherLang]);
+        const f = new Set(found).add(a.id);
+        setFound(f);
+        if (f.size === pairs) {
+          const extra = tries + 1 - pairs;
+          setTimeout(() => onFinish({ won: true, stars: extra <= 2 ? 3 : extra <= 5 ? 2 : 1 }), 1600);
+        }
+      } else api.sfx('nope');
+      setOpen([]);
+      busy.current = false;
+    }, 1500);
+  }
+  return (
+    <div className={`smemo smemo--${pairs}`}>
+      {cards.map((c, i) => {
+        const shown = found.has(c.a.id);
+        const isOpen = open.includes(i);
+        return (
+          <button key={c.k} className={`smemo__card pop-in ${isOpen ? 'is-open' : ''} ${shown ? 'is-found' : ''}`} style={{ animationDelay: `${i * 0.03}s`, background: shown ? c.a.bg : undefined }} onPointerDown={() => flip(i)}>
+            {shown ? <Emo e={c.a.emoji} /> : isOpen ? <span className="smemo__wave">🔊</span> : <Emo e="👂" />}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 function Free({ world, api }: GameProps) {
@@ -95,8 +148,9 @@ function Free({ world, api }: GameProps) {
   );
 }
 
-function Quiz({ api, onFinish }: GameProps) {
-  const ROUNDS = 5;
+function Quiz({ api, world, onFinish }: GameProps) {
+  const ROUNDS = world === 'small' ? 5 : 8;
+  const choices = world === 'small' ? 2 : 3;
   const order = useMemo(() => shuffle(FARM).slice(0, ROUNDS), []);
   const [round, setRound] = useState(0);
   const [mistakes, setMistakes] = useState(0);
@@ -105,7 +159,7 @@ function Quiz({ api, onFinish }: GameProps) {
   const say = useAnimalVoice(api);
   const target = order[round];
   const options = useMemo(
-    () => shuffle([target, ...shuffle(FARM.filter((a) => a.id !== target.id)).slice(0, 2)]),
+    () => shuffle([target, ...shuffle(FARM.filter((a) => a.id !== target.id)).slice(0, choices)]),
     [target]
   );
 
