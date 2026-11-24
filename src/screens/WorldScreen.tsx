@@ -11,23 +11,33 @@ import type { DictKey } from '../i18n/no';
 import { BackButton, Stars, TopBar } from '../components/ui';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
+import { useEffect, useRef, useState } from 'react';
 
 const AMBIENT: Record<WorldId, Ambient> = { tiny: 'meadow', small: 'forest', mid: 'mountain', big: 'city' };
 
 /** Hyllene i den rekkefølgen de vises */
-const GROUPS: { id: GameGroup; icon: string; key: DictKey }[] = [
-  { id: 'letters', icon: '🔤', key: 'group_letters' },
-  { id: 'numbers', icon: '🔢', key: 'group_numbers' },
-  { id: 'create', icon: '🎨', key: 'group_create' },
-  { id: 'explore', icon: '🐾', key: 'group_explore' },
-  { id: 'action', icon: '🎮', key: 'group_action' },
-  { id: 'together', icon: '👫', key: 'group_together' }
+const GROUPS: { id: GameGroup; icon: string; key: DictKey; color: string }[] = [
+  { id: 'letters', icon: '🔤', key: 'group_letters', color: '#ff595e' },
+  { id: 'numbers', icon: '🔢', key: 'group_numbers', color: '#1982c4' },
+  { id: 'create', icon: '🎨', key: 'group_create', color: '#ffb703' },
+  { id: 'explore', icon: '🐾', key: 'group_explore', color: '#43aa8b' },
+  { id: 'action', icon: '🎮', key: 'group_action', color: '#7b2cbf' },
+  { id: 'together', icon: '👫', key: 'group_together', color: '#fb5607' }
 ];
+const drawerKey = (w: string) => `istrefi-drawer-${w}`;
 
 export function WorldScreen({ worldId }: { worldId: string }) {
   const t = useT();
   const profile = useActiveProfile();
   useAmbient(AMBIENT[worldId as WorldId] ?? 'none');
+  // Hvilken skuff som er åpen (huskes mens appen er åpen)
+  const [openDrawer, setOpenDrawer] = useState<GameGroup | null>(() => {
+    try { return (sessionStorage.getItem(drawerKey(worldId)) as GameGroup) || null; } catch { return null; }
+  });
+  const drawerRefs = useRef<Partial<Record<GameGroup, HTMLElement | null>>>({});
+  useEffect(() => {
+    try { if (openDrawer) sessionStorage.setItem(drawerKey(worldId), openDrawer); else sessionStorage.removeItem(drawerKey(worldId)); } catch { /* ignorer */ }
+  }, [openDrawer, worldId]);
   if (!WORLDS.some((w) => w.id === worldId) || !profile) {
     go('map');
     return null;
@@ -75,13 +85,6 @@ export function WorldScreen({ worldId }: { worldId: string }) {
     );
   };
 
-  const shelf = (key: string, icon: string, title: string, list: GameDefinition[]) =>
-    list.length > 0 && (
-      <section className="shelf" key={key}>
-        <h2 className="shelf__title"><Emo e={icon} /> {title}</h2>
-        <div className="shelf__row">{list.map(card)}</div>
-      </section>
-    );
 
   return (
     <div className={`screen world-screen world-screen--${world.id}`} style={{ background: world.bg }}>
@@ -95,9 +98,52 @@ export function WorldScreen({ worldId }: { worldId: string }) {
         }
       />
       <div className="shelves">
-        {shelf('fav', '❤️', t('myFavorites'), favorites)}
-        {shelf('recent', '⭐', t('recentlyPlayed'), recent)}
-        {GROUPS.map((gr) => shelf(gr.id, gr.icon, t(gr.key), games.filter((g) => g.group === gr.id)))}
+        {(() => {
+          // Én kompakt rad: favoritter først, så sist spilte (uten dobbelt)
+          const quick = [...favorites, ...recent.filter((g) => !favorites.includes(g))].slice(0, 8);
+          return quick.length > 0 && (
+            <section className="shelf shelf--quick">
+              <h2 className="shelf__title"><Emo e={favorites.length ? '❤️' : '⭐'} /> {favorites.length ? t('myFavorites') : t('recentlyPlayed')}{favorites.length > 0 && recent.length > 0 && <> + <Emo e="⭐" /></>}</h2>
+              <div className="shelf__row">{quick.map(card)}</div>
+            </section>
+          );
+        })()}
+        <div className="dresser">
+          <div className="dresser__top" aria-hidden />
+          {GROUPS.map((gr) => {
+            const list = games.filter((g) => g.group === gr.id);
+            if (!list.length) return null;
+            const isOpen = openDrawer === gr.id;
+            const hasNew = list.some((g) => !stats(g));
+            return (
+              <section key={gr.id} className={`drawer ${isOpen ? 'is-open' : ''}`} style={{ ['--dc' as string]: gr.color }} ref={(el) => { drawerRefs.current[gr.id] = el; }}>
+                <button
+                  className="drawer__front"
+                  aria-expanded={isOpen}
+                  onClick={() => {
+                    playSfx(isOpen ? 'tap' : 'flip');
+                    if (!isOpen) {
+                      speak(t(gr.key));
+                      setTimeout(() => drawerRefs.current[gr.id]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
+                    }
+                    setOpenDrawer(isOpen ? null : gr.id);
+                  }}
+                >
+                  <span className="drawer__icon"><Emo e={gr.icon} /></span>
+                  <span className="drawer__label">{t(gr.key)}</span>
+                  <span className="drawer__count">{list.length}</span>
+                  {hasNew && <span className="drawer__new">{t('newBadge')}</span>}
+                  <span className="drawer__knob" aria-hidden />
+                </button>
+                {isOpen && (
+                  <div className="drawer__tray">
+                    <div className="drawer__games">{list.map(card)}</div>
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
