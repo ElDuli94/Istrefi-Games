@@ -1,20 +1,21 @@
 /**
  * Flaggquiz – 10 spørsmål per nivå. Først Norden og Balkan, så Europa, så hele verden.
  * Fra nivå 4 kommer også omvendte spørsmål: finn riktig flagg til et land.
+ * Nivå 11–14: hovedsteder (Norden og Balkan → Europa → verden → blanding). 🔥 teller riktige på rad.
  */
 import { useEffect, useMemo, useState } from 'react';
 import type { GameProps } from '../types';
-import { COUNTRIES, flagOf, type Country } from '../../data/countries';
+import { CAPITALS, COUNTRIES, flagOf, type Country } from '../../data/countries';
 import { LevelGrid, advanceGrid, emptyGridProgress, type GridProgress } from '../common/LevelGrid';
 import '../math/math.css';
 import './flags.css';
 
-const LEVELS = 10;
+const LEVELS = 14;
 const PER = 10;
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
 
 function poolFor(level: number) {
-  const g = level <= 2 ? 1 : level <= 5 ? 2 : 3;
+  const g = level >= 10 ? ([1, 2, 3, 3] as const)[level - 10] : level <= 2 ? 1 : level <= 5 ? 2 : 3;
   return COUNTRIES.filter((c) => c.group <= g);
 }
 
@@ -49,12 +50,16 @@ function Quiz({ api, onFinish, level, onEnd }: GameProps & { level: number; onEn
   const [n, setN] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
+  const [streak, setStreak] = useState(0);
   const q = questions[n];
-  const reverse = level >= 3 && n % 2 === 1;
+  // Nivå 11–13: bare hovedsteder. Nivå 14: blanding av flagg, omvendt og hovedsteder.
+  const capital = level >= 10 && (level < 13 || n % 3 === 2);
+  const reverse = !capital && level >= 3 && n % 2 === 1;
+  const ask = capital ? api.t('capitalOf', { c: q.name[api.lang] }) : reverse ? api.t('whichFlag', { c: q.name[api.lang] }) : api.t('whichCountry');
   const options = useMemo(() => shuffle([q, ...shuffle(pool.filter((c) => c.code !== q.code)).slice(0, 3)]), [q, pool]);
 
   useEffect(() => {
-    api.speak(reverse ? api.t('whichFlag', { c: q.name[api.lang] }) : api.t('whichCountry'));
+    api.speak(ask);
   }, [n]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function choose(c: Country) {
@@ -62,7 +67,10 @@ function Quiz({ api, onFinish, level, onEnd }: GameProps & { level: number; onEn
     const ok = c.code === q.code;
     setPicked(c.code);
     api.sfx(ok ? 'match' : 'nope');
-    api.speak(q.name[api.lang]);
+    api.speak(capital ? CAPITALS[q.code][api.lang] : q.name[api.lang]);
+    const st = ok ? streak + 1 : 0;
+    setStreak(st);
+    if (ok && st >= 3 && st % 3 === 0) api.sfx('sticker');
     const total = correct + (ok ? 1 : 0);
     setCorrect(total);
     setTimeout(() => {
@@ -80,8 +88,14 @@ function Quiz({ api, onFinish, level, onEnd }: GameProps & { level: number; onEn
       <div className="math__progress">
         {Array.from({ length: PER }, (_, i) => <i key={i} className={i < n ? 'done' : i === n ? 'now' : ''} />)}
       </div>
+      {streak >= 2 && <div className="flags__streak pop-in" key={streak}>🔥 {streak}</div>}
       <div className={`math__card ${picked ? (picked === q.code ? 'is-ok' : 'is-wrong') : ''}`}>
-        {reverse ? (
+        {capital ? (
+          <>
+            <div className="flags__big">{flagOf(q.code)}</div>
+            <div className="flags__q">{ask}</div>
+          </>
+        ) : reverse ? (
           <div className="flags__name">{api.t('whichFlag', { c: q.name[api.lang] })}</div>
         ) : (
           <>
@@ -97,7 +111,7 @@ function Quiz({ api, onFinish, level, onEnd }: GameProps & { level: number; onEn
             className={`math__choice flags__choice pop-in ${picked && c.code === q.code ? 'is-right' : ''} ${picked === c.code && c.code !== q.code ? 'is-wrong' : ''}`}
             onClick={() => choose(c)}
           >
-            {reverse ? <span className="flags__opt-flag">{flagOf(c.code)}</span> : c.name[api.lang]}
+            {capital ? CAPITALS[c.code][api.lang] : reverse ? <span className="flags__opt-flag">{flagOf(c.code)}</span> : c.name[api.lang]}
           </button>
         ))}
       </div>

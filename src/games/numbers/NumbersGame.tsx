@@ -2,6 +2,7 @@
  * Tallek – lær tall og telling.
  * 2–4 år: «Tell med meg» (trykk på hver ting, hør tallet) og «Hvor mange?» med to valg (1–5).
  * 5–7 år: 10 nivåer – telle til 5/10/20, finn tallet, hva mangler, flest, før/etter.
+ * Nivå 11–14: pluss og minus med bilder, telle med 2 og 5, og blanding av alt.
  * Tingene står i rader på fem (som en tierramme), så barna ser mengden, ikke bare teller.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -14,7 +15,7 @@ const THINGS = ['🍎', '🐟', '⭐', '🎈', '🐞', '🦆', '🍓', '🚗', '
 const R = (lo: number, hi: number) => lo + Math.floor(Math.random() * (hi - lo + 1));
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
-const LEVELS = 10;
+const LEVELS = 14;
 const PER_LEVEL = 8;
 
 type Q =
@@ -22,7 +23,9 @@ type Q =
   | { kind: 'find'; n: number; options: number[] }
   | { kind: 'missing'; seq: (number | null)[]; n: number; options: number[] }
   | { kind: 'more'; a: number; b: number; thing: string }
-  | { kind: 'after' | 'before'; ref: number; n: number; options: number[] };
+  | { kind: 'after' | 'before'; ref: number; n: number; options: number[] }
+  | { kind: 'add'; a: number; b: number; n: number; thing: string; options: number[] }
+  | { kind: 'sub'; a: number; b: number; n: number; thing: string; options: number[] };
 
 /** Svaralternativer rundt riktig tall (unike, innenfor lo–hi) */
 function opts(n: number, count: number, lo: number, hi: number): number[] {
@@ -36,17 +39,23 @@ function opts(n: number, count: number, lo: number, hi: number): number[] {
 function makeQ(level: number): Q {
   const kinds: Q['kind'][][] = [
     ['count'], ['count', 'find'], ['count'], ['find'], ['missing'],
-    ['more'], ['after', 'before'], ['count'], ['missing', 'more'], ['count', 'find', 'missing', 'more', 'after', 'before']
+    ['more'], ['after', 'before'], ['count'], ['missing', 'more'], ['count', 'find', 'missing', 'more', 'after', 'before'],
+    ['add'], ['sub'], ['missing'], ['add', 'sub', 'missing', 'after', 'before', 'more']
   ];
   const kind = pick(kinds[level]);
-  const max = level <= 1 ? 5 : level <= 6 ? 10 : 20;
+  const max = level <= 1 ? 5 : level <= 6 || level === 10 || level === 11 ? 10 : 20;
   const lo = level === 7 ? 11 : 1;
   switch (kind) {
     case 'count': { const n = R(lo, max); return { kind, n, thing: pick(THINGS), options: opts(n, 3, Math.max(1, lo - 2), max) }; }
     case 'find': { const n = R(level === 3 ? 0 : 1, max); return { kind, n, options: opts(n, 4, 0, max) }; }
     case 'missing': {
-      const start = R(1, max - 3), hole = R(1, 3);
-      const seq: (number | null)[] = [start, start + 1, start + 2, start + 3];
+      // Nivå 13: tell med 2 eller 5
+      const step = level === 12 ? pick([2, 2, 5]) : level === 13 ? pick([1, 2]) : 1;
+      const top = step === 5 ? 50 : step === 2 ? 20 : max;
+      const start = step === 1 ? R(1, top - 3) : step * R(0, top / step - 3);
+      const hole = R(1, 3);
+      const seq: (number | null)[] = [0, 1, 2, 3].map((k) => start + k * step);
+      if (step > 1) { const n = seq[hole] as number; seq[hole] = null; return { kind, seq, n, options: shuffle([n, n + step, Math.max(0, n - step) === n - step ? n - step : n + 2 * step].filter((x, k, a) => a.indexOf(x) === k)) }; }
       const n = seq[hole] as number;
       seq[hole] = null;
       return { kind, seq, n, options: opts(n, 3, 1, max) };
@@ -54,6 +63,8 @@ function makeQ(level: number): Q {
     case 'more': { let a = R(1, Math.min(max, 10)), b = R(1, Math.min(max, 10)); while (a === b) b = R(1, Math.min(max, 10)); return { kind, a, b, thing: pick(THINGS) }; }
     case 'after': { const ref = R(1, max - 1); return { kind, ref, n: ref + 1, options: opts(ref + 1, 3, 1, max) }; }
     case 'before': { const ref = R(2, max); return { kind, ref, n: ref - 1, options: opts(ref - 1, 3, 1, max) }; }
+    case 'add': { const a = R(1, max === 10 ? 5 : 9), b = R(1, Math.min(max === 10 ? 5 : 9, max - a)); return { kind, a, b, n: a + b, thing: pick(THINGS), options: opts(a + b, 3, 1, max) }; }
+    case 'sub': { const a = R(3, max), b = R(1, a - 1); return { kind, a, b, n: a - b, thing: pick(THINGS), options: opts(a - b, 3, 0, max) }; }
   }
 }
 
@@ -179,6 +190,8 @@ function LevelPlay({ api, level, onDone }: { api: GameApi; level: number; onDone
     : qq.kind === 'find' ? api.t('findNumber', { n: qq.n })
     : qq.kind === 'missing' ? api.t('whatsMissing')
     : qq.kind === 'more' ? api.t('whichMore')
+    : qq.kind === 'add' ? api.t('howManyTogether')
+    : qq.kind === 'sub' ? api.t('howManyLeft')
     : qq.kind === 'after' ? api.t('whatAfter', { n: qq.ref }) : api.t('whatBefore', { n: qq.ref });
   useEffect(() => { api.speak(prompt(q)); }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -212,6 +225,26 @@ function LevelPlay({ api, level, onDone }: { api: GameApi; level: number; onDone
           <div className="num-seq">
             {q.kind === 'after' ? <><span>{q.ref}</span><span className="is-hole">?</span></> : <><span className="is-hole">?</span><span>{q.ref}</span></>}
           </div>
+          <ChoicesW api={wrapApi} options={q.options} answer={q.n} onRight={right} k={i} />
+        </>
+      )}
+      {q.kind === 'add' && (
+        <>
+          <div className="num-sum">
+            <div className="num-sum__grp">{Array.from({ length: q.a }, (_, k) => <Emo key={k} e={q.thing} />)}</div>
+            <b>+</b>
+            <div className="num-sum__grp">{Array.from({ length: q.b }, (_, k) => <Emo key={k} e={q.thing} />)}</div>
+          </div>
+          <div className="num-seq"><span>{q.a}</span><span className="num-op">+</span><span>{q.b}</span><span className="num-op">=</span><span className="is-hole">?</span></div>
+          <ChoicesW api={wrapApi} options={q.options} answer={q.n} onRight={right} k={i} />
+        </>
+      )}
+      {q.kind === 'sub' && (
+        <>
+          <div className="num-sum">
+            <div className="num-sum__grp">{Array.from({ length: q.a }, (_, k) => <span key={k} className={k >= q.a - q.b ? 'is-gone' : ''}><Emo e={q.thing} /></span>)}</div>
+          </div>
+          <div className="num-seq"><span>{q.a}</span><span className="num-op">−</span><span>{q.b}</span><span className="num-op">=</span><span className="is-hole">?</span></div>
           <ChoicesW api={wrapApi} options={q.options} answer={q.n} onRight={right} k={i} />
         </>
       )}

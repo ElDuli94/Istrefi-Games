@@ -2,6 +2,7 @@
  * Robotkoding – legg kommandoer i rekkefølge og trykk Kjør, så roboten finner diamanten.
  * Nivå 1–6: piler som flytter roboten i den retningen pilen peker.
  * Nivå 7–12: roboten kan bare gå «fram» og snu seg – barnet må tenke på hvilken vei den ser.
+ * Nivå 13–20: samle alle ⭐ før diamanten, og bruk gjenta-klosser (×2, ×3) – første steg mot løkker.
  */
 import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -10,7 +11,7 @@ import { LevelGrid, advanceGrid, emptyGridProgress, type GridProgress } from '..
 import './robot.css';
 
 type Dir = 0 | 1 | 2 | 3; // 0=høyre 1=ned 2=venstre 3=opp
-type Cmd = 'R' | 'D' | 'L' | 'U' | 'F' | 'TL' | 'TR';
+type Cmd = 'R' | 'D' | 'L' | 'U' | 'F' | 'TL' | 'TR' | 'X2' | 'X3';
 const VEC: [number, number][] = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
 const MAPS = [
@@ -21,39 +22,67 @@ const MAPS = [
   ['G.#...', '.##.#.', '...#..', '.#...#', '.#.#..', '...#.S'],
   ['S#...G', '.#.#..', '.#.#.#', '...#..', '##.##.', '......']
 ];
-const LEVELS = 12;
-const relative = (lvl: number) => lvl >= 6;
-const mapFor = (lvl: number) => MAPS[lvl % 6];
+// Nivå 13–20: stjerner (o) som må samles før diamanten
+const MAPS2 = [
+  ['S..o..', '......', '..#...', '..#o..', '..#..G', '......'],
+  ['S.....', '.###o.', '......', 'o.###.', '......', '....oG'],
+  ['S..#..', '.o.#.o', '...#..', '##...#', 'o.....', '..##G.'],
+  ['G....o', '####..', 'o.....', '..####', '......', 'S...o.']
+];
+const LEVELS = 20;
+const relative = (lvl: number) => (lvl >= 6 && lvl < 12) || lvl >= 16;
+const mapFor = (lvl: number) => (lvl < 12 ? MAPS[lvl % 6] : MAPS2[(lvl - 12) % 4]);
+const hasLoops = (lvl: number) => lvl >= 12;
+
+/** Gjør om programmet til enkeltsteg: «×2» gjentar forrige kommando én gang til, «×3» to ganger til */
+function expand(program: Cmd[]): { c: Cmd; i: number }[] {
+  const out: { c: Cmd; i: number }[] = [];
+  program.forEach((c, i) => {
+    if (c === 'X2' || c === 'X3') {
+      const prev = out[out.length - 1];
+      if (!prev) return;
+      for (let k = 0; k < (c === 'X2' ? 1 : 2); k++) out.push({ c: prev.c, i });
+    } else out.push({ c, i });
+  });
+  return out;
+}
 
 function parse(map: string[]) {
   let start: [number, number] = [0, 0], goal: [number, number] = [0, 0];
   const rocks = new Set<string>();
+  const stars: [number, number][] = [];
   map.forEach((row, y) => [...row].forEach((c, x) => {
+    if (c === 'o') stars.push([x, y]);
     if (c === 'S') start = [x, y];
     if (c === 'G') goal = [x, y];
     if (c === '#') rocks.add(`${x},${y}`);
   }));
-  return { start, goal, rocks, w: map[0].length, h: map.length };
+  return { start, goal, rocks, stars, w: map[0].length, h: map.length };
 }
 
 /** Korteste løsning (for stjerner) */
 function optimal(lvl: number) {
   const m = parse(mapFor(lvl));
   const rel = relative(lvl);
-  const key = (x: number, y: number, d: number) => `${x},${y},${rel ? d : 0}`;
-  const q: [number, number, number, number][] = [[m.start[0], m.start[1], 0, 0]];
-  const seen = new Set([key(m.start[0], m.start[1], 0)]);
+  const all = (1 << m.stars.length) - 1;
+  const starIdx = (x: number, y: number) => m.stars.findIndex(([sx, sy]) => sx === x && sy === y);
+  const key = (x: number, y: number, d: number, mask: number) => `${x},${y},${rel ? d : 0},${mask}`;
+  const q: [number, number, number, number, number][] = [[m.start[0], m.start[1], 0, 0, 0]];
+  const seen = new Set([key(m.start[0], m.start[1], 0, 0)]);
   const free = (x: number, y: number) => x >= 0 && y >= 0 && x < m.w && y < m.h && !m.rocks.has(`${x},${y}`);
   while (q.length) {
-    const [x, y, d, steps] = q.shift()!;
-    if (x === m.goal[0] && y === m.goal[1]) return steps;
+    const [x, y, d, mask, steps] = q.shift()!;
+    if (x === m.goal[0] && y === m.goal[1] && mask === all) return steps;
     const next: [number, number, number][] = rel
       ? [[x + VEC[d][0], y + VEC[d][1], d], [x, y, (d + 3) % 4], [x, y, (d + 1) % 4]]
       : VEC.map(([dx, dy]) => [x + dx, y + dy, 0] as [number, number, number]);
     for (const [nx, ny, nd] of next) {
-      if (!free(nx, ny) || seen.has(key(nx, ny, nd))) continue;
-      seen.add(key(nx, ny, nd));
-      q.push([nx, ny, nd, steps + 1]);
+      if (!free(nx, ny)) continue;
+      const si = starIdx(nx, ny);
+      const nm = si >= 0 ? mask | (1 << si) : mask;
+      if (seen.has(key(nx, ny, nd, nm))) continue;
+      seen.add(key(nx, ny, nd, nm));
+      q.push([nx, ny, nd, nm, steps + 1]);
     }
   }
   return 99;
@@ -87,7 +116,9 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
   const m = useMemo(() => parse(mapFor(level)), [level]);
   const rel = relative(level);
   const best = useMemo(() => optimal(level), [level]);
-  const maxLen = rel ? 22 : 16;
+  const loops = hasLoops(level);
+  const maxLen = rel ? 26 : 20;
+  const [got, setGot] = useState<number[]>([]); // indekser til stjerner som er samlet
   const [program, setProgram] = useState<Cmd[]>([]);
   const [bot, setBot] = useState({ x: m.start[0], y: m.start[1], d: 0 as Dir });
   const [running, setRunning] = useState(false);
@@ -101,10 +132,13 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
     return () => timers.current.forEach(clearTimeout);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const cmds: { c: Cmd; icon: string; label: string }[] = rel
-    ? [{ c: 'TL', icon: '↪️', label: api.t('turnLeft') }, { c: 'F', icon: '⬆️', label: api.t('forward') }, { c: 'TR', icon: '↩️', label: api.t('turnRight') }]
-    : [{ c: 'L', icon: '⬅️', label: '' }, { c: 'U', icon: '⬆️', label: '' }, { c: 'D', icon: '⬇️', label: '' }, { c: 'R', icon: '➡️', label: '' }];
-  const iconOf = (c: Cmd) => ({ R: '➡️', D: '⬇️', L: '⬅️', U: '⬆️', F: '⬆️', TL: '↪️', TR: '↩️' })[c];
+  const cmds: { c: Cmd; icon: string; label: string }[] = [
+    ...(rel
+      ? [{ c: 'TL' as Cmd, icon: '↪️', label: api.t('turnLeft') }, { c: 'F' as Cmd, icon: '⬆️', label: api.t('forward') }, { c: 'TR' as Cmd, icon: '↩️', label: api.t('turnRight') }]
+      : [{ c: 'L' as Cmd, icon: '⬅️', label: '' }, { c: 'U' as Cmd, icon: '⬆️', label: '' }, { c: 'D' as Cmd, icon: '⬇️', label: '' }, { c: 'R' as Cmd, icon: '➡️', label: '' }]),
+    ...(loops ? [{ c: 'X2' as Cmd, icon: '🔁', label: '×2' }, { c: 'X3' as Cmd, icon: '🔁', label: '×3' }] : [])
+  ];
+  const iconOf = (c: Cmd) => ({ R: '➡️', D: '⬇️', L: '⬅️', U: '⬆️', F: '⬆️', TL: '↪️', TR: '↩️', X2: '🔁', X3: '🔁' })[c];
 
   function add(c: Cmd) {
     if (running || program.length >= maxLen) return;
@@ -119,6 +153,7 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
     setBot({ x: m.start[0], y: m.start[1], d: 0 });
     setRunning(false);
     setActive(-1);
+    setGot([]);
   }
 
   function run() {
@@ -127,7 +162,10 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
     setRunning(true);
     setMsg(null);
     let s = { x: m.start[0], y: m.start[1], d: 0 as Dir };
-    program.forEach((c, i) => {
+    const steps = expand(program);
+    const collected = new Set<number>();
+    const fail = () => setTimeout(() => { setRunning(false); setMsg(api.t('tryAgain')); api.speak(api.t('tryAgain')); setBot({ x: m.start[0], y: m.start[1], d: 0 }); setActive(-1); setGot([]); }, 700);
+    steps.forEach(({ c, i }, stepNo) => {
       timers.current.push(window.setTimeout(() => {
         setActive(i);
         let { x, y, d } = s;
@@ -143,7 +181,7 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
             setBump(true);
             setTimeout(() => setBump(false), 400);
             timers.current.forEach(clearTimeout);
-            setTimeout(() => { setRunning(false); setMsg(api.t('tryAgain')); api.speak(api.t('tryAgain')); setBot({ x: m.start[0], y: m.start[1], d: 0 }); setActive(-1); }, 700);
+            fail();
             s = { x, y, d };
             setBot(s);
             return;
@@ -153,17 +191,22 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
         s = { x, y, d };
         setBot(s);
         api.sfx(c === 'TL' || c === 'TR' ? 'tap' : 'flip');
-        if (x === m.goal[0] && y === m.goal[1]) {
+        const si = m.stars.findIndex(([sx, sy]) => sx === x && sy === y);
+        if (si >= 0 && !collected.has(si)) { collected.add(si); setGot([...collected]); api.sfx('sticker'); }
+        if (x === m.goal[0] && y === m.goal[1] && collected.size === m.stars.length) {
           timers.current.forEach(clearTimeout);
           api.sfx('win');
+          // Stjerner: kort program. Med gjenta-klosser teller hver kloss én (løkker gir kortere program).
           const len = i + 1;
-          const stars = len <= best ? 3 : len <= best + 2 ? 2 : 1;
+          const target = loops ? Math.ceil(best * 0.75) : best;
+          const stars = len <= target ? 3 : len <= target + 2 ? 2 : 1;
           const firstClear = onWin(stars);
           setTimeout(() => onFinish({ won: true, stars, firstClear }), 900);
-        } else if (i === program.length - 1) {
-          setTimeout(() => { setRunning(false); setMsg(api.t('tryAgain')); api.speak(api.t('tryAgain')); setBot({ x: m.start[0], y: m.start[1], d: 0 }); setActive(-1); }, 700);
+        } else if (stepNo === steps.length - 1) {
+          if (x === m.goal[0] && y === m.goal[1]) { setMsg(api.t('collectStarsFirst')); api.speak(api.t('collectStarsFirst')); setTimeout(() => { setRunning(false); setBot({ x: m.start[0], y: m.start[1], d: 0 }); setActive(-1); setGot([]); }, 1400); }
+          else fail();
         }
-      }, 300 + i * 480));
+      }, 300 + stepNo * 420));
     });
   }
 
@@ -175,7 +218,8 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
           const x = i % m.w, y = Math.floor(i / m.w);
           const rock = m.rocks.has(`${x},${y}`);
           const goal = x === m.goal[0] && y === m.goal[1];
-          return <span key={i} className={`rcell ${(x + y) % 2 ? 'is-alt' : ''}`}>{rock ? <Emo e="🪨" /> : goal ? <Emo e="💎" /> : ''}</span>;
+          const si = m.stars.findIndex(([sx, sy]) => sx === x && sy === y);
+          return <span key={i} className={`rcell ${(x + y) % 2 ? 'is-alt' : ''}`}>{rock ? <Emo e="🪨" /> : goal ? <span className={got.length < m.stars.length ? 'is-locked' : ''}><Emo e="💎" /></span> : si >= 0 && !got.includes(si) ? <Emo e="⭐" /> : ''}</span>;
         })}
         <span
           className={`robot__bot ${bump ? 'is-bump' : ''}`}
@@ -190,7 +234,7 @@ function Play({ api, onFinish, level, onWin }: GameProps & { level: number; onWi
         {program.length === 0 && <span className="robot__hint">{rel ? api.t('robotHelpTurn') : api.t('robotHelp')}</span>}
         {program.map((c, i) => (
           <button key={i} className={`pcmd ${active === i ? 'is-active' : ''}`} onClick={() => { if (!running) { api.sfx('tap'); setProgram((p) => p.filter((_, k) => k !== i)); } }}>
-            <Emo e={iconOf(c)} />
+            <Emo e={iconOf(c)} />{(c === 'X2' || c === 'X3') && <small className="pcmd__x">{c === 'X2' ? '×2' : '×3'}</small>}
           </button>
         ))}
       </div>

@@ -25,3 +25,6 @@
 .rcmd--clear { background: #ffadad; }
 .rcmd--run { background: #06d6a0; color: #fff; font-weight: 800; font-size: 1.4rem; min-width: 120px; }
 .rcmd--run:disabled { opacity: .5; }
+.rcell .is-locked { opacity: .45; filter: grayscale(.6); }
+.pcmd { position: relative; }
+.pcmd__x { position: absolute; bottom: -4px; right: -4px; background: #8338ec; color: #fff; border-radius: 999px; font-size: .7rem; font-weight: 800; padding: 0 5px; }

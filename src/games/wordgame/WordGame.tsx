@@ -2,6 +2,7 @@
  * Ordgåten – gjett det hemmelige ordet på 6 forsøk.
  * Grønn = riktig bokstav på riktig plass, gul = bokstaven finnes et annet sted, grå = ikke med.
  * "Dagens ord" er likt for alle hver dag. "Øving" gir nye ord så mye man vil.
+ * 💡 Hint viser én bokstav (koster én stjerne). Statistikk: spilt, vunnet, på rad og fordeling av forsøk.
  */
 import { useEffect, useMemo, useState } from 'react';
 import type { GameProps } from '../types';
@@ -11,7 +12,9 @@ import './wordgame.css';
 
 const TRIES = 6;
 type Mark = 'ok' | 'near' | 'no';
-interface SavedData { daily?: { date: string; won: boolean; tries: number; lang: string } }
+interface Stats { played: number; won: number; streak: number; best: number; dist: number[] }
+interface SavedData { daily?: { date: string; won: boolean; tries: number; lang: string }; stats?: Stats }
+const emptyStats = (): Stats => ({ played: 0, won: 0, streak: 0, best: 0, dist: Array(TRIES).fill(0) });
 
 const today = () => new Date().toISOString().slice(0, 10);
 function hash(s: string) { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return Math.abs(h); }
@@ -36,6 +39,8 @@ export default function WordGame(props: GameProps) {
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   const list = useMemo(() => WORDS[api.lang][L as 4 | 5].map((w) => splitLetters(w, api.lang)).filter((w) => w.length === L), [api.lang, L]);
   const dailyDone = saved.daily?.date === today() && saved.daily.lang === api.lang;
+  const st = saved.stats ?? emptyStats();
+  const maxDist = Math.max(1, ...st.dist);
 
   if (mode === null) {
     return (
@@ -48,6 +53,21 @@ export default function WordGame(props: GameProps) {
         <button className="wg-mode pop-in" style={{ animationDelay: '.08s' }} onClick={() => { api.sfx('pop'); setMode('practice'); }}>
           <span>🔁</span>{api.t('practice')}
         </button>
+        {st.played > 0 && (
+          <div className="wg-stats pop-in">
+            <div className="wg-stats__row">
+              <span><b>{st.played}</b>{api.t('statPlayed')}</span>
+              <span><b>{Math.round((st.won / st.played) * 100)}%</b>{api.t('statWon')}</span>
+              <span><b>🔥 {st.streak}</b>{api.t('statStreak')}</span>
+              <span><b>🏆 {st.best}</b>{api.t('statBest')}</span>
+            </div>
+            <div className="wg-dist">
+              {st.dist.map((d, k) => (
+                <div key={k} className="wg-dist__bar"><i>{k + 1}</i><span style={{ width: `${Math.max(8, (d / maxDist) * 100)}%` }}>{d}</span></div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -58,8 +78,11 @@ export default function WordGame(props: GameProps) {
       target={target}
       daily={mode === 'daily'}
       onEnd={(won, tries) => {
-        if (mode !== 'daily') return false;
-        const next = { ...saved, daily: { date: today(), won, tries, lang: api.lang } };
+        const s0 = saved.stats ?? emptyStats();
+        const streak = won ? s0.streak + 1 : 0;
+        const stats: Stats = { played: s0.played + 1, won: s0.won + (won ? 1 : 0), streak, best: Math.max(s0.best, streak), dist: s0.dist.map((d, k) => (won && k === tries - 1 ? d + 1 : d)) };
+        if (mode !== 'daily') { const next = { ...saved, stats }; setSaved(next); api.saveData(next); return false; }
+        const next = { ...saved, stats, daily: { date: today(), won, tries, lang: api.lang } };
         setSaved(next);
         api.saveData(next);
         return won;
@@ -74,6 +97,7 @@ function Board({ api, onFinish, target, daily, onEnd }: GameProps & { target: st
   const [cur, setCur] = useState<string[]>([]);
   const [shake, setShake] = useState(false);
   const [over, setOver] = useState(false);
+  const [hint, setHint] = useState<number | null>(null); // posisjon som er avslørt
   const alphabet = ALPHABETS[api.lang];
 
   const keyMarks = useMemo(() => {
@@ -100,7 +124,7 @@ function Board({ api, onFinish, target, daily, onEnd }: GameProps & { target: st
         api.sfx(won ? 'win' : 'nope');
         api.speak(won ? word.toLowerCase() : api.t('theWordWas', { w: word.toLowerCase() }));
         const firstClear = onEnd(won, tries);
-        const stars = won ? (tries <= 3 ? 3 : tries <= 5 ? 2 : 1) : 0;
+        const stars = won ? Math.max(1, (tries <= 3 ? 3 : tries <= 5 ? 2 : 1) - (hint !== null ? 1 : 0)) : 0;
         setTimeout(() => onFinish({ won, stars, firstClear, coins: daily ? undefined : won ? 5 : 0 }), 2000);
       } else api.sfx('pop');
       return;
@@ -122,6 +146,18 @@ function Board({ api, onFinish, target, daily, onEnd }: GameProps & { target: st
     return () => window.removeEventListener('keydown', onKey);
   });
 
+  function useHint() {
+    if (hint !== null || over) return;
+    // Avslør en plass som ikke allerede er funnet (grønn)
+    const known = new Set<number>();
+    rows.forEach((r) => r.marks.forEach((m, i) => { if (m === 'ok') known.add(i); }));
+    const free = target.map((_, i) => i).filter((i) => !known.has(i));
+    if (!free.length) return;
+    const i = free[Math.floor(Math.random() * free.length)];
+    api.sfx('sticker');
+    setHint(i);
+  }
+
   // Tastatur i tre rader
   const per = Math.ceil(alphabet.length / 3);
   const keyRows = [alphabet.slice(0, per), alphabet.slice(per, per * 2), alphabet.slice(per * 2)];
@@ -135,8 +171,8 @@ function Board({ api, onFinish, target, daily, onEnd }: GameProps & { target: st
           return (
             <div key={r} className={`wg-row ${r === rows.length && shake ? 'is-shake' : ''}`}>
               {Array.from({ length: L }, (_, i) => (
-                <span key={i} className={`wg-cell ${row ? `is-${row.marks[i]} is-flip` : letters[i] ? 'is-typed' : ''}`} style={{ animationDelay: `${i * 0.12}s` }}>
-                  {letters[i] ?? ''}
+                <span key={i} className={`wg-cell ${row ? `is-${row.marks[i]} is-flip` : letters[i] ? 'is-typed' : ''} ${!row && r === rows.length && hint === i && !letters[i] ? 'is-ghost' : ''}`} style={{ animationDelay: `${i * 0.12}s` }}>
+                  {letters[i] ?? (!row && r === rows.length && hint === i ? target[i] : '')}
                 </span>
               ))}
             </div>
@@ -144,6 +180,11 @@ function Board({ api, onFinish, target, daily, onEnd }: GameProps & { target: st
         })}
       </div>
       {over && !rows[rows.length - 1].marks.every((m) => m === 'ok') && <div className="wg-reveal pop-in">{api.t('theWordWas', { w: target.join('') })}</div>}
+      {!over && rows.length >= 2 && (
+        <button className={`wg-hint pop-in ${hint !== null ? 'is-used' : ''}`} onClick={useHint} disabled={hint !== null}>
+          💡 {hint !== null ? api.t('hintLetter', { n: hint + 1, l: target[hint] }) : api.t('hintCost')}
+        </button>
+      )}
       <div className="wg-keys">
         {keyRows.map((row, i) => (
           <div key={i} className="wg-keyrow">

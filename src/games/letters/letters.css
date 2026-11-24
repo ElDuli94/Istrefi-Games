@@ -65,3 +65,5 @@
 .word-task__slots span { width: 22px; height: 8px; border-radius: 4px; background: #ffffff88; }
 .word-task__slots span.is-filled { background: #fff; }
 .word-task .letters { flex: 1; min-height: 0; width: 100%; }
+.letters-menu--cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; width: min(94vw, 620px); }
+.letters-mode--cat { width: auto; }

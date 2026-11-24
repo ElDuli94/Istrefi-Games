@@ -26,3 +26,12 @@
 @media (max-width: 520px) { .pattern-cell { width: 44px; height: 44px; } .pattern-cell .shape-svg { width: 40px; height: 40px; } }
 @keyframes shapeBounce { 0% { transform: scale(.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes shapeHint { 0%, 100% { rotate: 0deg; } 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+.shapes-count { position: relative; width: min(88vw, 400px, 44vh); aspect-ratio: 1; background: #fff; border-radius: 24px; box-shadow: 0 6px 0 rgba(0,0,0,.12); margin: 8px auto; }
+.shapes-count__it { position: absolute; transition: filter .3s; }
+.shapes-count__it.is-glow { filter: drop-shadow(0 0 10px #ffd60a) drop-shadow(0 0 4px #ffd60a); }
+.shapes-nums { display: flex; gap: 14px; justify-content: center; }
+.shapes-num { min-width: 78px; height: 78px; border-radius: 22px; border: 0; background: #fff; font-size: 2.2rem; font-weight: 900; color: #23213a; box-shadow: 0 6px 0 rgba(0,0,0,.15); }
+.shapes-num.is-wrong { opacity: .35; }
+.shapes-num.is-right { background: #2dc653; color: #fff; }
+.shapes-num.is-hint { animation: wiggle .6s infinite; }
+.shapes-ask .shape-svg { vertical-align: middle; }

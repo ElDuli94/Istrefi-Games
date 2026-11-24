@@ -2,14 +2,14 @@
  * Bokstavlek – dra (eller trykk) bokstaver til tavla, lag ord og få dem lest opp.
  *
  * Fri lek: lag hva du vil. Barn 5–7 får navnet sitt som hjelpelinje.
- * Ord-oppgaver: stav dyret på bildet. Hjelpen blir mindre jo eldre barnet er.
+ * Ord-oppgaver: velg tema (dyr, mat, kjøretøy …) og stav ordet på bildet. Hjelpen blir mindre jo eldre barnet er.
  */
 import { Emo } from '../../components/Emo';
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
 import type { GameApi, GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
 import { ALPHABETS, VOWELS, splitLetters } from '../../data/alphabets';
-import { ANIMALS } from '../../data/animals';
+import { VOCAB, type VocabCat } from '../../data/vocab';
 import './letters.css';
 
 interface Tile {
@@ -34,17 +34,20 @@ const TASKS: Record<Exclude<WorldId, 'tiny'>, { words: number; maxLen: number; g
   big: { words: 5, maxLen: 20, guide: false, extra: 'all', colorCorrect: false }
 };
 
+// Temaer for ord-oppgaver (fargene passer dårlig å stave fra bilde)
+const TOPICS = VOCAB.filter((c) => c.id !== 'colors');
 let nextId = 1;
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
 
 export default function LetterGame(props: GameProps) {
   const { world, api } = props;
   const [mode, setMode] = useState<'free' | 'tasks' | null>(world === 'tiny' ? 'free' : null);
+  const [cat, setCat] = useState<VocabCat | null>(null);
   // ⬅️ går først tilbake til spillets egen meny
   useEffect(() => {
-    api.setBack(mode !== null && world !== 'tiny' ? () => setMode(null) : null);
+    api.setBack(cat ? () => setCat(null) : mode !== null && world !== 'tiny' ? () => setMode(null) : null);
     return () => api.setBack(null);
-  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mode, cat]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (mode === null) {
     return (
@@ -58,7 +61,19 @@ export default function LetterGame(props: GameProps) {
       </div>
     );
   }
-  return mode === 'free' ? <FreePlay {...props} /> : <WordTasks {...props} world={world} />;
+  if (mode === 'free') return <FreePlay {...props} />;
+  if (!cat) {
+    return (
+      <div className="letters-menu letters-menu--cats">
+        {TOPICS.map((c, k) => (
+          <button key={c.id} className="letters-mode letters-mode--cat pop-in" style={{ animationDelay: `${k * 0.05}s` }} onClick={() => { api.sfx('pop'); api.speak(api.t(c.nameKey)); setCat(c); }}>
+            <span><Emo e={c.icon} /></span>{api.t(c.nameKey)}
+          </button>
+        ))}
+      </div>
+    );
+  }
+  return <WordTasks key={cat.id} {...props} world={world} cat={cat} />;
 }
 
 // ---------------------------------------------------------------------------
@@ -243,19 +258,22 @@ function FreePlay({ world, api, onFinish }: GameProps) {
 // ---------------------------------------------------------------------------
 // Ord-oppgaver: stav dyret
 // ---------------------------------------------------------------------------
-function WordTasks({ world, api, onFinish }: GameProps & { world: WorldId }) {
+function WordTasks({ world, api, onFinish, cat }: GameProps & { world: WorldId; cat: VocabCat }) {
   const cfg = TASKS[world === 'tiny' ? 'small' : world];
   const words = useMemo(() => {
-    const pool = ANIMALS.filter((a) => splitLetters(a.name[api.lang], api.lang).length <= cfg.maxLen);
+    const ok = (w: string) => !/[\s-]/.test(w) && splitLetters(w, api.lang).length <= cfg.maxLen;
+    let pool = cat.items.filter((a) => ok(a[api.lang]));
+    // Finnes det for få korte ord i temaet, fyll på med dyr
+    if (pool.length < cfg.words) pool = [...pool, ...VOCAB[0].items.filter((a) => ok(a[api.lang]))];
     return shuffle(pool).slice(0, cfg.words);
-  }, [api.lang, cfg]);
+  }, [api.lang, cfg, cat]);
   const [index, setIndex] = useState(0);
   const [board, setBoard] = useState<Tile[]>([]);
   const [hints, setHints] = useState(0);
   const [solved, setSolved] = useState(false);
 
   const current = words[index];
-  const target = useMemo(() => splitLetters(current.name[api.lang], api.lang), [current, api.lang]);
+  const target = useMemo(() => splitLetters(current[api.lang], api.lang), [current, api.lang]);
   const tray = useMemo(() => {
     if (cfg.extra === 'all') return ALPHABETS[api.lang];
     const extras = shuffle(ALPHABETS[api.lang].filter((c) => !target.includes(c))).slice(0, cfg.extra);
@@ -264,7 +282,7 @@ function WordTasks({ world, api, onFinish }: GameProps & { world: WorldId }) {
 
   useEffect(() => {
     // 5–7 år hører ordet; eldre må finne ut hva dyret heter selv.
-    api.speak(world === 'small' ? current.name[api.lang] : api.t('whatIsThis'));
+    api.speak(world === 'small' ? current[api.lang] : api.t('whatIsThis'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
@@ -274,7 +292,7 @@ function WordTasks({ world, api, onFinish }: GameProps & { world: WorldId }) {
     if (solved || board.length !== target.length || !correct.every(Boolean)) return;
     setSolved(true);
     api.sfx('match');
-    api.speak(current.name[api.lang]);
+    api.speak(current[api.lang]);
     setTimeout(() => {
       if (index + 1 < words.length) {
         setIndex(index + 1);
@@ -304,8 +322,8 @@ function WordTasks({ world, api, onFinish }: GameProps & { world: WorldId }) {
     <div className="word-task">
       <div className="word-task__top">
         <span className="word-task__count">{api.t('wordOf', { n: index + 1, total: words.length })}</span>
-        <button className={`word-task__pic ${solved ? 'is-solved' : ''}`} onClick={() => api.speak(world === 'small' ? current.name[api.lang] : api.t('whatIsThis'))}>
-          <Emo e={current.emoji} />
+        <button className={`word-task__pic ${solved ? 'is-solved' : ''}`} onClick={() => api.speak(world === 'small' ? current[api.lang] : api.t('whatIsThis'))}>
+          <Emo e={current.e} />
         </button>
         {!cfg.guide && (
           <div className="word-task__slots" aria-hidden>
