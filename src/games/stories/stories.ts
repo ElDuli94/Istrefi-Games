@@ -225,6 +225,110 @@ export const STORIES: Story[] = [
         }
       }
     ]
+  },
+  {
+    id: 'beach',
+    icon: '🏖️',
+    title: { no: 'En dag på stranden', sq: 'Një ditë në plazh' },
+    pages: [
+      {
+        id: 'start', bg: SEA, next: 'sand',
+        items: [i('🦅', 30, 40, 6, 'fly'), i('🐢', 68, 66, 5, 'bob'), i('☀️', 82, 14, 5, 'pulse')],
+        text: {
+          no: 'Solen skinte, og Shqipo fløy til stranden. Der ventet Skilpadde med en bøtte og en spade.',
+          sq: 'Dielli shkëlqente dhe Shqipo fluturoi në plazh. Atje e priste Breshka me një kovë dhe një lopatë.'
+        }
+      },
+      {
+        id: 'sand', bg: SEA,
+        items: [i('🪣', 40, 66, 5, 'shake'), i('🐢', 62, 66, 5, 'bob'), i('🦅', 25, 45, 5, 'bob')],
+        text: { no: 'Hva skal de gjøre først?', sq: 'Çfarë do të bëjnë së pari?' },
+        choices: [
+          { e: '🏰', label: { no: 'Bygge sandslott', sq: 'Të ndërtojnë kështjellë' }, to: 'castle' },
+          { e: '🐚', label: { no: 'Lete etter skjell', sq: 'Të kërkojnë guaska' }, to: 'shells' }
+        ]
+      },
+      {
+        id: 'castle', bg: SEA, next: 'wave',
+        items: [i('🏰', 50, 62, 9, 'pulse'), i('🐢', 25, 68, 4, 'bob'), i('🦅', 76, 40, 4, 'fly')],
+        text: {
+          no: 'De bygde det største sandslottet i hele verden. Skilpadde satte et lite flagg på toppen.',
+          sq: 'Ndërtuan kështjellën më të madhe prej rëre në gjithë botën. Breshka vuri një flamur të vogël në majë.'
+        }
+      },
+      {
+        id: 'shells', bg: SEA, next: 'wave',
+        items: [i('🐚', 30, 70, 4, 'bob'), i('🐚', 52, 74, 3, 'bob'), i('⭐', 70, 70, 4, 'spin'), i('🦀', 80, 60, 4, 'shake')],
+        text: {
+          no: 'De fant rosa skjell, en sjøstjerne og en liten krabbe som vinket med klørne.',
+          sq: 'Gjetën guaska rozë, një yll deti dhe një gaforre të vogël që tundte kthetrat.'
+        }
+      },
+      {
+        id: 'wave', bg: SEA, next: 'end',
+        items: [i('🌊', 50, 62, 12, 'bob'), i('🐬', 70, 40, 5, 'spin'), i('🦅', 25, 30, 4, 'fly')],
+        text: {
+          no: 'Plutselig kom en stor bølge. Splæsj! Alle ble våte og lo så de nesten falt.',
+          sq: 'Papritur erdhi një valë e madhe. Pllaq! Të gjithë u lagën dhe qeshën me të madhe.'
+        }
+      },
+      {
+        id: 'end', bg: SEA,
+        items: [i('🍦', 35, 60, 5, 'bob'), i('🍦', 60, 60, 5, 'bob'), i('🐢', 30, 76, 4, 'bob'), i('🦅', 66, 76, 4, 'bob'), i('🌅', 82, 18, 5, 'pulse')],
+        text: {
+          no: 'Til slutt spiste de is mens solen gikk ned. For en herlig dag!',
+          sq: 'Në fund hëngrën akullore ndërsa perëndonte dielli. Sa ditë e bukur!'
+        }
+      }
+    ]
+  },
+  {
+    id: 'snow',
+    icon: '⛄',
+    title: { no: 'Den store snødagen', sq: 'Dita e madhe me borë' },
+    pages: [
+      {
+        id: 'start', bg: 'linear-gradient(180deg,#caf0f8,#edf6f9 70%,#ffffff 70%)', next: 'out',
+        items: [i('🦅', 40, 50, 6, 'bob'), i('❄️', 20, 20, 3, 'float'), i('❄️', 70, 15, 3, 'float'), i('🏠', 75, 58, 7, 'still')],
+        text: {
+          no: 'En morgen var alt hvitt. Det hadde snødd hele natten!',
+          sq: 'Një mëngjes gjithçka ishte e bardhë. Kishte rënë borë gjithë natën!'
+        }
+      },
+      {
+        id: 'out', bg: 'linear-gradient(180deg,#caf0f8,#edf6f9 70%,#ffffff 70%)',
+        items: [i('🦅', 30, 50, 5, 'bob'), i('🐻', 60, 55, 6, 'bob'), i('🧣', 45, 30, 3, 'shake')],
+        text: { no: 'Shqipo og Bjørn tok på seg skjerf og votter. Hva skal de gjøre?', sq: 'Shqipo dhe Ariu vunë shall dhe doreza. Çfarë do të bëjnë?' },
+        choices: [
+          { e: '🛷', label: { no: 'Ake på kjelke', sq: 'Të rrëshqasin me sajë' }, to: 'sled' },
+          { e: '⛄', label: { no: 'Lage snømann', sq: 'Të bëjnë burrë dëbore' }, to: 'snowman' }
+        ]
+      },
+      {
+        id: 'sled', bg: 'linear-gradient(180deg,#caf0f8,#ffffff)', next: 'cocoa',
+        items: [i('⛰️', 50, 50, 12, 'still'), i('🛷', 40, 70, 5, 'fly'), i('🐻', 38, 62, 4, 'bob')],
+        text: {
+          no: 'Wiii! De suste ned bakken så snøen sprutet. Så gikk de opp og gjorde det igjen og igjen.',
+          sq: 'Uiii! Rrëshqitën poshtë kodrës aq shpejt sa bora spërkaste. Pastaj u ngjitën dhe e bënë përsëri e përsëri.'
+        }
+      },
+      {
+        id: 'snowman', bg: 'linear-gradient(180deg,#caf0f8,#ffffff)', next: 'cocoa',
+        items: [i('⛄', 50, 55, 10, 'pulse'), i('🥕', 58, 40, 3, 'shake'), i('🐻', 25, 64, 4, 'bob'), i('🦅', 76, 40, 4, 'fly')],
+        text: {
+          no: 'De rullet tre store snøballer og laget en snømann. Han fikk en gulrot til nese.',
+          sq: 'Rrotulluan tre topa të mëdhenj bore dhe bënë një burrë dëbore. Ai mori një karotë për hundë.'
+        }
+      },
+      {
+        id: 'cocoa', bg: 'linear-gradient(180deg,#ffe8d6,#ffd7ba 72%,#e3b78f 72%)',
+        items: [i('☕', 40, 58, 5, 'bob'), i('☕', 60, 58, 5, 'bob'), i('🔥', 80, 62, 5, 'pulse'), i('🐻', 30, 74, 4, 'bob'), i('🦅', 66, 74, 4, 'bob')],
+        text: {
+          no: 'Til slutt satt de inne ved peisen og drakk varm kakao. Det var den beste snødagen noensinne.',
+          sq: 'Në fund u ulën brenda pranë oxhakut dhe pinë kakao të ngrohtë. Ishte dita më e mirë me borë.'
+        }
+      }
+    ]
   }
 ];
 

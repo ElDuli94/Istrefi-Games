@@ -5,9 +5,19 @@ import { Emo, emojiUrl } from '../../components/Emo';
 import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameProps } from '../types';
 import { DOT_FIGS, type DotFig } from './figures';
+import { ALPHABETS } from '../../data/alphabets';
+import type { GameApi } from '../types';
 import './dots.css';
 
-interface SavedData { done: string[] }
+interface SavedData { done: string[]; mode?: CountMode }
+/** Tellemåter: 1-2-3, 2-4-6, 5-10-15, 10-20-30 eller A-B-C */
+type CountMode = 'one' | 'two' | 'five' | 'ten' | 'abc';
+const MODES: { id: CountMode; label: string; older?: boolean }[] = [
+  { id: 'one', label: '1 2 3' }, { id: 'abc', label: 'A B C' },
+  { id: 'two', label: '2 4 6', older: true }, { id: 'five', label: '5 10 15', older: true }, { id: 'ten', label: '10 20 30', older: true }
+];
+const labelFor = (mode: CountMode, i: number, api: GameApi) =>
+  mode === 'abc' ? ALPHABETS[api.lang][i] ?? String(i + 1) : String((i + 1) * (mode === 'two' ? 2 : mode === 'five' ? 5 : mode === 'ten' ? 10 : 1));
 
 export default function DotsGame(props: GameProps) {
   const { api } = props;
@@ -18,9 +28,18 @@ export default function DotsGame(props: GameProps) {
     api.setBack(fig !== null ? () => setFig(null) : null);
     return () => api.setBack(null);
   }, [fig]); // eslint-disable-line react-hooks/exhaustive-deps
+  const mode: CountMode = saved.mode ?? 'one';
+  const modes = MODES.filter((m) => !m.older || props.world !== 'small');
   if (!fig) {
     return (
       <div className="dots-pick">
+        <div className="dots-modes">
+          {modes.map((m) => (
+            <button key={m.id} className={`dots-mode ${mode === m.id ? 'is-on' : ''}`} onClick={() => { api.sfx('tap'); const next = { ...saved, mode: m.id }; setSaved(next); api.saveData(next); }}>
+              {m.label}
+            </button>
+          ))}
+        </div>
         <h2 className="level-picker__title">{api.t('choosePicture')}</h2>
         <div className="dots-pick__grid">
           {DOT_FIGS.map((f, i) => (
@@ -36,6 +55,7 @@ export default function DotsGame(props: GameProps) {
     <Board
       {...props}
       fig={fig}
+      mode={mode}
       onDone={() => {
         const first = !saved.done.includes(fig.id);
         if (first) { const next = { done: [...saved.done, fig.id] }; setSaved(next); api.saveData(next); }
@@ -45,7 +65,7 @@ export default function DotsGame(props: GameProps) {
   );
 }
 
-function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone: () => boolean }) {
+function Board({ api, onFinish, fig, mode, onDone }: GameProps & { fig: DotFig; mode: CountMode; onDone: () => boolean }) {
   const [n, setN] = useState(1); // antall prikker som er koblet (første er "startet")
   const [wrong, setWrong] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -71,7 +91,7 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
     const radius = e.type === 'pointerdown' ? 12 : 9;
     if (Math.hypot(target[0] - x, target[1] - y) < radius) {
       api.sfx('pop');
-      api.speak(String(n < fig.pts.length ? n + 1 : 1));
+      api.speak(n < fig.pts.length ? labelFor(mode, n, api).toLowerCase() : labelFor(mode, 0, api).toLowerCase());
       const next = n + 1;
       setN(next);
       if (next > fig.pts.length && !finished.current) {
@@ -110,7 +130,7 @@ function Board({ api, onFinish, fig, onDone }: GameProps & { fig: DotFig; onDone
             <g key={i} className={`dot is-${state} ${wrong === i ? 'is-wrong' : ''}`}>
               {state === 'next' && <circle cx={x} cy={y} r={7} className="dot__ring" />}
               <circle cx={x} cy={y} r={state === 'next' ? 3.8 : 2.8} />
-              <text x={x} y={y - 5.2} textAnchor="middle">{i + 1}</text>
+              <text x={x} y={y - 5.2} textAnchor="middle" className={labelFor(mode, i, api).length > 2 ? 'is-long' : ''}>{labelFor(mode, i, api)}</text>
             </g>
           );
         })}
