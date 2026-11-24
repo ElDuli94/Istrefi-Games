@@ -1,6 +1,6 @@
 /**
- * Lær klokka – 8 nivåer: hele og halve timer, kvart over/på, fem-minutter,
- * still klokka selv (dra den lange viseren), og digital → analog.
+ * Lær klokka – 12 nivåer: hele og halve timer, kvart over/på, fem-minutter,
+ * still klokka selv (dra den lange viseren), digital → analog, «om en time / halvtime» og 24-timersklokka.
  */
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameApi, GameProps } from '../types';
@@ -9,7 +9,7 @@ import { LevelGrid, advanceGrid, emptyGridProgress, type GridProgress } from '..
 import { timeText } from './time';
 import './clock.css';
 
-const LEVELS = 8;
+const LEVELS = 12;
 const PER_LEVEL = 6;
 const R = (n: number) => Math.floor(Math.random() * n);
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
@@ -55,7 +55,11 @@ function Clock({ h, m, size = 240, onDrag, onRelease }: { h: number; m: number; 
   );
 }
 
-type Q = { kind: 'read' | 'set' | 'digital'; h: number; m: number; options: [number, number][] };
+type Q = {
+  kind: 'read' | 'set' | 'digital' | 'later' | 'h24'; h: number; m: number; options: [number, number][];
+  /** «later»: tiden klokka viser nå, og hvor mange minutter senere svaret er */
+  from?: [number, number]; add?: number;
+};
 
 function minutesFor(level: number): number[] {
   if (level === 0) return [0];
@@ -65,7 +69,20 @@ function minutesFor(level: number): number[] {
   return Array.from({ length: 12 }, (_, k) => k * 5);
 }
 function makeQ(level: number): Q {
-  const kind: Q['kind'] = level === 5 || level === 7 ? 'set' : level === 6 ? 'digital' : 'read';
+  // Nivå 12 (indeks 11): blanding av alle typene
+  if (level === 11) level = [3, 4, 5, 6, 8, 9, 10][R(7)];
+  if (level === 8 || level === 9) {
+    // Hva er klokka om en time / en halvtime?
+    const add = level === 8 ? 60 : 30;
+    const fh = 1 + R(12), fm = [0, 15, 30, 45][R(4)];
+    const tot = (fh % 12) * 60 + fm + add;
+    const h = Math.floor(tot / 60) % 12 || 12, m = tot % 60;
+    const opts = new Map<string, [number, number]>([[`${h}:${m}`, [h, m]], [`${fh}:${fm}`, [fh, fm]]]);
+    while (opts.size < 3) { const d = [-30, 30, 90, -60][R(4)]; const t2 = (((fh % 12) * 60 + fm + add + d) % 720 + 720) % 720; opts.set(`${Math.floor(t2 / 60) || 12}:${t2 % 60}`, [Math.floor(t2 / 60) || 12, t2 % 60]); }
+    return { kind: 'later', h, m, from: [fh, fm], add, options: shuffle([...opts.values()]) };
+  }
+  const kind: Q['kind'] = level === 5 || level === 7 ? 'set' : level === 6 ? 'digital' : level === 10 ? 'h24' : 'read';
+  if (level === 10) level = 6;
   const ms = minutesFor(level);
   const h = 1 + R(12), m = ms[R(ms.length)];
   const opts = new Map<string, [number, number]>([[`${h}:${m}`, [h, m]]]);
@@ -106,7 +123,8 @@ function Play({ api, level, onDone }: { api: GameApi; level: number; onDone: (st
   const [checked, setChecked] = useState<'no' | null>(null);
   const mistakes = useRef(0);
   const target = timeText(q.h, q.m, api.lang);
-  const prompt = q.kind === 'read' ? api.t('whatTime') : q.kind === 'digital' ? api.t('findClock') : api.t('setClock', { t: target });
+  const prompt = q.kind === 'read' ? api.t('whatTime') : q.kind === 'digital' || q.kind === 'h24' ? api.t('findClock')
+    : q.kind === 'later' ? api.t(q.add === 60 ? 'inOneHour' : 'inHalfHour') : api.t('setClock', { t: target });
 
   useEffect(() => { setWrong([]); setOk(false); setTotal(12 * 60); setChecked(null); api.speak(prompt); }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -142,9 +160,20 @@ function Play({ api, level, onDone }: { api: GameApi; level: number; onDone: (st
           </div>
         </>
       )}
-      {q.kind === 'digital' && (
+      {q.kind === 'later' && (
         <>
-          <div className="clock-digital">{digital(q.h, q.m)}</div>
+          <Clock h={q.from![0]} m={q.from![1]} size={190} />
+          <div className="clock-options">
+            {q.options.map(([h, m], k) => (
+              <button key={k} className={`clock-opt pop-in ${wrong.includes(k) ? 'is-wrong' : ''} ${ok && h === q.h && m === q.m ? 'is-right' : ''} ${hint(k) ? 'is-hint' : ''}`}
+                disabled={wrong.includes(k)} onClick={() => pick(k)}>{timeText(h, m, api.lang)}</button>
+            ))}
+          </div>
+        </>
+      )}
+      {(q.kind === 'digital' || q.kind === 'h24') && (
+        <>
+          <div className="clock-digital">{q.kind === 'h24' ? `${q.h + 12 === 24 ? 12 : q.h + 12}:${String(q.m).padStart(2, '0')}` : digital(q.h, q.m)}</div>
           <div className="clock-options">
             {q.options.map(([h, m], k) => (
               <button key={k} className={`clock-opt clock-opt--clock pop-in ${wrong.includes(k) ? 'is-wrong' : ''} ${ok && h === q.h && m === q.m ? 'is-right' : ''} ${hint(k) ? 'is-hint' : ''}`}

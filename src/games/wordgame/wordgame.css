@@ -33,3 +33,14 @@
 .wg-key.is-ok { background: #06d6a0; color: #fff; }
 .wg-key.is-near { background: #ffd60a; }
 .wg-key.is-no { background: #adb5bd; color: #fff; }
+.wg-cell.is-ghost { color: #2dc65399; border-color: #2dc653; border-style: dashed; }
+.wg-hint { align-self: center; border: 0; border-radius: 999px; padding: 8px 18px; background: #ffd60a; font-weight: 800; color: #23213a; box-shadow: 0 4px 0 rgba(0,0,0,.15); }
+.wg-hint.is-used { background: #fff3b0; }
+.wg-stats { background: #fff; border-radius: 20px; padding: 12px 14px; width: min(92vw, 380px); box-shadow: 0 5px 0 rgba(0,0,0,.1); }
+.wg-stats__row { display: flex; justify-content: space-between; text-align: center; gap: 6px; }
+.wg-stats__row span { display: flex; flex-direction: column; font-size: .75rem; color: #6c6a80; }
+.wg-stats__row b { font-size: 1.2rem; color: #23213a; }
+.wg-dist { margin-top: 10px; display: grid; gap: 4px; }
+.wg-dist__bar { display: flex; align-items: center; gap: 6px; font-size: .8rem; }
+.wg-dist__bar i { width: 12px; font-style: normal; font-weight: 800; }
+.wg-dist__bar span { background: #2dc653; color: #fff; border-radius: 6px; padding: 0 6px; text-align: right; font-weight: 800; }

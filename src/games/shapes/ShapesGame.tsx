@@ -3,6 +3,7 @@
  * - Finn formen: «Finn: trekant!» (2 valg for 2–4 år, 3–4 for 5–7 år).
  * - Formboksen: dra formene ned i riktig hull (2–7 år).
  * - Mønster: hva kommer etter? AB, AAB, ABB, ABC (5–7 år).
+ * - Tell formene: et bilde med mange former – hvor mange trekanter ser du?
  * Feil gir hint, aldri straff.
  */
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
@@ -37,7 +38,7 @@ export function Shape({ id, color = '#3a86ff', size = 80, outline = false }: { i
   return <svg viewBox="0 0 100 100" width={size} height={size} className="shape-svg" aria-hidden>{el}</svg>;
 }
 
-type Mode = 'find' | 'box' | 'pattern';
+type Mode = 'find' | 'box' | 'pattern' | 'count';
 
 export default function ShapesGame(props: GameProps) {
   const { api, world } = props;
@@ -51,6 +52,7 @@ export default function ShapesGame(props: GameProps) {
     const modes: [Mode, string, string][] = [
       ['find', '🔷', api.t('findShape')],
       ['box', '📦', api.t('shapeBox')],
+      ['count', '🔢', api.t('countShapes')],
       ...(tiny ? [] : [['pattern', '🔁', api.t('patterns')] as [Mode, string, string]])
     ];
     return (
@@ -65,6 +67,7 @@ export default function ShapesGame(props: GameProps) {
   }
   const done = (stars: number) => props.onFinish({ won: true, stars });
   if (mode === 'find') return <FindShape api={api} tiny={tiny} onDone={done} />;
+  if (mode === 'count') return <CountShapes api={api} tiny={tiny} onDone={done} />;
   if (mode === 'box') return <ShapeBox api={api} tiny={tiny} onDone={done} />;
   return <Pattern api={api} onDone={done} />;
 }
@@ -109,6 +112,56 @@ function FindShape({ api, tiny, onDone }: { api: GameApi; tiny: boolean; onDone:
             <Shape id={s} color={c} size={tiny ? 130 : 110} />
             {ok && s === q.target && <span className="shapes-name">{nameOf(api, s)}</span>}
           </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Tell formene ----------
+function CountShapes({ api, tiny, onDone }: { api: GameApi; tiny: boolean; onDone: (stars: number) => void }) {
+  const ROUNDS = tiny ? 5 : 8;
+  const [i, setI] = useState(0);
+  const q = useMemo(() => {
+    // Former som ligner (firkant/rektangel, sirkel/oval, firkant/rombe) blandes ikke i samme bilde
+    const LOOKALIKE: Partial<Record<ShapeId, ShapeId[]>> = { square: ['rectangle', 'diamond'], rectangle: ['square'], circle: ['oval'], oval: ['circle'], diamond: ['square'] };
+    const target = shuffle(tiny ? BASIC : ALL)[0];
+    const kinds = [target, ...shuffle((tiny ? BASIC : ALL).filter((s) => s !== target && !LOOKALIKE[target]?.includes(s))).slice(0, tiny ? 1 : i < 3 ? 2 : 3)];
+    const n = tiny ? 1 + R(3) : 2 + R(i < 4 ? 5 : 8);
+    const items: ShapeId[] = [...Array(n).fill(target), ...Array.from({ length: (tiny ? 2 : 4) + R(tiny ? 2 : 5) }, () => kinds[1 + R(kinds.length - 1)])];
+    // Spre formene i et rutenett med litt tilfeldig plassering, så de ikke overlapper
+    const cols = 4, cells = shuffle(Array.from({ length: 16 }, (_, k) => k)).slice(0, items.length);
+    const placed = shuffle(items).map((s, k) => ({ s, c: COLORS[R(COLORS.length)], x: (cells[k] % cols) * 25 + 4 + R(6), y: Math.floor(cells[k] / cols) * 25 + 3 + R(6), rot: R(20) - 10 }));
+    const opts = new Set([n]);
+    while (opts.size < (tiny ? 2 : 3)) { const d = n + (R(2) ? 1 : -1) * (1 + R(2)); if (d >= 1) opts.add(d); }
+    return { target, n, placed, options: shuffle([...opts]) };
+  }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [wrong, setWrong] = useState<number[]>([]);
+  const [ok, setOk] = useState(false);
+  const mistakes = useRef(0);
+  const text = api.t('countThe', { x: nameOf(api, q.target) });
+  useEffect(() => { setWrong([]); setOk(false); api.speak(text); }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
+  function pick(o: number) {
+    if (ok) return;
+    if (o === q.n) {
+      setOk(true); api.sfx('match'); api.sayBoth(String(o), String(o));
+      setTimeout(() => (i + 1 >= ROUNDS ? onDone(mistakes.current <= 1 ? 3 : mistakes.current <= 4 ? 2 : 1) : setI(i + 1)), 1600);
+    } else { api.sfx('nope'); api.speak(String(o)); mistakes.current++; setWrong((w) => [...w, o]); }
+  }
+  return (
+    <div className="shapes">
+      <Progress n={ROUNDS} i={i} />
+      <button className="shapes-ask" onClick={() => api.speak(text)}><Shape id={q.target} color="#8338ec" size={40} /> {text} <Emo e="🔊" /></button>
+      <div className="shapes-count">
+        {q.placed.map((p, k) => (
+          <span key={`${i}-${k}`} className={`shapes-count__it pop-in ${ok && p.s === q.target ? 'is-glow' : ''}`} style={{ left: `${p.x}%`, top: `${p.y}%`, rotate: `${p.rot}deg`, animationDelay: `${k * 0.05}s` }}>
+            <Shape id={p.s} color={p.c} size={tiny ? 64 : 54} />
+          </span>
+        ))}
+      </div>
+      <div className="shapes-nums">
+        {q.options.map((o) => (
+          <button key={o} className={`shapes-num pop-in ${wrong.includes(o) ? 'is-wrong' : ''} ${ok && o === q.n ? 'is-right' : ''} ${!ok && wrong.length >= 1 && o === q.n ? 'is-hint' : ''}`} disabled={wrong.includes(o) || ok} onClick={() => pick(o)}>{o}</button>
         ))}
       </div>
     </div>

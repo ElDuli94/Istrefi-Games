@@ -26,3 +26,11 @@
 .numbers .naming-progress { display: flex; gap: 6px; }
 .numbers .naming-progress i { width: 14px; height: 14px; border-radius: 50%; background: #ffffff66; }
 .numbers .naming-progress i.is-done { background: #ffd60a; }
+.num-sum { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; font-size: 2rem; }
+.num-sum > b { font-size: 2.4rem; color: #8338ec; }
+.num-sum__grp { display: grid; grid-template-columns: repeat(5, auto); gap: 4px; background: #fff8; padding: 8px; border-radius: 16px; }
+.num-sum__grp .is-gone { opacity: .3; filter: grayscale(1); position: relative; }
+.num-sum__grp .is-gone::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 4px; background: #ff4d6d; transform: rotate(-30deg); border-radius: 2px; }
+.num-seq .num-op { width: auto !important; min-width: 20px; background: none !important; box-shadow: none !important; border: 0 !important; color: #8338ec; }
+.num-seq:has(.num-op) span:not(.num-op) { width: clamp(58px, 13vmin, 96px); }
+.num-sum__grp { font-size: clamp(22px, 5vmin, 34px); }

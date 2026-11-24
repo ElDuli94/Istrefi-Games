@@ -12,7 +12,7 @@ import { STORIES, sentencesOf } from '../games/stories/stories';
 import { SHAPE_NAMES } from '../games/shapes/names';
 import { ALL_TIMES, timeText } from '../games/clock/time';
 import { FARM } from '../data/farm';
-import { COUNTRIES } from '../data/countries';
+import { COUNTRIES, CAPITALS } from '../data/countries';
 import { WORDS } from '../data/words';
 import { ALPHABETS } from '../data/alphabets';
 import { SONGS } from '../games/music/songs';
@@ -50,10 +50,11 @@ export function phrasesFor(lang: Lang): Clip[] {
   for (let n = 1; n <= 9; n++) add(fill(d.popNumber, { n }));
   for (const l of 'A B D E F H I K L M N O P R S T U'.split(' ')) add(fill(d.popLetter, { l }));
   for (const n of [5, 10, 15, 20]) add(fill(d.streakN, { n }));
+  for (let n = 0; n <= 60; n++) add(fill(d.sprintResult, { n }));
   for (const p of [d.red, d.blue, 'Shqipo']) add(fill(d.playerWins, { p }));
   for (let c = 1; c <= 60; c++) add(fill(d.youEarned, { coins: c }));
   for (let c = 0; c <= 36; c++) add(fill(d.stickerCount, { count: c, total: 36 }));
-  for (const w of COUNTRIES) { add(w.name[lang]); add(fill(d.whichFlag, { c: w.name[lang] })); }
+  for (const w of COUNTRIES) { add(w.name[lang]); add(fill(d.whichFlag, { c: w.name[lang] })); add(fill(d.capitalOf, { c: w.name[lang] })); add(CAPITALS[w.code][lang]); }
   for (const len of [4, 5] as const) for (const w of WORDS[lang][len]) { add(w.toLowerCase()); add(fill(d.theWordWas, { w: w.toLowerCase() })); }
   // 3) Dyr, sanger, figurer
   for (const a of ANIMALS) add(a.name[lang]);
@@ -65,7 +66,7 @@ export function phrasesFor(lang: Lang): Clip[] {
     add(st.title[lang]);
     for (const pg of st.pages) { for (const s of sentencesOf(pg.text[lang])) add(s); for (const c of pg.choices ?? []) add(c.label[lang]); }
   }
-  for (const n of Object.values(SHAPE_NAMES)) { add(n[lang]); add(fill(d.findThe, { x: n[lang] })); }
+  for (const n of Object.values(SHAPE_NAMES)) { add(n[lang]); add(fill(d.findThe, { x: n[lang] })); add(fill(d.countThe, { x: n[lang] })); }
   for (const [h, m] of ALL_TIMES) { const tt = timeText(h, m, lang); add(tt); add(fill(d.setClock, { t: tt })); }
   // Hva heter det? og Tallek
   for (const c of VOCAB) for (const it of c.items) { add(it[lang]); add(fill(d.findThe, { x: it[lang] })); add(fill(d.whichLetter, { x: it[lang] })); }
