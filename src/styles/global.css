@@ -718,3 +718,5 @@ h1, h2, h3 { margin: 0; line-height: 1.1; }
 .cdrawer { background: color-mix(in srgb, var(--dc) 45%, #3b2a20); }
 @supports not (background: color-mix(in srgb, red, blue)) { .cdrawer { background: #5c4033; } }
 .cdrawer__tag { box-shadow: 0 3px 0 rgba(0,0,0,.18); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.35); }
+/* Mens 3D-øya lastes: hav og Shqipo (ikke 2D-kartet) */
+.island-loading { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; background: #8fd8ff; }

@@ -11,7 +11,7 @@ import { WORLDS } from '../data/worlds';
 import { RoundButton, TopBar } from '../components/ui';
 import { LivelyAvatar } from '../components/LivelyAvatar';
 import { CoinChip } from './Shop';
-import { MascotSays } from '../components/Mascot';
+import { Mascot, MascotSays } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 
@@ -131,7 +131,7 @@ export function IslandMap() {
       />
       {use3D ? (
         <Fallback fallback={flat} onError={() => { markSlow(); setUse3D(false); }}>
-          <Suspense fallback={flat}>
+          <Suspense fallback={<div className="island-loading" aria-busy><Mascot size={110} className="bob" /></div>}>
             <Island3D
               myWorld={profile.world}
               onWorld={openWorld}

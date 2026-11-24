@@ -1,5 +1,5 @@
 import { LiveBackdrop } from '../components/LiveBackdrop';
-import { actions, useStore } from '../storage/store';
+import { actions, getState, useStore } from '../storage/store';
 import { useT } from '../i18n';
 import { go } from '../router';
 import { LivelyAvatar } from '../components/LivelyAvatar';
@@ -7,11 +7,14 @@ import { Mascot } from '../components/Mascot';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
 import { useEffect } from 'react';
+import { preloadIsland3D } from '../three/support';
 
 export function ProfileSelect() {
   const t = useT();
   const profiles = useStore((s) => s.profiles);
 
+  // Last 3D-øya i bakgrunnen mens barnet velger profil
+  useEffect(() => { if (getState().settings.map3d) preloadIsland3D(); }, []);
   useEffect(() => {
     if (profiles.length === 0) go('new');
   }, [profiles.length]);
