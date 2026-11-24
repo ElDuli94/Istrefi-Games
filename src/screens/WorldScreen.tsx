@@ -11,7 +11,8 @@ import type { DictKey } from '../i18n/no';
 import { BackButton, Stars, TopBar } from '../components/ui';
 import { playSfx } from '../audio/sound';
 import { speak } from '../audio/speech';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { DrawerFace, type FaceKind } from '../components/DrawerFace';
 
 const AMBIENT: Record<WorldId, Ambient> = { tiny: 'meadow', small: 'forest', mid: 'mountain', big: 'city' };
 
@@ -25,6 +26,7 @@ const GROUPS: { id: GameGroup; icon: string; key: DictKey; color: string }[] = [
   { id: 'together', icon: '👫', key: 'group_together', color: '#fb5607' }
 ];
 const drawerKey = (w: string) => `istrefi-drawer-${w}`;
+const FACES: Record<GameGroup, FaceKind> = { letters: 'dots', numbers: 'happy', create: 'wink', explore: 'lashes', action: 'big', together: 'sleepy' };
 
 export function WorldScreen({ worldId }: { worldId: string }) {
   const t = useT();
@@ -34,7 +36,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
   const [openDrawer, setOpenDrawer] = useState<GameGroup | null>(() => {
     try { return (sessionStorage.getItem(drawerKey(worldId)) as GameGroup) || null; } catch { return null; }
   });
-  const drawerRefs = useRef<Partial<Record<GameGroup, HTMLElement | null>>>({});
+  const [pulling, setPulling] = useState<GameGroup | null>(null);
   useEffect(() => {
     try { if (openDrawer) sessionStorage.setItem(drawerKey(worldId), openDrawer); else sessionStorage.removeItem(drawerKey(worldId)); } catch { /* ignorer */ }
   }, [openDrawer, worldId]);
@@ -108,43 +110,62 @@ export function WorldScreen({ worldId }: { worldId: string }) {
             </section>
           );
         })()}
-        <div className="dresser">
-          <div className="dresser__top" aria-hidden />
-          {GROUPS.map((gr) => {
+        <div className="cabinet">
+          {GROUPS.filter((gr) => games.some((g) => g.group === gr.id)).map((gr, k) => {
             const list = games.filter((g) => g.group === gr.id);
-            if (!list.length) return null;
-            const isOpen = openDrawer === gr.id;
             const hasNew = list.some((g) => !stats(g));
             return (
-              <section key={gr.id} className={`drawer ${isOpen ? 'is-open' : ''}`} style={{ ['--dc' as string]: gr.color }} ref={(el) => { drawerRefs.current[gr.id] = el; }}>
-                <button
-                  className="drawer__front"
-                  aria-expanded={isOpen}
-                  onClick={() => {
-                    playSfx(isOpen ? 'tap' : 'flip');
-                    if (!isOpen) {
-                      speak(t(gr.key));
-                      setTimeout(() => drawerRefs.current[gr.id]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
-                    }
-                    setOpenDrawer(isOpen ? null : gr.id);
-                  }}
-                >
-                  <span className="drawer__icon"><Emo e={gr.icon} /></span>
-                  <span className="drawer__label">{t(gr.key)}</span>
-                  <span className="drawer__count">{list.length}</span>
-                  {hasNew && <span className="drawer__new">{t('newBadge')}</span>}
-                  <span className="drawer__knob" aria-hidden />
-                </button>
-                {isOpen && (
-                  <div className="drawer__tray">
-                    <div className="drawer__games">{list.map(card)}</div>
-                  </div>
-                )}
-              </section>
+              <button
+                key={gr.id}
+                className={`cdrawer ${pulling === gr.id ? 'is-pulling' : ''}`}
+                style={{ ['--dc' as string]: gr.color, animationDelay: `${k * 0.06}s` }}
+                aria-label={t(gr.key)}
+                onClick={() => {
+                  if (pulling) return;
+                  playSfx('flip');
+                  speak(t(gr.key));
+                  setPulling(gr.id);
+                  // Skuffen trekkes ut, så spretter spillene opp
+                  setTimeout(() => { setOpenDrawer(gr.id); setPulling(null); playSfx('pop'); }, 380);
+                }}
+              >
+                <span className="cdrawer__box">
+                  <DrawerFace face={FACES[gr.id]} dark={k % 2 === 1} />
+                  {hasNew && <span className="cdrawer__new">{t('newBadge')}</span>}
+                </span>
+                <span className="cdrawer__tag"><Emo e={gr.icon} /> {t(gr.key)} <b>{list.length}</b></span>
+              </button>
             );
           })}
         </div>
       </div>
+      {openDrawer && (() => {
+        const gr = GROUPS.find((x) => x.id === openDrawer)!;
+        const list = games.filter((g) => g.group === gr.id);
+        if (!list.length) return null;
+        const close = () => { playSfx('tap'); setOpenDrawer(null); };
+        return (
+          <div className="drawer-pop" onClick={close} role="dialog" aria-label={t(gr.key)} style={{ ['--dc' as string]: gr.color }}>
+            <div className="drawer-pop__inner" onClick={(e) => e.stopPropagation()}>
+              <div className="drawer-pop__head">
+                <h2><Emo e={gr.icon} /> {t(gr.key)}</h2>
+                <button className="drawer-pop__close" onClick={close} aria-label={t('back')}>✖</button>
+              </div>
+              <div className="drawer-pop__games">
+                {list.map((g, k) => (
+                  <div key={g.id} className="drawer-pop__fly" style={{ animationDelay: `${0.12 + k * 0.08}s`, ['--k' as string]: k }}>
+                    {card(g, k)}
+                  </div>
+                ))}
+              </div>
+              <div className="drawer-pop__drawer" aria-hidden>
+                <span className="drawer-pop__inside" />
+                <span className="drawer-pop__front"><DrawerFace face={FACES[gr.id]} /></span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
