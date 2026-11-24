@@ -5,18 +5,22 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { GameApi, GameProps } from '../types';
-import { ALPHABETS } from '../../data/alphabets';
+import { ALPHABETS, splitLetters } from '../../data/alphabets';
 import { wordForLetter } from '../../data/vocab';
 import { Emo } from '../../components/Emo';
 import './trace.css';
 
-type Mode = 'upper' | 'lower' | 'digits';
+type Mode = 'upper' | 'lower' | 'digits' | 'name';
 interface SavedData { done: string[] }
 const ROUND = 5;
 const FONT = '"Baloo 2", "Arial Rounded MT Bold", sans-serif';
 
+/** Barnets navn som bokstaver (SH, LL osv. er én bokstav på albansk) */
+const nameLetters = (api: GameApi) => splitLetters(api.playerName.replace(/[^\p{L}]/gu, ''), api.lang).slice(0, 10);
+
 function charsFor(mode: Mode, api: GameApi) {
   if (mode === 'digits') return '0 1 2 3 4 5 6 7 8 9'.split(' ');
+  if (mode === 'name') return nameLetters(api);
   const up = ALPHABETS[api.lang];
   return mode === 'upper' ? up : up.map((c) => c.toLowerCase());
 }
@@ -37,14 +41,14 @@ export default function TraceGame(props: GameProps) {
     return (
       <div className="trace-pick">
         <nav className="trace-tabs">
-          {([['upper', 'ABC'], ['lower', 'abc'], ['digits', '123']] as const).map(([m, label]) => (
+          {([['upper', 'ABC'], ['lower', 'abc'], ['digits', '123'], ...(nameLetters(api).length ? [['name', `✏️ ${api.playerName}`]] : [])] as [Mode, string][]).map(([m, label]) => (
             <button key={m} className={mode === m ? 'is-active' : ''} onClick={() => { api.sfx('tap'); setMode(m); }}>{label}</button>
           ))}
         </nav>
         <div className="trace-grid">
           {chars.map((ch, i) => (
-            <button key={ch} className={`trace-tile pop-in ${saved.done.includes(`${mode}:${ch}`) ? 'is-done' : ''}`} style={{ animationDelay: `${Math.min(i, 20) * 0.02}s` }}
-              onClick={() => { api.sfx('pop'); api.speak(ch.toLowerCase()); setStart(i); }}>
+            <button key={`${ch}-${i}`} className={`trace-tile pop-in ${saved.done.includes(`${mode}:${ch}`) ? 'is-done' : ''}`} style={{ animationDelay: `${Math.min(i, 20) * 0.02}s` }}
+              onClick={() => { api.sfx('pop'); api.speak(mode === 'name' ? api.t('writeYourName') : ch.toLowerCase()); setStart(mode === 'name' ? 0 : i); }}>
               {ch}
             </button>
           ))}
@@ -53,7 +57,8 @@ export default function TraceGame(props: GameProps) {
     );
   }
 
-  const round = Array.from({ length: Math.min(ROUND, chars.length) }, (_, k) => chars[(start + k) % chars.length]);
+  // Navn: hele navnet bokstav for bokstav. Ellers: fem bokstaver fra den man valgte.
+  const round = mode === 'name' ? chars : Array.from({ length: Math.min(ROUND, chars.length) }, (_, k) => chars[(start + k) % chars.length]);
   return (
     <Tracer
       api={api}
@@ -68,7 +73,10 @@ export default function TraceGame(props: GameProps) {
           return next;
         });
       }}
-      onRoundDone={(newOnes) => onFinish({ won: true, stars: 3, firstClear: newOnes > 0, coins: 10 + (newOnes > 0 ? 10 : 0) })}
+      onRoundDone={(newOnes) => {
+        if (mode === 'name') api.speak(`${api.playerName}!`);
+        onFinish({ won: true, stars: 3, firstClear: newOnes > 0, coins: 10 + (newOnes > 0 ? 10 : 0) });
+      }}
       isNew={(ch) => !saved.done.includes(`${mode}:${ch}`)}
     />
   );

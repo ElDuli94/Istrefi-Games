@@ -29,3 +29,14 @@
   0%,100% { translate: 0; } 25% { translate: -6px; } 75% { translate: 6px; }
 }
 .mcard__front--word { font-weight: 800; color: #3a0ca3; background: #fff8e1; border-color: #ffd166; padding: 4px; word-break: break-all; line-height: 1; }
+/* Temaer og to spillere */
+.memory-menu { height: 100%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.memory-themes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 4px; }
+.memory-theme { border: 4px solid #fff; background: #ffffffb3; border-radius: 18px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; font-size: 30px; line-height: 1; box-shadow: 0 4px 0 rgba(0,0,0,.12); min-width: 72px; }
+.memory-theme small { font-size: .78rem; font-weight: 800; margin-top: 3px; }
+.memory-theme.is-on { background: #ffd60a; transform: scale(1.06); }
+.memory-theme--two.is-on { background: #caffbf; }
+.mcard__front--letter { font-weight: 800; color: #8338ec; font-size: 1.1em; }
+.mem-player { border: 4px solid transparent; transition: transform .2s; }
+.mem-player.is-turn { transform: scale(1.1); border-color: #ffd60a; }
+.memory-menu .level-picker { height: auto; }

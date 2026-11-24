@@ -21,3 +21,12 @@
 .balloon.is-popped .balloon__body, .balloon.is-popped .balloon__string { opacity: 0; transform: scale(1.4); transition: all .2s; }
 .balloon__boom { position: absolute; top: 10%; font-size: 64px; animation: popIn .3s both; }
 @keyframes balloonUp { from { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-60vh) rotate(3deg); } to { transform: translateY(-125vh) rotate(-3deg); } }
+/* Spesialballonger og konfetti */
+.balloon__body .emo { font-size: .9em; }
+.balloon--star .balloon__body { background: radial-gradient(circle at 32% 28%, #fff9 0 12%, #ffd60a 13%, #f4a261 100%); box-shadow: 0 0 22px 6px #ffd60a99, inset -6px -8px 0 rgba(0,0,0,.12); animation: starGlow 1s ease-in-out infinite; }
+.balloon--rainbow .balloon__body { background: conic-gradient(#ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e); box-shadow: 0 0 20px 4px #fff9, inset -6px -8px 0 rgba(0,0,0,.12); }
+@keyframes starGlow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
+.balloon__confetti { position: absolute; left: 50%; top: 35%; width: 0; height: 0; pointer-events: none; }
+.balloon__confetti i { position: absolute; width: 10px; height: 10px; border-radius: 3px; animation: confettiBurst .5s ease-out forwards; }
+@keyframes confettiBurst { from { transform: rotate(var(--a)) translateX(0) scale(1); opacity: 1; } to { transform: rotate(var(--a)) translateX(70px) scale(.4); opacity: 0; } }
+.balloons__streak { background: #ffe8cc; animation: popIn .3s both; }

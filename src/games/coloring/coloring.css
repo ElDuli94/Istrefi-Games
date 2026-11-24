@@ -16,3 +16,5 @@
   .painter__bar { width: 130px; }
   .painter__palette { display: grid; grid-template-columns: repeat(2, 46px); overflow: visible; }
 }
+.swatch--magic { padding: 0; overflow: hidden; border-radius: 50%; }
+.swatch--magic svg { width: 100%; height: 100%; display: block; }

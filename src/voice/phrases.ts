@@ -48,6 +48,8 @@ export function phrasesFor(lang: Lang): Clip[] {
     add(d[`colorName_${c}`]);
   }
   for (let n = 1; n <= 9; n++) add(fill(d.popNumber, { n }));
+  for (const l of 'A B D E F H I K L M N O P R S T U'.split(' ')) add(fill(d.popLetter, { l }));
+  for (const n of [5, 10, 15, 20]) add(fill(d.streakN, { n }));
   for (const p of [d.red, d.blue, 'Shqipo']) add(fill(d.playerWins, { p }));
   for (let c = 1; c <= 60; c++) add(fill(d.youEarned, { coins: c }));
   for (let c = 0; c <= 36; c++) add(fill(d.stickerCount, { count: c, total: 36 }));
@@ -72,6 +74,7 @@ export function phrasesFor(lang: Lang): Clip[] {
   // 4) Bokstaver (uttales som bokstav) og tall
   for (const ch of ALPHABETS[lang]) add(ch.toLowerCase(), true);
   for (let n = 0; n <= 100; n++) add(String(n));
+  for (let n = 110; n <= 200; n += 10) add(String(n));
   // 5) Regneord (settes sammen med tall: "3 pluss 4")
   for (const w of lang === 'no' ? ['pluss', 'minus', 'ganger', 'delt på'] : ['plus', 'minus', 'herë', 'pjesëtuar me']) add(w);
   return [...out.values()];

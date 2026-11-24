@@ -47,12 +47,17 @@ function PictureView({ pic, size }: { pic: Pic; size: number }) {
   );
 }
 
-interface SavedData { solved: (number | string)[] }
+interface SavedData { solved: (number | string)[]; n?: number }
+/** Antall biter på hver side som kan velges per alder (2 = 4 biter, 5 = 25 biter) */
+const SIZES: Record<string, number[]> = { tiny: [2], small: [2, 3], mid: [3, 4, 5], big: [3, 4, 5] };
+const DEFAULT_N: Record<string, number> = { tiny: 2, small: 3, mid: 4, big: 4 };
 
 export default function PuzzleGame(props: GameProps) {
   const { api } = props;
   const [saved, setSaved] = useState<SavedData>(() => api.loadData<SavedData>() ?? { solved: [] });
   const [pic, setPic] = useState<Pic | null>(null);
+  const sizes = SIZES[props.world] ?? [3];
+  const n = saved.n && sizes.includes(saved.n) ? saved.n : DEFAULT_N[props.world] ?? 3;
   // ⬅️ går først tilbake til spillets egen meny
   useEffect(() => {
     api.setBack(pic !== null ? () => setPic(null) : null);
@@ -62,6 +67,16 @@ export default function PuzzleGame(props: GameProps) {
   if (pic === null) {
     return (
       <div className="puzzle-pick">
+        {sizes.length > 1 && (
+          <div className="puzzle-sizes">
+            {sizes.map((k) => (
+              <button key={k} className={`puzzle-size ${n === k ? 'is-on' : ''}`} onClick={() => { api.sfx('tap'); const next = { ...saved, n: k }; setSaved(next); api.saveData(next); }}>
+                <span className="puzzle-size__grid" style={{ gridTemplateColumns: `repeat(${k}, 1fr)` }}>{Array.from({ length: k * k }, (_, i) => <i key={i} />)}</span>
+                <b>{k * k}</b>
+              </button>
+            ))}
+          </div>
+        )}
         <h2 className="level-picker__title">{api.t('choosePicture')}</h2>
         <div className="puzzle-pick__grid">
           {ALL_PICS.map((p, i) => (
@@ -78,10 +93,11 @@ export default function PuzzleGame(props: GameProps) {
     <Board
       {...props}
       pic={pic}
+      n={n}
       onSolved={() => {
         const first = !saved.solved.includes(pic.id);
         if (first) {
-          const next = { solved: [...saved.solved, pic.id] };
+          const next = { ...saved, solved: [...saved.solved, pic.id] };
           setSaved(next);
           api.saveData(next);
         }
@@ -93,8 +109,8 @@ export default function PuzzleGame(props: GameProps) {
 
 interface Piece { id: number; r: number; c: number; x: number; y: number; placed: boolean }
 
-function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: Pic; onSolved: () => boolean }) {
-  const n = world === 'tiny' ? 2 : world === 'small' ? 3 : 4;
+function Board({ api, onFinish, pic, n, onSolved }: GameProps & { pic: Pic; n: number; onSolved: () => boolean }) {
+  const [peek, setPeek] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(0);
@@ -175,7 +191,8 @@ function Board({ world, api, onFinish, pic, onSolved }: GameProps & { pic: Pic; 
 
   return (
     <div className="puzzle" ref={wrapRef} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-      <div className="puzzle__board" ref={boardRef} style={{ width: size, height: size }}>
+      <button className="puzzle__peek" onClick={() => { api.sfx('flip'); setPeek(true); setTimeout(() => setPeek(false), 2500); }} aria-label={api.t('showPicture')}>👁️</button>
+      <div className={`puzzle__board ${peek ? 'is-peek' : ''}`} ref={boardRef} style={{ width: size, height: size }}>
         <PictureView pic={pic} size={size} />
         {Array.from({ length: n * n }, (_, i) => (
           <span key={i} className="puzzle__slot" style={{ left: (i % n) * cell, top: Math.floor(i / n) * cell, width: cell, height: cell }} />

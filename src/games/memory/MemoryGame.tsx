@@ -2,7 +2,11 @@ import { Emo } from '../../components/Emo';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { GameProps } from '../types';
 import type { WorldId } from '../../data/worlds';
+import type { DictKey } from '../../i18n/no';
 import { ANIMALS } from '../../data/animals';
+import { VOCAB, wordForLetter } from '../../data/vocab';
+import { ALPHABETS } from '../../data/alphabets';
+import type { Lang } from '../../i18n';
 import { LevelPicker, advance, emptyProgress, type LevelProgress } from '../common/LevelPicker';
 import './memory.css';
 
@@ -44,10 +48,27 @@ const WORLD_UI: Record<WorldId, { showMoves: boolean; showTime: boolean; speakEv
   big: { showMoves: true, showTime: true, speakEveryFlip: false, alwaysThreeStars: false }
 };
 
+/** Ting som kan være på kortene: emoji + navn på hvert språk */
+interface Thing { e: string; name: Record<Lang, string> }
+type Theme = 'animals' | 'food' | 'vehicles' | 'home' | 'nature' | 'letters';
+const THEMES: { id: Theme; icon: string; minWorld: WorldId }[] = [
+  { id: 'animals', icon: '🐶', minWorld: 'tiny' }, { id: 'food', icon: '🍎', minWorld: 'tiny' }, { id: 'vehicles', icon: '🚗', minWorld: 'tiny' },
+  { id: 'home', icon: '🏠', minWorld: 'tiny' }, { id: 'nature', icon: '🌈', minWorld: 'tiny' }, { id: 'letters', icon: '🔤', minWorld: 'small' }
+];
+const WORLD_ORDER: WorldId[] = ['tiny', 'small', 'mid', 'big'];
+function thingsFor(theme: Theme): Thing[] {
+  if (theme === 'animals') return ANIMALS.map((a) => ({ e: a.emoji, name: a.name }));
+  const cat = VOCAB.find((c) => c.id === theme);
+  return (cat?.items ?? []).map((it) => ({ e: it.e, name: { no: it.no, sq: it.sq } }));
+}
+
 interface Card {
   key: number;
-  animal: number;
-  isWord: boolean;
+  pair: number;
+  /** Hva kortet viser: bilde, ord (lesetrening) eller bokstav */
+  face: { kind: 'emoji'; e: string } | { kind: 'word'; text: string } | { kind: 'letter'; l: string };
+  /** Det som leses opp */
+  say: string;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -59,12 +80,21 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-function makeDeck(cfg: LevelCfg): Card[] {
-  const picked = shuffle(ANIMALS.map((_, i) => i)).slice(0, cfg.pairs);
+function makeDeck(cfg: LevelCfg, theme: Theme, lang: Lang, asIn: (l: string, w: string) => string): Card[] {
+  if (theme === 'letters') {
+    // Bokstav + bilde som starter på bokstaven («A» og 🐵 ape)
+    const pairs = shuffle(ALPHABETS[lang].map((l) => ({ l, it: wordForLetter(l, lang) })).filter((x) => x.it)).slice(0, cfg.pairs);
+    return shuffle(pairs.flatMap(({ l, it }, i) => [
+      { key: i * 2, pair: i, face: { kind: 'letter' as const, l }, say: l.toLowerCase() },
+      { key: i * 2 + 1, pair: i, face: { kind: 'emoji' as const, e: it!.e }, say: asIn(l, it![lang]) }
+    ]));
+  }
+  const all = thingsFor(theme);
+  const picked = shuffle(all).slice(0, Math.min(cfg.pairs, all.length));
   return shuffle(
-    picked.flatMap((a, i) => [
-      { key: i * 2, animal: a, isWord: false },
-      { key: i * 2 + 1, animal: a, isWord: cfg.mode === 'word' }
+    picked.flatMap((th, i) => [
+      { key: i * 2, pair: i, face: { kind: 'emoji' as const, e: th.e }, say: th.name[lang] },
+      { key: i * 2 + 1, pair: i, face: cfg.mode === 'word' ? { kind: 'word' as const, text: th.name[lang].toUpperCase() } : { kind: 'emoji' as const, e: th.e }, say: th.name[lang] }
     ])
   );
 }
@@ -82,8 +112,13 @@ function bestGrid(n: number, w: number, h: number, gap: number) {
 
 export default function MemoryGame(props: GameProps) {
   const { world, api } = props;
-  const [progress, setProgress] = useState<LevelProgress>(() => api.loadData<LevelProgress>() ?? emptyProgress());
+  const saved = api.loadData<LevelProgress | { progress: LevelProgress; theme: Theme; two: boolean }>();
+  const [progress, setProgress] = useState<LevelProgress>(() => (saved && 'progress' in saved ? saved.progress : (saved as LevelProgress) ?? emptyProgress()));
+  const [theme, setTheme] = useState<Theme>(() => (saved && 'theme' in saved ? saved.theme : 'animals'));
+  const [two, setTwo] = useState<boolean>(() => !!(saved && 'two' in saved && saved.two));
   const [level, setLevel] = useState<number | null>(null);
+  const store = (p: LevelProgress, th: Theme, tw: boolean) => api.saveData({ progress: p, theme: th, two: tw });
+  const themes = THEMES.filter((th) => WORLD_ORDER.indexOf(world) >= WORLD_ORDER.indexOf(th.minWorld));
   // ⬅️ går først tilbake til spillets egen meny
   useEffect(() => {
     api.setBack(level !== null ? () => setLevel(null) : null);
@@ -92,12 +127,26 @@ export default function MemoryGame(props: GameProps) {
 
   if (level === null) {
     return (
-      <LevelPicker
-        api={api}
-        progress={progress}
-        onPick={setLevel}
-        details={LEVELS[world].map((l) => `${l.pairs * 2} 🃏${l.mode === 'word' ? ' + 🔤' : ''}`)}
-      />
+      <div className="memory-menu">
+        <div className="memory-themes">
+          {themes.map((th) => (
+            <button key={th.id} className={`memory-theme ${theme === th.id ? 'is-on' : ''}`} onClick={() => { api.sfx('tap'); api.speak(api.t(`memTheme_${th.id}` as DictKey)); setTheme(th.id); store(progress, th.id, two); }}>
+              <Emo e={th.icon} /><small>{api.t(`memTheme_${th.id}` as DictKey)}</small>
+            </button>
+          ))}
+          {world !== 'tiny' && (
+            <button className={`memory-theme memory-theme--two ${two ? 'is-on' : ''}`} onClick={() => { api.sfx('tap'); setTwo(!two); store(progress, theme, !two); if (!two) api.speak(api.t('twoPlayers')); }}>
+              <Emo e="👫" /><small>{api.t('twoPlayers')}</small>
+            </button>
+          )}
+        </div>
+        <LevelPicker
+          api={api}
+          progress={progress}
+          onPick={setLevel}
+          details={LEVELS[world].map((l) => `${l.pairs * 2} 🃏${l.mode === 'word' && theme !== 'letters' ? ' + 🔤' : ''}`)}
+        />
+      </div>
     );
   }
 
@@ -105,19 +154,23 @@ export default function MemoryGame(props: GameProps) {
     <Board
       {...props}
       cfg={LEVELS[world][level]}
+      theme={theme}
+      two={two}
       onDone={(stars) => {
         const next = advance(progress, level, true, stars);
         setProgress(next);
-        api.saveData(next);
+        store(next, theme, two);
         return (progress.best[level] ?? 0) === 0;
       }}
     />
   );
 }
 
-function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCfg; onDone: (stars: number) => boolean }) {
+function Board({ world, api, onFinish, cfg, theme, two, onDone }: GameProps & { cfg: LevelCfg; theme: Theme; two: boolean; onDone: (stars: number) => boolean }) {
   const ui = WORLD_UI[world];
-  const [deck] = useState(() => makeDeck(cfg));
+  const [deck] = useState(() => makeDeck(cfg, theme, api.lang, (l, w) => api.t('asIn', { l, w })));
+  const [turn, setTurn] = useState<0 | 1>(0);
+  const [score, setScore] = useState<[number, number]>([0, 0]);
   const [open, setOpen] = useState<number[]>([]);
   const [matched, setMatched] = useState<Set<number>>(new Set());
   const [moves, setMoves] = useState(0);
@@ -142,7 +195,7 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const animalName = (i: number) => ANIMALS[deck[i].animal].name[api.lang];
+  const animalName = (i: number) => deck[i].say;
 
   function flip(i: number) {
     if (lock.current || open.includes(i) || matched.has(i)) return;
@@ -155,7 +208,9 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
     const total = moves + 1;
     setMoves(total);
     const [a, b] = next;
-    if (deck[a].animal === deck[b].animal) {
+    if (deck[a].pair === deck[b].pair) {
+      const sc: [number, number] = [...score] as [number, number];
+      if (two) { sc[turn] += 1; setScore(sc); }
       const nm = new Set(matched).add(a).add(b);
       setMatched(nm);
       setOpen([]);
@@ -164,6 +219,14 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
         if (!ui.speakEveryFlip) api.speak(animalName(a));
       }, 250);
       if (nm.size === deck.length) {
+        if (two) {
+          // To spillere: den med flest par vinner
+          const w = sc[0] === sc[1] ? -1 : sc[0] > sc[1] ? 0 : 1;
+          setTimeout(() => api.speak(w < 0 ? api.t('draw') : api.t('playerWins', { p: api.t(w === 0 ? 'red' : 'blue') })), 700);
+          onDone(3);
+          setTimeout(() => onFinish({ won: true, stars: 3, coins: 6 }), 2200);
+          return;
+        }
         const p = cfg.pairs;
         const stars = ui.alwaysThreeStars ? 3 : total <= p * 1.5 ? 3 : total <= p * 2.2 ? 2 : 1;
         const firstClear = onDone(stars);
@@ -179,6 +242,7 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
         setOpen([]);
         setWiggle([]);
         lock.current = false;
+        if (two) setTurn((t) => (t === 0 ? 1 : 0));
       }, cfg.flipBackMs);
     }
   }
@@ -187,7 +251,13 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
 
   return (
     <div className={`memory memory--${world}`}>
-      {(ui.showMoves || ui.showTime) && (
+      {two && (
+        <div className="memory__hud memory__hud--two">
+          <span className={`mem-player mem-player--red ${turn === 0 ? 'is-turn' : ''}`}>🔴 {api.t('red')}: <b>{score[0]}</b></span>
+          <span className={`mem-player mem-player--blue ${turn === 1 ? 'is-turn' : ''}`}>🔵 {api.t('blue')}: <b>{score[1]}</b></span>
+        </div>
+      )}
+      {!two && (ui.showMoves || ui.showTime) && (
         <div className="memory__hud">
           {ui.showMoves && <span>🔄 {api.t('moves')}: <b>{moves}</b></span>}
           {ui.showTime && <span>⏱️ {api.t('time')}: <b>{fmtTime}</b></span>}
@@ -197,7 +267,7 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
         <div className="memory__grid" style={{ gridTemplateColumns: `repeat(${grid.cols}, ${grid.size}px)`, gap }}>
           {deck.map((card, i) => {
             const isUp = open.includes(i) || matched.has(i);
-            const name = ANIMALS[card.animal].name[api.lang];
+            const name = card.say;
             return (
               <button
                 key={card.key}
@@ -208,12 +278,14 @@ function Board({ world, api, onFinish, cfg, onDone }: GameProps & { cfg: LevelCf
               >
                 <span className="mcard__inner">
                   <span className="mcard__back"><Emo e="⭐" /></span>
-                  {card.isWord ? (
-                    <span className="mcard__front mcard__front--word" style={{ fontSize: Math.min(grid.size * 0.26, (grid.size * 1.5) / name.length) }}>
-                      {name.toUpperCase()}
+                  {card.face.kind === 'word' ? (
+                    <span className="mcard__front mcard__front--word" style={{ fontSize: Math.min(grid.size * 0.26, (grid.size * 1.5) / card.face.text.length) }}>
+                      {card.face.text}
                     </span>
+                  ) : card.face.kind === 'letter' ? (
+                    <span className="mcard__front mcard__front--letter">{card.face.l}</span>
                   ) : (
-                    <span className="mcard__front"><Emo e={ANIMALS[card.animal].emoji} /></span>
+                    <span className="mcard__front"><Emo e={card.face.e} /></span>
                   )}
                 </span>
               </button>

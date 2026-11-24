@@ -20,3 +20,7 @@
 .dots__name { position: absolute; bottom: 8%; background: #fff; border-radius: 999px; padding: 6px 22px; font-weight: 800; font-size: 1.8rem; box-shadow: 0 5px 0 rgba(0,0,0,.15); }
 .dot__ring { fill: #ff006e22; stroke: #ff006e; stroke-width: .6; stroke-dasharray: 1.5 1.2; animation: dotPulse 1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @supports not (container-type: size) { .dots__svg { width: min(100%, calc(100vh - 170px)); } }
+.dots-modes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.dots-mode { border: 4px solid #fff; border-radius: 999px; padding: 6px 16px; font-weight: 800; font-size: 1.1rem; background: #ffffffb3; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+.dots-mode.is-on { background: #ffd60a; }
+.dot text.is-long { font-size: 3.4px; }
