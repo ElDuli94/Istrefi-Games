@@ -2,6 +2,7 @@
  * Slangejakt – styr slangen, spis frukt og unngå steiner (og deg selv!).
  * Styring: sveip på brettet, piltaster/WASD eller de store pilknappene.
  * Nivåer: spis nok frukt før hjertene er brukt opp. Uendelig: slå rekorden.
+ * Kraftfrukter dukker opp av og til: 🌟 gullfrukt (+3), 🐢 sakte fart, 🛡️ skjold (knuser én stein / redder ett krasj), 💖 ekstra hjerte.
  */
 import { emojiImage } from '../../components/Emo';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -13,7 +14,9 @@ import './snake.css';
 
 const LEVELS = 12;
 const FRUITS = ['🍎', '🍓', '🍌', '🍇', '🍉', '🍒', '🍑', '🍐', '🥝'];
-FRUITS.forEach((e) => emojiImage(e)); // last inn 3D-fruktene på forhånd
+type Power = 'gold' | 'slow' | 'shield' | 'heart';
+const POWER_EMOJI: Record<Power, string> = { gold: '🌟', slow: '🐢', shield: '🛡️', heart: '💖' };
+[...FRUITS, ...Object.values(POWER_EMOJI)].forEach((e) => emojiImage(e)); // last inn 3D-bildene på forhånd
 type P = [number, number];
 type Dir = 'up' | 'down' | 'left' | 'right';
 const VEC: Record<Dir, P> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -127,22 +130,50 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     eaten: 0,
     hearts: cfg.hearts,
     phase: 'ready' as Phase,
-    flash: 0
+    flash: 0,
+    power: null as { p: P; kind: Power; until: number } | null,
+    slowUntil: 0,
+    shield: false
   });
+  const [buffs, setBuffs] = useState<{ slow: boolean; shield: boolean }>({ slow: false, shield: false });
+  const syncBuffs = () => { const s = g.current; setBuffs({ slow: performance.now() < s.slowUntil, shield: s.shield }); };
 
   const setPh = (p: Phase) => { g.current.phase = p; setPhase(p); };
 
-  const placeFruit = useCallback(() => {
+  const freeCell = useCallback((): P => {
     const s = g.current;
     const taken = new Set(s.snake.map(key));
+    taken.add(key(s.fruit));
+    if (s.power) taken.add(key(s.power.p));
     const free: P[] = [];
     for (let x = 0; x < cfg.size; x++) for (let y = 0; y < cfg.size; y++) {
       const k = key([x, y]);
       if (!taken.has(k) && !s.rocks.has(k)) free.push([x, y]);
     }
-    s.fruit = free[Math.floor(Math.random() * free.length)] ?? [0, 0];
-    s.fruitEmoji = FRUITS[Math.floor(Math.random() * FRUITS.length)];
+    return free[Math.floor(Math.random() * free.length)] ?? [0, 0];
   }, [cfg.size]);
+  const placeFruit = useCallback(() => {
+    const s = g.current;
+    s.fruit = freeCell();
+    s.fruitEmoji = FRUITS[Math.floor(Math.random() * FRUITS.length)];
+  }, [freeCell]);
+  /** Etter hver 4. frukt kommer en kraftfrukt som blir liggende i 9 sekunder */
+  function maybePower() {
+    const s = g.current;
+    if (s.power || s.eaten % 4 !== 0) return;
+    const kinds: Power[] = ['gold', 'slow', 'shield', ...(level !== null && s.hearts < cfg.hearts ? ['heart' as Power, 'heart' as Power] : [])];
+    s.power = { p: freeCell(), kind: kinds[Math.floor(Math.random() * kinds.length)], until: performance.now() + 9000 };
+  }
+  function takePower(kind: Power) {
+    const s = g.current;
+    api.sfx('sticker');
+    if (kind === 'gold') { s.eaten += 3; setEaten(s.eaten); }
+    else if (kind === 'slow') s.slowUntil = performance.now() + 6000;
+    else if (kind === 'shield') s.shield = true;
+    else { s.hearts = Math.min(cfg.hearts, s.hearts + 1); setHearts(s.hearts); }
+    api.speak(api.t(`snakePower_${kind}` as 'snakePower_gold'));
+    syncBuffs();
+  }
 
   const resetSnake = useCallback(() => {
     const s = g.current;
@@ -206,7 +237,16 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     const eats = hx === s.fruit[0] && hy === s.fruit[1];
     const body = eats ? s.snake : s.snake.slice(0, -1);
     const hitSelf = body.some(([x, y]) => x === hx && y === hy);
-    if (out || hitSelf || s.rocks.has(key([hx, hy]))) {
+    const rock = s.rocks.has(key([hx, hy]));
+    if ((out || hitSelf || rock) && s.shield) {
+      // Skjoldet redder: knuser steinen, eller stopper slangen uten å miste hjerte
+      s.shield = false;
+      s.flash = performance.now();
+      api.sfx('pop');
+      syncBuffs();
+      if (rock && !out && !hitSelf) s.rocks.delete(key([hx, hy]));
+      else { setPh('crashed'); return; }
+    } else if (out || hitSelf || rock) {
       s.hearts -= 1;
       setHearts(s.hearts);
       s.flash = performance.now();
@@ -216,6 +256,12 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
       return;
     }
     s.snake = [[hx, hy], ...body];
+    if (s.power && s.power.p[0] === hx && s.power.p[1] === hy) {
+      const kind = s.power.kind;
+      s.power = null;
+      takePower(kind);
+      if (s.eaten >= cfg.goal) { finish(true); return; }
+    }
     if (eats) {
       s.eaten += 1;
       setEaten(s.eaten);
@@ -223,6 +269,7 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
       if (level === null) s.speed = Math.max(cfg.minSpeed, s.speed - 3);
       if (s.eaten >= cfg.goal) { finish(true); return; }
       placeFruit();
+      maybePower();
     }
   }
 
@@ -231,7 +278,10 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     let raf = 0;
     const loop = (now: number) => {
       const s = g.current;
-      if (s.phase === 'running' && now - s.last >= s.speed) { s.last = now; step(); }
+      const slow = now < s.slowUntil;
+      if (s.phase === 'running' && now - s.last >= (slow ? s.speed * 1.6 : s.speed)) { s.last = now; step(); }
+      if (s.power && now > s.power.until && s.phase === 'running') s.power = null;
+      if (buffs.slow !== slow) syncBuffs();
       draw(now);
       raf = requestAnimationFrame(loop);
     };
@@ -307,6 +357,16 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
     const fruitImg = emojiImage(s.fruitEmoji);
     if (fruitImg) ctx.drawImage(fruitImg, s.fruit[0] * cs + cs * 0.06, s.fruit[1] * cs + cs * 0.06 + bob, cs * 0.88, cs * 0.88);
     else ctx.fillText(s.fruitEmoji, s.fruit[0] * cs + cs / 2, s.fruit[1] * cs + cs / 2 + bob);
+    // Kraftfrukt med pulserende ring (blinker de siste 2 sekundene)
+    if (s.power && !(s.power.until - now < 2000 && Math.floor(now / 150) % 2 === 0)) {
+      const [px0, py0] = s.power.p;
+      const pulse = 0.5 + Math.sin(now / 150) * 0.08;
+      ctx.fillStyle = 'rgba(255, 214, 10, .45)';
+      ctx.beginPath(); ctx.arc(px0 * cs + cs / 2, py0 * cs + cs / 2, cs * pulse, 0, Math.PI * 2); ctx.fill();
+      const img = emojiImage(POWER_EMOJI[s.power.kind]);
+      if (img) ctx.drawImage(img, px0 * cs + cs * 0.08, py0 * cs + cs * 0.08, cs * 0.84, cs * 0.84);
+      else ctx.fillText(POWER_EMOJI[s.power.kind], px0 * cs + cs / 2, py0 * cs + cs / 2);
+    }
     // Slange
     const n = s.snake.length;
     const flashing = now - s.flash < 500 && Math.floor((now - s.flash) / 80) % 2 === 0;
@@ -323,6 +383,7 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
           ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px2 * cs + cs / 2, py2 * cs + cs / 2); ctx.stroke();
         }
       }
+      if (i === 0 && s.shield) { ctx.strokeStyle = '#4cc9f0'; ctx.lineWidth = cs * 0.12; ctx.beginPath(); ctx.arc(cx, cy, cs * 0.6, 0, Math.PI * 2); ctx.stroke(); }
       ctx.fillStyle = flashing ? '#ff595e' : i === 0 ? '#2b9348' : i % 2 ? '#2a9d8f' : '#38b000';
       ctx.beginPath(); ctx.arc(cx, cy, i === 0 ? cs * 0.48 : cs * 0.38, 0, Math.PI * 2); ctx.fill();
     }
@@ -351,6 +412,8 @@ function Play({ api, world, onFinish, level, highscore, onEnd }: GameProps & {
         ) : (
           <span className="hud-chip snake__hearts">{Array.from({ length: cfg.hearts }, (_, i) => (i < hearts ? '❤️' : '🤍')).join('')}</span>
         )}
+        {buffs.shield && <span className="hud-chip pop-in">🛡️</span>}
+        {buffs.slow && <span className="hud-chip pop-in">🐢</span>}
         <button className="hud-chip snake__pause" onClick={() => setPh(phase === 'running' ? 'paused' : 'running')} aria-label={api.t('paused')}>
           {phase === 'running' ? '⏸️' : '▶️'}
         </button>

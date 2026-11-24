@@ -39,3 +39,9 @@
 .farm-animal.is-wrong { animation: wiggle .4s; opacity: .6; }
 .farm-animal.is-right { border-color: #06d6a0; box-shadow: 0 0 0 8px #06d6a088; }
 .farm-animal.is-right .farm-animal__emoji { animation: animalJump .6s cubic-bezier(.3,1.6,.5,1) 2; }
+.smemo { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); width: min(94vw, 520px); margin: auto; }
+.smemo--6 { grid-template-columns: repeat(4, 1fr); }
+.smemo__card { aspect-ratio: 1; border: 0; border-radius: 22px; background: linear-gradient(145deg, #8338ec, #3a86ff); font-size: clamp(2rem, 9vmin, 3.4rem); box-shadow: 0 6px 0 rgba(0,0,0,.18); display: flex; align-items: center; justify-content: center; transition: transform .25s, background .25s; }
+.smemo__card.is-open { background: #ffd60a; transform: scale(1.06) rotate(-3deg); }
+.smemo__card.is-found { transform: scale(.96); }
+.smemo__wave { animation: wiggle .5s infinite; }

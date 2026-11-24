@@ -27,3 +27,13 @@
 .hockey__score { position: absolute; left: 12px; font-size: 3rem; font-weight: 800; pointer-events: none; opacity: .8; }
 .hockey__score--top { top: 40%; transform: rotate(180deg); }
 .hockey__score--bottom { bottom: 40%; }
+.react { height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+.react-half { flex: 1; border: 0; border-radius: 28px; background: color-mix(in srgb, var(--c) 30%, #fff); color: #23213a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-weight: 900; position: relative; touch-action: none; box-shadow: 0 6px 0 rgba(0,0,0,.12); transition: background .15s; }
+.react-half--2 { transform: rotate(180deg); }
+.react-half.is-go { background: var(--c); color: #fff; }
+.react-half__score { font-size: 1.8rem; letter-spacing: 4px; }
+.react-half__msg { font-size: clamp(1.4rem, 6vmin, 2.4rem); text-align: center; padding: 0 10px; }
+.react-half__ai { position: absolute; top: 10px; right: 14px; font-size: 1.6rem; }
+.react-light { align-self: center; width: 70px; height: 70px; border-radius: 50%; background: #ef233c; box-shadow: 0 0 0 6px #fff, 0 0 30px #ef233c; transition: background .1s, box-shadow .1s; flex: none; }
+.react-light.is-go { background: #2dc653; box-shadow: 0 0 0 6px #fff, 0 0 40px #2dc653; }
+.react-light.is-point { background: #ffd60a; box-shadow: 0 0 0 6px #fff, 0 0 30px #ffd60a; }

@@ -2,6 +2,7 @@
  * Ludo for 2–4 spillere på samme skjerm. Hver plass kan være person, robot eller av.
  * Klassiske regler: slå 6 for å komme ut, 6 gir nytt kast, lander du på en
  * motstander sendes den hjem. Stjerner og startruter er trygge. Nøyaktig kast inn i mål.
+ * Robotene kan være 😊 snille (tilfeldige trekk, tar sjelden andre) eller 😎 smarte.
  */
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import type { GameApi, GameProps } from '../types';
@@ -55,7 +56,8 @@ function spot(seat: Seat, p: number, i: number): [number, number] {
   return [x + 0.5, y + 0.5];
 }
 
-interface Setup { kinds: Kind[]; tokens: 2 | 4 }
+type Bot = 'easy' | 'smart';
+interface Setup { kinds: Kind[]; tokens: 2 | 4; bot?: Bot }
 
 export default function LudoGame({ api, onFinish }: GameProps) {
   const [setup, setSetup] = useState<Setup | null>(null);
@@ -72,6 +74,7 @@ function SetupScreen({ api, onStart }: { api: GameApi; onStart: (s: Setup) => vo
   const saved = api.loadData<Setup>();
   const [kinds, setKinds] = useState<Kind[]>(saved?.kinds ?? ['human', 'robot', 'robot', 'robot']);
   const [tokens, setTokens] = useState<2 | 4>(saved?.tokens ?? 2);
+  const [bot, setBot] = useState<Bot>(saved?.bot ?? 'easy');
   const active = kinds.filter((k) => k !== 'off').length;
   const humans = kinds.filter((k) => k === 'human').length;
   const ok = active >= 2 && humans >= 1;
@@ -102,10 +105,19 @@ function SetupScreen({ api, onStart }: { api: GameApi; onStart: (s: Setup) => vo
           </button>
         ))}
       </div>
+      {kinds.includes('robot') && (
+        <div className="ludo-len ludo-len--bot">
+          {(['easy', 'smart'] as const).map((b) => (
+            <button key={b} className={bot === b ? 'is-on' : ''} onClick={() => { api.sfx('tap'); setBot(b); api.speak(api.t(b === 'easy' ? 'botEasy' : 'botSmart')); }}>
+              {b === 'easy' ? `😊 ${api.t('botEasy')}` : `😎 ${api.t('botSmart')}`}
+            </button>
+          ))}
+        </div>
+      )}
       <button
         className="big-btn big-btn--go"
         disabled={!ok}
-        onClick={() => { api.sfx('pop'); api.saveData({ kinds, tokens }); onStart({ kinds, tokens }); }}
+        onClick={() => { api.sfx('pop'); api.saveData({ kinds, tokens, bot }); onStart({ kinds, tokens, bot }); }}
       >▶ {api.t('start')}</button>
       {!ok && <p className="ludo-hint">{api.t('ludoNeed')}</p>}
     </div>
@@ -134,7 +146,17 @@ function opponentsAt(tokens: Tokens, seat: Seat, idx: number, active: boolean[])
 }
 
 /** Enkel robot: mål > ta noen > ut av hjemmet > trygg rute > lengst fremme */
-function robotChoice(tokens: Tokens, seat: Seat, roll: number, moves: number[], active: boolean[]): number {
+function robotChoice(tokens: Tokens, seat: Seat, roll: number, moves: number[], active: boolean[], bot: Bot = 'smart'): number {
+  // Snill robot: velger tilfeldig, men unngår helst å sende andre hjem
+  if (bot === 'easy') {
+    const kind = moves.filter((i) => {
+      const p = tokens[seat][i];
+      const np = p < 0 ? 0 : p + roll;
+      return np > 50 || SAFE.has(trackIndex(seat, np)) || !opponentsAt(tokens, seat, trackIndex(seat, np), active).length;
+    });
+    const pool = kind.length && Math.random() < 0.8 ? kind : moves;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
   let best = moves[0], bestScore = -Infinity;
   for (const i of moves) {
     const p = tokens[seat][i];
@@ -234,7 +256,7 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
     await sleep(350);
     const m = legalMoves(tokRef.current, turnRef.current, r);
     if (!m.length) { await sleep(500); nextTurn(false); return; }
-    const choice = robotChoice(tokRef.current, turnRef.current, r, m, active);
+    const choice = robotChoice(tokRef.current, turnRef.current, r, m, active, setup.bot ?? 'smart');
     await move(turnRef.current, choice, r);
   }
   const turnRef = useRef(turn);

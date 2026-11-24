@@ -2,6 +2,7 @@
  * Stigespillet for 2–4 spillere på samme skjerm (person, robot eller av).
  * Kast terningen, gå like mange ruter (tallene telles høyt), klatre opp stiger
  * og skli ned sklier. Først til siste rute vinner (man trenger ikke nøyaktig kast).
+ * Spesialruter: ⭐ nytt kast, 🚀 tre ruter fram, ❓ regneoppgave (riktig svar = to ruter fram).
  */
 import { useEffect, useRef, useState } from 'react';
 import type { GameApi, GameProps } from '../types';
@@ -25,6 +26,13 @@ const BOARDS: Record<Size, { ladders: [number, number][]; slides: [number, numbe
     slides: [[16, 6], [47, 26], [49, 30], [62, 43], [87, 66], [93, 73], [98, 78]]
   }
 };
+
+type Special = 'star' | 'rocket' | 'quiz';
+const SPECIALS: Record<Size, Record<number, Special>> = {
+  36: { 6: 'star', 19: 'star', 31: 'star', 7: 'rocket', 18: 'rocket', 2: 'quiz', 30: 'quiz' },
+  100: { 12: 'star', 39: 'star', 64: 'star', 85: 'star', 19: 'rocket', 41: 'rocket', 74: 'rocket', 9: 'quiz', 33: 'quiz', 57: 'quiz', 83: 'quiz' }
+};
+const SPECIAL_EMOJI: Record<Special, string> = { star: '⭐', rocket: '🚀', quiz: '❓' };
 
 /** Midten av rute n (1-basert) i rutenett-koordinater. Slangeformet: annenhver rad går motsatt vei. */
 const colsOf = (size: Size) => (size === 36 ? 6 : 10);
@@ -101,6 +109,8 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
   const [glide, setGlide] = useState<number | null>(null); // spiller som klatrer/sklir (lang animasjon)
   const [msg, setMsg] = useState('');
   const [winner, setWinner] = useState<number | null>(null);
+  const [quiz, setQuiz] = useState<{ a: number; b: number; options: number[]; resolve: (ok: boolean) => void } | null>(null);
+  const [quizWrong, setQuizWrong] = useState<number | null>(null);
   const alive = useRef(true);
   useEffect(() => () => { alive.current = false; }, []);
   const posRef = useRef(pos);
@@ -156,6 +166,41 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
       await sleep(900);
       setGlide(null);
     }
+    // Spesialrute?
+    let again = r === 6;
+    const sp = !ladder && !slide ? SPECIALS[size][final] : undefined;
+    if (sp) {
+      await sleep(250);
+      if (sp === 'star') {
+        again = true;
+        setMsg(`⭐ ${api.t('ladStar')}`); api.speak(api.t('ladStar')); api.sfx('sticker');
+        await sleep(700);
+      } else {
+        let ok = true;
+        if (sp === 'quiz') {
+          const a = 1 + Math.floor(Math.random() * 5), b = 1 + Math.floor(Math.random() * 5);
+          if (isHuman(s)) {
+            const set = new Set([a + b]);
+            while (set.size < 3) { const x = a + b + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 2)); if (x > 0) set.add(x); }
+            api.speak(api.t('ladQuiz', { a, b }));
+            ok = await new Promise<boolean>((resolve) => setQuiz({ a, b, options: [...set].sort(() => Math.random() - 0.5), resolve }));
+            setQuiz(null); setQuizWrong(null);
+          } else ok = Math.random() < 0.7;
+          setMsg(ok ? `✅ ${api.t('ladQuizRight')}` : `🙂 ${api.t('ladQuizWrong', { n: a + b })}`);
+          api.speak(ok ? api.t('ladQuizRight') : api.t('ladQuizWrong', { n: a + b }));
+          api.sfx(ok ? 'match' : 'pop');
+          await sleep(900);
+        } else { setMsg(`🚀 ${api.t('ladRocket')}`); api.speak(api.t('ladRocket')); api.sfx('match'); }
+        if (ok) {
+          final = Math.min(size, final + (sp === 'rocket' ? 3 : 2));
+          setGlide(s);
+          setPos((ps) => ps.map((v, j) => (j === s ? final : v)));
+          await sleep(800);
+          setGlide(null);
+        }
+      }
+      if (!alive.current) return;
+    }
     if (final >= size) {
       setWinner(s);
       api.sfx('win');
@@ -166,10 +211,10 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
     }
     await sleep(300);
     setBusy(false);
-    // 6 gir nytt kast
-    if (r === 6) {
-      setMsg(`🎲 ${api.t('ludoSix')}`);
-      if (isHuman(s)) api.speak(api.t('ludoSix'));
+    // 6 (eller stjernerute) gir nytt kast
+    if (again) {
+      if (r === 6) setMsg(`🎲 ${api.t('ludoSix')}`);
+      if (isHuman(s) && r === 6) api.speak(api.t('ludoSix'));
       else { await sleep(500); await play(s); }
       return;
     }
@@ -186,6 +231,7 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
       <g key={n}>
         <rect x={cx - 0.5 + 0.03} y={cy - 0.5 + 0.03} width={0.94} height={0.94} rx={0.12} fill={CELL_COLORS[(n + Math.floor((n - 1) / 10)) % CELL_COLORS.length]} />
         <text x={cx - 0.42} y={cy - 0.22} className="lad-num">{n}</text>
+        {SPECIALS[size][n] && <text x={cx + 0.22} y={cy + 0.36} className="lad-special">{SPECIAL_EMOJI[SPECIALS[size][n]]}</text>}
       </g>
     );
   }
@@ -216,6 +262,21 @@ function Board({ api, setup, onFinish }: { api: GameApi; setup: Setup; onFinish:
           })}
         </svg>
       </div>
+      {quiz && (
+        <div className="lad-quiz pop-in">
+          <div className="lad-quiz__card">
+            <div className="lad-quiz__q">{quiz.a} + {quiz.b} = ?</div>
+            <div className="lad-quiz__opts">
+              {quiz.options.map((o) => (
+                <button key={o} className={quizWrong === o ? 'is-wrong' : ''} disabled={quizWrong === o} onClick={() => {
+                  if (o === quiz.a + quiz.b || quizWrong !== null) quiz.resolve(o === quiz.a + quiz.b);
+                  else { api.sfx('nope'); setQuizWrong(o); }
+                }}>{o}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="ludo__side">
         <div className="ludo__msg" style={{ borderColor: COLORS[winner ?? turn] }}>
           <i style={{ background: COLORS[winner ?? turn] }} />

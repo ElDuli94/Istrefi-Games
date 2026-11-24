@@ -58,3 +58,6 @@
   .ludo__side { width: 180px; }
   .ludo-die { width: 86px; height: 86px; }
 }
+.ludo-len--bot { flex-wrap: nowrap; }
+.ludo-len--bot button { font-size: .9rem; padding: 8px 12px; white-space: nowrap; }
+.ludo-setup > * { flex-shrink: 0; }
