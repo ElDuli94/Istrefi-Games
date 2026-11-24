@@ -23,6 +23,13 @@ export function can3D(): boolean {
   return cached;
 }
 
+/** Start nedlastingen av 3D-øya tidlig (f.eks. på profilvalget), så kartet er klart med en gang. */
+let preloaded: Promise<unknown> | null = null;
+export function preloadIsland3D() {
+  if (preloaded || !can3D()) return;
+  preloaded = import('./Island3D').catch(() => { preloaded = null; });
+}
+
 /** Husk at denne enheten var for treg til 3D. */
 export function markSlow() {
   cached = false;
