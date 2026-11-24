@@ -250,6 +250,16 @@ export const GAMES: GameDefinition[] = [
     component: lazy(() => import('./ladders/LaddersGame'))
   },
   {
+    id: 'chess',
+    group: 'together',
+    titleKey: 'game_chess',
+    icon: '♟️',
+    color: '#6a4c93',
+    worlds: ['small', 'mid', 'big'],
+    maxPlayers: 2,
+    component: lazy(() => import('./chess/ChessGame'))
+  },
+  {
     id: 'clock',
     group: 'numbers',
     titleKey: 'game_clock',
