@@ -1,7 +1,7 @@
 // Finner alle emoji som brukes i appen og kopierer tilhørende 3D-figurer
 // (Microsoft Fluent Emoji 3D, MIT-lisens, via @lobehub/fluent-emoji-3d) til public/emoji3d/.
 // Kjøres automatisk etter `npm install` og før bygging.
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -42,5 +42,8 @@ for (const key of [...used].sort()) {
   copyFileSync(join(assets, file), join(out, `${key}.webp`));
   copied.push(key);
 }
+// Fjern bilder av emoji som ikke brukes lenger
+const keep = new Set(copied.map((k) => `${k}.webp`));
+for (const f of readdirSync(out)) if (f.endsWith('.webp') && !keep.has(f)) unlinkSync(join(out, f));
 writeFileSync(listFile, `// Generert av scripts/sync-emoji.mjs – ikke rediger.\nexport const EMOJI3D: string[] = ${JSON.stringify(copied)};\n`);
 console.log(`[emoji3d] ${copied.length} av ${used.size} emoji har 3D-versjon (kopiert til public/emoji3d).`);

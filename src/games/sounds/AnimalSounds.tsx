@@ -13,7 +13,7 @@ type Animal = (typeof FARM)[number];
 const TODDLER = ['dog', 'cat', 'cow', 'sheep', 'pig', 'duck', 'chicken', 'horse', 'lion'];
 const shuffle = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
 
-/** Spiller dyrelyd og sier så navn + lydord. Avbryter forrige. */
+/** Spiller ekte dyrelyd og sier så navnet (på begge språk hvis tospråklig). Avbryter forrige. */
 function useAnimalVoice(api: GameApi) {
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
