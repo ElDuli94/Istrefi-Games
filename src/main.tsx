@@ -16,7 +16,26 @@ installHistoryGuard();
 installTouchGuard();
 installSparkles();
 
-registerSW({ immediate: true });
+// Oppdateringer: se etter ny versjon når appen åpnes/kommer fram igjen, og bytt til den
+// automatisk – men aldri midt i et spill (da byttes det når barnet går ut av spillet).
+const hadController = !!navigator.serviceWorker?.controller;
+let pendingReload = false;
+const maybeReload = () => { if (pendingReload && !location.hash.startsWith('#/play')) { pendingReload = false; location.reload(); } };
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, reg) {
+    if (!reg) return;
+    const check = () => { reg.update().catch(() => {}); };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+    setInterval(check, 30 * 60 * 1000);
+  }
+});
+navigator.serviceWorker?.addEventListener('controllerchange', () => {
+  if (!hadController) return; // første installasjon – ingen ny versjon å bytte til
+  pendingReload = true;
+  maybeReload();
+});
+window.addEventListener('hashchange', maybeReload);
 
 // Etter en oppdatering kan gamle spillfiler være borte fra serveren.
 // Da laster vi siden på nytt én gang i stedet for å vise en feil.
