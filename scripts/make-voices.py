@@ -131,10 +131,18 @@ def main():
             i += BATCH
             json.dump(manifest[lang], open(os.path.join(out_dir, 'index.json'), 'w'), ensure_ascii=False, indent=0)
             print(f'[{lang}] {min(i, len(todo))}/{len(todo)}')
-    with open(os.path.join(ROOT, 'src', 'voice', 'manifest.ts'), 'w') as f:
-        f.write('// Generert av scripts/make-voices.py – ikke rediger.\nimport type { Lang } from \'../i18n\';\n')
-        f.write('export const VOICE_FILES: Partial<Record<Lang, Record<string, string>>> = ' + json.dumps(manifest, ensure_ascii=False) + ';\n')
-    print('Ferdig! Manifest skrevet til src/voice/manifest.ts')
+        # Rydd bort klipp for tekster appen ikke bruker lenger
+        wanted = {norm(c['text']) for c in phrases[lang]}
+        stale = [k for k in manifest[lang] if k not in wanted]
+        for k in stale:
+            fid = manifest[lang].pop(k)
+            if fid not in manifest[lang].values():
+                try: os.remove(os.path.join(out_dir, f'{fid}.mp3'))
+                except FileNotFoundError: pass
+        if stale:
+            json.dump(manifest[lang], open(os.path.join(out_dir, 'index.json'), 'w'), ensure_ascii=False, indent=0)
+            print(f'[{lang}] fjernet {len(stale)} ubrukte klipp')
+    print('Ferdig! Oversikten ligger i public/voice/<språk>/index.json')
 
 if __name__ == '__main__':
     main()

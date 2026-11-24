@@ -10,7 +10,6 @@
  */
 import { getState } from '../storage/store';
 import { LANGUAGES, type Lang } from '../i18n';
-import { VOICE_FILES } from '../voice/manifest';
 
 const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
 const BASE = `${import.meta.env.BASE_URL}voice/`;
@@ -24,8 +23,22 @@ let queue: Item[] = [];
 let token = 0;
 let doneCb: (() => void) | null = null;
 
+// Oversikten over lydklipp (tekst → fil) hentes fra public/voice/<språk>/index.json
+// i stedet for å ligge i selve app-koden – det gjør appen ca. 130 kB mindre.
+const voiceFiles: Partial<Record<Lang, Record<string, string>>> = {};
+const loading: Partial<Record<Lang, Promise<void>>> = {};
+function loadVoices(lang: Lang): Promise<void> {
+  return (loading[lang] ??= fetch(`${BASE}${lang}/index.json`)
+    .then((r) => (r.ok ? r.json() : {}))
+    .then((j: Record<string, string>) => { voiceFiles[lang] = j; })
+    .catch(() => { delete loading[lang]; }));
+}
+// Last begge språk med en gang (tospråklig modus trenger begge)
+loadVoices('no');
+loadVoices('sq');
+
 function clipUrl(lang: Lang, text: string): string | null {
-  const id = VOICE_FILES[lang]?.[norm(text)];
+  const id = voiceFiles[lang]?.[norm(text)];
   return id ? `${BASE}${lang}/${id}.mp3` : null;
 }
 
@@ -41,10 +54,6 @@ function findVoice(l: Lang = getState().settings.lang): SpeechSynthesisVoice | n
     if (best) return best;
   }
   return null;
-}
-
-export function canSpeak(): boolean {
-  return 'speechSynthesis' in window && findVoice() !== null;
 }
 
 /** Del opp teksten i biter som kan spilles som lydfil, ellers leses av enheten. */
@@ -111,6 +120,18 @@ export function speakParts(parts: SpeakPart[], onDone?: () => void) {
   stopSpeaking();
   if (!getState().settings.voice) { onDone?.(); return; }
   const main = getState().settings.lang;
+  const my = token;
+  // Er ikke lydoversikten lastet ennå (rett etter oppstart)? Vent litt, men maks 1,5 s.
+  const missing = [...new Set(parts.map((p) => p.lang ?? main))].filter((l) => !voiceFiles[l]);
+  if (missing.length) {
+    Promise.race([Promise.all(missing.map(loadVoices)), new Promise((r) => setTimeout(r, 1500))])
+      .then(() => { if (my === token) startQueue(parts, main, onDone); });
+    return;
+  }
+  startQueue(parts, main, onDone);
+}
+
+function startQueue(parts: SpeakPart[], main: Lang, onDone?: () => void) {
   queue = [];
   for (const p of parts) {
     if (!p.text) continue;
@@ -120,11 +141,6 @@ export function speakParts(parts: SpeakPart[], onDone?: () => void) {
   }
   doneCb = onDone ?? null;
   next(token);
-}
-
-/** Antall lydfiler med naturlig stemme for språket (vises i foreldredelen). */
-export function voiceClipCount(lang: Lang) {
-  return Object.keys(VOICE_FILES[lang] ?? {}).length;
 }
 
 // iOS: "lås opp" lydavspilling ved første trykk, så senere opplesing kan starte automatisk

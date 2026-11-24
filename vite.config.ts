@@ -46,6 +46,12 @@ export default defineConfig({
         navigateFallback: null,
         runtimeCaching: [
           {
+            // Oversikten over lydklipp: bruk lagret kopi med en gang, men hent ny i bakgrunnen
+            urlPattern: ({ url }) => url.pathname.includes('/voice/') && url.pathname.endsWith('/index.json'),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'voice-index' }
+          },
+          {
             // Opplesing: lagres når de spilles første gang, så de virker offline etterpå
             urlPattern: ({ url }) => url.pathname.includes('/voice/'),
             handler: 'CacheFirst',

@@ -53,9 +53,9 @@ export function phrasesFor(lang: Lang): Clip[] {
   for (let c = 0; c <= 36; c++) add(fill(d.stickerCount, { count: c, total: 36 }));
   for (const w of COUNTRIES) { add(w.name[lang]); add(fill(d.whichFlag, { c: w.name[lang] })); }
   for (const len of [4, 5] as const) for (const w of WORDS[lang][len]) { add(w.toLowerCase()); add(fill(d.theWordWas, { w: w.toLowerCase() })); }
-  // 3) Dyr, lydord, sanger, figurer
+  // 3) Dyr, sanger, figurer
   for (const a of ANIMALS) add(a.name[lang]);
-  for (const a of FARM) { add(a.name[lang]); add(a.says[lang]); add(`${a.name[lang]}! ${a.says[lang]}`); }
+  for (const a of FARM) add(a.name[lang]);
   for (const s of SONGS) add(s.title[lang]);
   for (const f of DOT_FIGS) add(f.name[lang]);
   // Eventyr, former og klokka
