@@ -18,12 +18,12 @@ const AMBIENT: Record<WorldId, Ambient> = { tiny: 'meadow', small: 'forest', mid
 
 /** Hyllene i den rekkefølgen de vises */
 const GROUPS: { id: GameGroup; icon: string; key: DictKey; color: string }[] = [
-  { id: 'letters', icon: '🔤', key: 'group_letters', color: '#ff595e' },
-  { id: 'numbers', icon: '🔢', key: 'group_numbers', color: '#1982c4' },
-  { id: 'create', icon: '🎨', key: 'group_create', color: '#ffb703' },
-  { id: 'explore', icon: '🐾', key: 'group_explore', color: '#43aa8b' },
-  { id: 'action', icon: '🎮', key: 'group_action', color: '#7b2cbf' },
-  { id: 'together', icon: '👫', key: 'group_together', color: '#fb5607' }
+  { id: 'letters', icon: '🔤', key: 'group_letters', color: '#ff6b6b' },
+  { id: 'numbers', icon: '🔢', key: 'group_numbers', color: '#4dabf7' },
+  { id: 'create', icon: '🎨', key: 'group_create', color: '#fcc419' },
+  { id: 'explore', icon: '🐾', key: 'group_explore', color: '#51cf66' },
+  { id: 'action', icon: '🎮', key: 'group_action', color: '#b197fc' },
+  { id: 'together', icon: '👫', key: 'group_together', color: '#ff922b' }
 ];
 const drawerKey = (w: string) => `istrefi-drawer-${w}`;
 const FACES: Record<GameGroup, FaceKind> = { letters: 'dots', numbers: 'happy', create: 'wink', explore: 'lashes', action: 'big', together: 'sleepy' };
@@ -130,7 +130,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
                 }}
               >
                 <span className="cdrawer__box">
-                  <DrawerFace face={FACES[gr.id]} dark={k % 2 === 1} />
+                  <DrawerFace face={FACES[gr.id]} color={gr.color} />
                   {hasNew && <span className="cdrawer__new">{t('newBadge')}</span>}
                 </span>
                 <span className="cdrawer__tag"><Emo e={gr.icon} /> {t(gr.key)} <b>{list.length}</b></span>
@@ -160,7 +160,7 @@ export function WorldScreen({ worldId }: { worldId: string }) {
               </div>
               <div className="drawer-pop__drawer" aria-hidden>
                 <span className="drawer-pop__inside" />
-                <span className="drawer-pop__front"><DrawerFace face={FACES[gr.id]} /></span>
+                <span className="drawer-pop__front"><DrawerFace face={FACES[gr.id]} color={gr.color} /></span>
               </div>
             </div>
           </div>
