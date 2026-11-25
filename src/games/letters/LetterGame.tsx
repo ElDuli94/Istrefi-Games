@@ -1,7 +1,8 @@
 /**
  * Bokstavlek – dra (eller trykk) bokstaver til tavla, lag ord og få dem lest opp.
  *
- * Fri lek: lag hva du vil. Barn 5–7 får navnet sitt som hjelpelinje.
+ * Fri lek: «Skriv et ord!» – lag hva du vil. «Les opp» lyser opp og sier hver bokstav, og så hele ordet.
+ * Kjenner appen ordet (katt, sol, navnet ditt …), dukker bildet opp og ordet samles i en liten ordsamling.
  * Ord-oppgaver: velg tema (dyr, mat, kjøretøy …) og stav ordet på bildet. Hjelpen blir mindre jo eldre barnet er.
  */
 import { Emo } from '../../components/Emo';
@@ -79,7 +80,7 @@ export default function LetterGame(props: GameProps) {
 // ---------------------------------------------------------------------------
 // Felles tavle med dra-og-slipp
 // ---------------------------------------------------------------------------
-function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, extraButtons }: {
+function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, extraButtons, lit = -1, allLit = false, top }: {
   api: GameApi;
   board: Tile[];
   setBoard: (b: Tile[]) => void;
@@ -90,6 +91,10 @@ function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, 
   guide?: string[];
   onRead: () => void;
   extraButtons?: ReactNode;
+  /** Bokstav som lyser mens den leses opp */
+  lit?: number;
+  allLit?: boolean;
+  top?: ReactNode;
 }) {
   const vowels = VOWELS[api.lang];
   const boardRef = useRef<HTMLDivElement>(null);
@@ -174,6 +179,7 @@ function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, 
           {guide.map((ch, i) => <span key={i} className={board[i]?.ch === ch ? 'is-done' : ''}>{ch}</span>)}
         </div>
       )}
+      {top}
       <div className={`letters__board ${board.length === 0 ? 'is-empty' : ''} ${drag?.moved ? 'is-target' : ''}`} ref={boardRef}>
         {board.length === 0 && dropAt < 0 && <span className="letters__placeholder">{api.t('dragLetters')}</span>}
         {board.map((t, i) => (
@@ -181,7 +187,7 @@ function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, 
             {dropAt === i && <span className="tile tile--slot" />}
             <span
               data-tile
-              className={`tile ${tileCls(t.ch)} ${drag?.moved && drag.fromBoard === i ? 'is-dragging' : ''} ${correct?.[i] ? 'is-correct' : ''}`}
+              className={`tile ${tileCls(t.ch)} ${drag?.moved && drag.fromBoard === i ? 'is-dragging' : ''} ${correct?.[i] ? 'is-correct' : ''} ${lit === i ? 'is-lit' : ''} ${allLit ? 'is-alllit' : ''}`}
               onPointerDown={(e) => start(e, t.ch, i)}
             >
               {t.ch}
@@ -218,37 +224,83 @@ function LetterBoard({ api, board, setBoard, tray, big, correct, guide, onRead, 
 // ---------------------------------------------------------------------------
 function FreePlay({ world, api, onFinish }: GameProps) {
   const [board, setBoard] = useState<Tile[]>([]);
-  const [readWords, setReadWords] = useState<Set<string>>(new Set());
-  const nameLetters = useMemo(
-    () => (api.playerName && (world === 'tiny' || world === 'small') ? splitLetters(api.playerName.replace(/[^\p{L}]/gu, ''), api.lang) : null),
-    [api.playerName, api.lang, world]
-  );
+  const [lit, setLit] = useState(-1);
+  const [allLit, setAllLit] = useState(false);
+  const [result, setResult] = useState<{ word: string; e: string | null; key: number } | null>(null);
+  const [found, setFound] = useState<{ word: string; e: string }[]>([]);
+  const [reads, setReads] = useState(0);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // Ord appen kjenner (med bilde): alle ord i ordbanken + navnet til barnet
+  const known = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of VOCAB) for (const it of c.items) if (!/\s/.test(it[api.lang])) m.set(it[api.lang].toUpperCase(), it.e);
+    if (api.playerName) m.set(api.playerName.replace(/[^\p{L}]/gu, '').toUpperCase(), '🙂');
+    return m;
+  }, [api.lang, api.playerName]);
 
   useEffect(() => {
-    api.speak(nameLetters ? `${api.t('writeYourName')} ${api.playerName}` : api.t('dragLetters'));
+    api.speak(api.t('writeAWord'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const word = board.map((t) => t.ch).join('');
 
   function read() {
-    api.speak(word.toLowerCase());
-    if (nameLetters && word === nameLetters.join('')) api.sfx('match');
-    setReadWords((s) => new Set(s).add(word));
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    setResult(null);
+    setAllLit(false);
+    const step = 600;
+    // 1) Lys opp og si hver bokstav …
+    board.forEach((t, i) => timers.current.push(window.setTimeout(() => { setLit(i); api.speak(t.ch.toLowerCase()); }, i * step)));
+    // 2) … så hele ordet. Kjent ord = bilde + feiring.
+    timers.current.push(window.setTimeout(() => {
+      setLit(-1);
+      setAllLit(true);
+      const e = known.get(word) ?? null;
+      setResult({ word, e, key: Date.now() });
+      api.speak(word.toLowerCase());
+      if (e) {
+        api.sfx('match');
+        if (!found.some((f) => f.word === word)) setFound((f) => [...f, { word, e }]);
+      } else api.sfx('pop');
+      setReads((r) => r + 1);
+      timers.current.push(window.setTimeout(() => setAllLit(false), 1200));
+    }, board.length * step + 200));
   }
 
   return (
     <LetterBoard
       api={api}
       board={board}
-      setBoard={setBoard}
+      setBoard={(b) => { setBoard(b); setResult(null); }}
       tray={ALPHABETS[api.lang]}
       big={world === 'tiny'}
-      guide={nameLetters ?? undefined}
+      lit={lit}
+      allLit={allLit}
       onRead={read}
+      top={
+        <div className="letters__top">
+          {result ? (
+            <button className={`letters__result pop-in ${result.e ? 'is-known' : ''}`} key={result.key} onClick={() => api.speak(result.word.toLowerCase())}>
+              {result.e && <span className="letters__result-pic"><Emo e={result.e} /></span>}
+              <b>{result.word.toLowerCase()}</b> <Emo e="🔊" />
+            </button>
+          ) : (
+            <button className="letters__prompt" onClick={() => api.speak(api.t('writeAWord'))}>✏️ {api.t('writeAWord')} <Emo e="🔊" /></button>
+          )}
+          {found.length > 0 && (
+            <div className="letters__found" aria-label={api.t('wordsFound')}>
+              {found.map((f) => <button key={f.word} onClick={() => api.speak(f.word.toLowerCase())}><Emo e={f.e} /></button>)}
+            </div>
+          )}
+        </div>
+      }
       extraButtons={
-        readWords.size >= 3 && (
-          <button className="act act--done pop-in" onClick={() => onFinish({ won: true, stars: 3, coins: 5 })}>✔ {api.t('done')}</button>
+        reads >= 3 && (
+          <button className="act act--done pop-in" onClick={() => onFinish({ won: true, stars: 3, coins: 5 + Math.min(10, found.length * 2) })}>✔ {api.t('done')}</button>
         )
       }
     />

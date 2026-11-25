@@ -199,7 +199,6 @@
 "trykk på et dyr for å høre hva det sier!": "8ec7b6923c7e",
 "tegn med fingeren! velg farger, regnbue eller stempler.": "71b48607fa9b",
 "snu to kort. finner du to like, får du beholde dem!": "df605f7b1f95",
-"dra bokstaver til tavla, og trykk på høyttaleren for å høre ordet.": "2e59715bb7a6",
 "dra klossene inn på brettet. fyll en hel rad eller kolonne, så forsvinner den!": "137756428f61",
 "sveip eller bruk pilene for å styre slangen. spis frukt, men ikke krasj!": "0996f29864e3",
 "regn ut og trykk på riktig svar!": "e08f478f18fd",
@@ -2111,5 +2110,8 @@
 "bonden går ett steg rett fram, eller to steg første gang. den slår på skrå. kommer den helt over brettet, blir den en dronning!": "1513135e2928",
 "trykk på et felt med prikk for å flytte.": "de28a6559eb1",
 "trykk på de lysende feltene.": "b2a1751e64ad",
-"bonden ble en dronning!": "3a040031aaf1"
+"bonden ble en dronning!": "3a040031aaf1",
+"skriv et ord med bokstavene. trykk på «les opp», så leser jeg hver bokstav og hele ordet. kjenner jeg ordet, får du se et bilde!": "490cd86bc5bd",
+"skriv et ord!": "2d27a0b803c1",
+"ord du har skrevet": "b8173a765fa3"
 }
