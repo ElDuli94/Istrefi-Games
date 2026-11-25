@@ -52,6 +52,8 @@ export function phrasesFor(lang: Lang): Clip[] {
   for (const n of [5, 10, 15, 20]) add(fill(d.streakN, { n }));
   for (let n = 0; n <= 60; n++) add(fill(d.sprintResult, { n }));
   for (let a = 1; a <= 5; a++) for (let b = 1; b <= 5; b++) add(fill(d.ladQuiz, { a, b }));
+  // Gangetabellen
+  for (let a = 1; a <= 10; a++) { add(fill(d.timesTable, { n: a })); for (let b = 1; b <= 10; b++) { add(fill(d.timesQ, { a, b })); add(fill(d.timesA, { a, b, n: a * b })); } }
   for (let n = 2; n <= 10; n++) for (const sct of sentences(fill(d.ladQuizWrong, { n }))) add(sct);
   for (const p of [d.red, d.blue, 'Shqipo']) add(fill(d.playerWins, { p }));
   for (let c = 1; c <= 60; c++) add(fill(d.youEarned, { coins: c }));
