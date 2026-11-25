@@ -243,7 +243,7 @@ export const no = {
   help_sounds: 'Trykk på et dyr for å høre hva det sier!',
   help_draw: 'Tegn med fingeren! Velg farger, regnbue eller stempler.',
   help_memory: 'Snu to kort. Finner du to like, får du beholde dem!',
-  help_letters: 'Dra bokstaver til tavla, og trykk på høyttaleren for å høre ordet.',
+  help_letters: 'Skriv et ord med bokstavene. Trykk på «Les opp», så leser jeg hver bokstav og hele ordet. Kjenner jeg ordet, får du se et bilde!',
   help_blocks: 'Dra klossene inn på brettet. Fyll en hel rad eller kolonne, så forsvinner den!',
   help_snake: 'Sveip eller bruk pilene for å styre slangen. Spis frukt, men ikke krasj!',
   help_math: 'Regn ut og trykk på riktig svar!',
@@ -477,6 +477,8 @@ export const no = {
   learnTry: 'Trykk på et felt med prikk for å flytte.',
   learnTapGlow: 'Trykk på de lysende feltene.',
   learnPromoted: 'Bonden ble en dronning!',
+  writeAWord: 'Skriv et ord!',
+  wordsFound: 'Ord du har skrevet',
   soundOn: 'Lyd på',
   soundOff: 'Lyd av',
   // Kakevakt

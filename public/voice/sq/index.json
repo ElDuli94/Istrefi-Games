@@ -198,7 +198,6 @@
 "shtyp një kafshë për të dëgjuar zërin e saj!": "e415b1d46bd2",
 "vizato me gisht! zgjidh ngjyra, ylber ose vula.": "f823ef199f5c",
 "kthe dy letra. nëse gjen dy të njëjta, i mban!": "0db8ddad43b5",
-"tërhiq shkronjat në tabelë dhe shtyp altoparlantin për të dëgjuar fjalën.": "dfd85335e278",
 "tërhiq kubet në tabelë. mbush një rresht ose kolonë dhe ajo zhduket!": "db45bcd1f756",
 "rrëshqit ose përdor shigjetat për të drejtuar gjarprin. ha fruta, por mos u përplas!": "3e950f269575",
 "llogarit dhe shtyp përgjigjen e saktë!": "686e2cb9cab3",
@@ -2039,5 +2038,8 @@
 "ushtari shkon një hap përpara, ose dy hapa herën e parë. ai merr tërthor. nëse arrin në fund të tabelës, bëhet mbretëreshë!": "17c1bf09819d",
 "prek një fushë me pikë për të lëvizur.": "901cccc65a6d",
 "prek fushat që ndriçojnë.": "1ea2a47387bb",
-"ushtari u bë mbretëreshë!": "4f57886dc97c"
+"ushtari u bë mbretëreshë!": "4f57886dc97c",
+"shkruaj një fjalë me shkronjat. shtyp «lexo», dhe unë lexoj çdo shkronjë dhe gjithë fjalën. nëse e njoh fjalën, do të shohësh një foto!": "efa28b124bc3",
+"shkruaj një fjalë!": "cff56636cf18",
+"fjalët që ke shkruar": "cb8985ee167b"
 }
