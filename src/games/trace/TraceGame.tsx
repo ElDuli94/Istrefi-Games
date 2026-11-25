@@ -151,22 +151,24 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
         if (xi < 0 || yi < 0 || xi >= size || yi >= size) return false;
         return data[(yi * size + xi) * 4 + 3] > 40;
       };
-      const pts: [number, number][] = [];
       const step = Math.max(4, Math.round(size / 70));
-      for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) if (inside(x, y)) pts.push([x, y]);
-      // Del bokstaven i små ruter. Alle ruter med nok "blekk" må fargelegges,
-      // så f.eks. streken i midten av A ikke kan hoppes over.
-      const G = lenient ? 6 : 8;
-      const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
-      const minX = Math.min(...xs), maxX = Math.max(...xs) + 1, minY = Math.min(...ys), maxY = Math.max(...ys) + 1;
-      const grid: [number, number][][] = Array.from({ length: G * G }, () => []);
+      // Bare «kjernen» av bokstaven teller – en smal kant langs omrisset kan barnet bomme litt på.
+      const e = size * 0.035;
+      const core = (x: number, y: number) => inside(x, y) && inside(x - e, y) && inside(x + e, y) && inside(x, y - e) && inside(x, y + e);
+      let pts: [number, number][] = [];
+      for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) if (core(x, y)) pts.push([x, y]);
+      if (pts.length < 20) { pts = []; for (let y = 0; y < size; y += step) for (let x = 0; x < size; x += step) if (inside(x, y)) pts.push([x, y]); }
+      // Del bokstaven i like store ruter (uavhengig av hvor smal bokstaven er). Alle ruter med nok
+      // "blekk" må fargelegges, så f.eks. streken i midten av A ikke kan hoppes over.
+      const cellPx = size / (lenient ? 6 : 8);
+      const grid = new Map<number, [number, number][]>();
       for (const q of pts) {
-        const cx = Math.min(G - 1, Math.floor(((q[0] - minX) / (maxX - minX)) * G));
-        const cy = Math.min(G - 1, Math.floor(((q[1] - minY) / (maxY - minY)) * G));
-        grid[cy * G + cx].push(q);
+        const k = Math.floor(q[1] / cellPx) * 100 + Math.floor(q[0] / cellPx);
+        if (!grid.has(k)) grid.set(k, []);
+        grid.get(k)!.push(q);
       }
-      const minPts = Math.max(3, (pts.length / (G * G)) * 0.3);
-      const cells = grid.filter((c) => c.length >= minPts);
+      const full = (cellPx / step) ** 2;
+      const cells = [...grid.values()].filter((c) => c.length >= Math.max(3, full * 0.12));
       mask.current = { pts, inside, cells };
       hintRef.current!.width = size * dpr; hintRef.current!.height = size * dpr;
       hintRef.current!.getContext('2d')!.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -232,7 +234,7 @@ function Tracer({ api, letters, lenient, onLetterDone, onRoundDone, isNew }: {
     const tooMessy = outsidePainted > coveredPts * (lenient ? 1.6 : 0.9);
     const cellNeed = lenient ? 0.3 : 0.5;
     const missing = m.cells.filter((c) => c.filter(([x, y]) => painted(x, y)).length / c.length < cellNeed);
-    const need = lenient ? 0.55 : 0.72;
+    const need = lenient ? 0.65 : 0.85;
     const partsDone = 1 - missing.length / Math.max(1, m.cells.length);
     setProgress(tooMessy ? 0 : Math.min(1, Math.min(covered / need, partsDone)));
     // Vis hvilke biter som mangler når barnet nesten er ferdig
